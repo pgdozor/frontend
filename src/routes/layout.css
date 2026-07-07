@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+
+@theme {
+	--color-paper: #f4efe6;
+	--color-ink: #3a2a1f;
+	--color-command: #a83d2b;
+	--color-danger: #8b1e1e;
+	--color-warn: #c7771a;
+	--color-ok: #6b7a3a;
+	--color-steel: #6c8392;
+	--color-teal: #4e7a86;
+	--color-panic: #5e1414;
+	--color-taupe: #9a8f7e;
+	--color-card: #fbf8f1;
+	--color-shell: #efe8db;
+
+	--font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+	--font-condensed: 'IBM Plex Sans Condensed', 'IBM Plex Sans', sans-serif;
+	--font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+}
+
+@layer base {
+	html,
+	body {
+		margin: 0;
+		padding: 0;
+	}
+	body {
+		background: var(--color-paper);
+		color: var(--color-ink);
+		font-family: var(--font-sans);
+		-webkit-font-smoothing: antialiased;
+		text-rendering: optimizeLegibility;
+	}
+	::selection {
+		background: rgba(168, 61, 43, 0.22);
+	}
+	::-webkit-scrollbar {
+		width: 11px;
+		height: 11px;
+	}
+	::-webkit-scrollbar-thumb {
+		background: rgba(58, 42, 31, 0.28);
+		border: 3px solid var(--color-paper);
+	}
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
+}
+
+@keyframes pgd-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.35;
+	}
+}
