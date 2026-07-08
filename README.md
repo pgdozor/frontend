@@ -1,53 +1,49 @@
-# pgdozor frontend
+# Frontend
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+The pgdozor dashboard — a SvelteKit app (Svelte 5 runes, Tailwind 4) that talks to the backend over Connect-web.
 
-- npm
+> Production deployment (Kubernetes / Helm) lives in the [`pgdozor/docs`](https://github.com/pgdozor/docs) repo. This README is for working on the frontend itself.
 
-## Creating a project
+## Local development
 
-If you're seeing this, you've probably already done this step. Congrats!
+Requires Node 24 (see `.node-version`).
 
 ```sh
-# create a new project
-npx sv create my-app
+npm install
+npm run dev   # localhost:3001
 ```
 
-To recreate this project with the same configuration:
+The backend base URL comes from `PUBLIC_API_URL` (defaults to `http://localhost:3000`; see `.env.example`).
+
+## Check
 
 ```sh
-# recreate this project
-npx sv@0.16.1 create --template minimal --types ts --add tailwindcss="plugins:none" --install npm pgdozor-frontend
+npm run check # svelte-check (types) + lint
 ```
 
-## Backend API setup (protobuf / Connect)
+## Backend schema (Connect / buf)
+
+After a backend proto change is published to buf.build, pull the regenerated client:
 
 ```sh
-npm config set -g //buf.build/gen/npm/v1/:_authToken=BUF_TOKEN
+npm run proto:update
+```
+
+One-time buf registry auth:
+
+```sh
 npm config set -g @buf:registry=https://buf.build/gen/npm/v1
+npm config set -g //buf.build/gen/npm/v1/:_authToken=BUF_TOKEN
 ```
 
-To pull the latest schema from the backend, run `npm run proto:update`.
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install`, start a development server:
+## Build & release
 
 ```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+make release VERSION=0.1.0   # checks, tags v0.1.0, pushes; CI builds and publishes the image to GHCR
 ```
 
-## Building
-
-To create a production version of your app:
+Or build locally:
 
 ```sh
-npm run build
+npm run build   # adapter-node output in build/ (serve with `node build`)
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
