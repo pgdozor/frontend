@@ -92,7 +92,7 @@
 
 	{#if loading}
 		<div class="px-[44px] py-[28px] text-center font-mono text-[13px] text-ink/45">Loading…</div>
-	{:else if error}
+	{:else if error && servers.length === 0}
 		<div class="px-[44px] py-[28px] text-center font-mono text-[13px] text-danger">{error}</div>
 	{:else if servers.length === 0}
 		<div class="border border-ink/16 bg-card px-[44px] py-[44px] text-center font-mono text-[13px] text-ink/45">

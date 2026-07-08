@@ -45,10 +45,11 @@ class ContextState {
 	timeRange(): { from: Date; to: Date } {
 		if (this.range === 'custom') {
 			// Inputs are typed as "YYYY-MM-DD HH:MM:SS"; normalize the space to ISO's "T".
-			return {
-				from: new Date(this.customFrom.replace(' ', 'T')),
-				to: new Date(this.customTo.replace(' ', 'T'))
-			};
+			const from = new Date(this.customFrom.replace(' ', 'T'));
+			const to = new Date(this.customTo.replace(' ', 'T'));
+			if (!isNaN(from.getTime()) && !isNaN(to.getTime()) && from.getTime() <= to.getTime()) {
+				return { from, to };
+			}
 		}
 		const to = new Date();
 		const span = presetMs[this.range] ?? presetMs[DEFAULT_RANGE];

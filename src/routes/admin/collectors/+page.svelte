@@ -47,6 +47,9 @@
 
 	function close() {
 		modal = null;
+		newToken = '';
+		newTokenServer = '';
+		copied = false;
 	}
 
 	async function create() {

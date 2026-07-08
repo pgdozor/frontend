@@ -67,6 +67,7 @@
 
 	function close() {
 		modal = null;
+		umPassword = '';
 	}
 
 	function toggleServer(name: string) {
