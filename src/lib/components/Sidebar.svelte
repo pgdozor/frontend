@@ -18,13 +18,11 @@
 </script>
 
 <aside class="sticky top-0 hidden h-screen w-[250px] flex-none flex-col border-r border-ink/14 bg-shell md:flex">
-	<!-- emblem -->
 	<div class="flex items-center gap-[11px] border-b border-ink/14 px-[18px] py-[20px]">
 		<PgdozorMark class="size-[30px] flex-none text-command" />
 		<span class="font-condensed text-[20px] font-bold tracking-[2.5px] text-ink">PGDOZOR</span>
 	</div>
 
-	<!-- nav -->
 	<nav class="flex flex-col gap-[2px] px-[8px] py-[10px]">
 		{#each navItems as item (item.key)}
 			<a href={item.href} title={item.label} class={navClass(isNavActive(item, page.url.pathname))}>
@@ -34,7 +32,6 @@
 	</nav>
 
 	{#if session.isSuperAdmin}
-		<!-- admin -->
 		<div class="mt-auto border-t border-ink/14 px-[8px] pt-[8px] pb-[4px]">
 			<div
 				class="px-[13px] pt-[8px] pb-[7px] font-condensed text-[10px] font-bold tracking-[1.4px] text-ink/40 uppercase"
@@ -51,7 +48,6 @@
 		</div>
 	{/if}
 
-	<!-- user -->
 	<div class="{session.isSuperAdmin ? '' : 'mt-auto'} border-t border-ink/14 p-[14px]">
 		<div class="flex items-center gap-[11px] px-[10px] py-[8px] hover:bg-ink/4">
 			<span

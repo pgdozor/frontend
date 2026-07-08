@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { SVGAttributes } from 'svelte/elements';
 
-	// The pgdozor radar emblem — the one brand glyph Lucide can't provide.
-	// Uses currentColor so callers tint it with a text-* utility (text-command).
+	// Uses currentColor so callers tint it with a text-* utility (e.g. text-command).
 	let props: SVGAttributes<SVGSVGElement> = $props();
 </script>
 

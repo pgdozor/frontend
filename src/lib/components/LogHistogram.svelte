@@ -11,11 +11,10 @@
 
 	const total = (b: Bucket): number => b.segments.reduce((s, seg) => s + seg.value, 0);
 
-	// Scale every bucket against the tallest total so the peak fills the chart.
+	// Scale against the tallest total so the peak fills the chart.
 	const maxTotal = $derived(Math.max(1, ...data.map(total)));
 	const px = (n: number): number => (n / maxTotal) * CHART_H;
 
-	// A handful of evenly-spaced x labels, like the design's lgXTicks.
 	const ticks = $derived.by(() => {
 		if (data.length === 0) return [];
 		return Array.from({ length: TICKS }, (_, i) => {

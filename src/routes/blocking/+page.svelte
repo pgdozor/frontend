@@ -13,7 +13,6 @@
 
 	const sql = new SqlPopoverState();
 
-	// Re-fetch whenever the context bar (server · database · time range) changes.
 	$effect(() => {
 		const { from, to } = ctx.timeRange();
 		const request = {
@@ -49,9 +48,8 @@
 
 	type VictimRow = { event: BlockedEvent; level: number };
 
-	// Rebuild the waits-for tree from the flat blocked list: walk down from the
-	// root through each event's blocker, depth-first, so a victim renders directly
-	// under whoever blocks it. `level` (1-based) drives the row indent.
+	// Rebuild the waits-for tree from the flat blocked list: depth-first from the
+	// root through each event's blocker; `level` (1-based) drives the row indent.
 	function orderVictims(tree: BlockingTree): VictimRow[] {
 		const byBlocker: Record<number, BlockedEvent[]> = {};
 		for (const e of tree.blocked) {
@@ -62,7 +60,7 @@
 		const seen: Record<number, boolean> = {};
 		const walk = (blockerPid: number, level: number) => {
 			for (const e of byBlocker[blockerPid] ?? []) {
-				if (seen[e.pid]) continue; // guard against a waits-for cycle.
+				if (seen[e.pid]) continue; // guard against a waits-for cycle
 				seen[e.pid] = true;
 				rows.push({ event: e, level });
 				walk(e.pid, level + 1);
@@ -70,8 +68,7 @@
 		};
 		walk(tree.rootPid, 1);
 
-		// Anything whose blocker isn't itself in the tree still belongs to this
-		// pile-up — surface it at the top level rather than dropping it.
+		// A victim whose blocker isn't in the tree still belongs to this pile-up.
 		for (const e of tree.blocked) {
 			if (!seen[e.pid]) {
 				seen[e.pid] = true;
@@ -82,11 +79,9 @@
 		return rows;
 	}
 
-	// Durations show whole seconds as "1m 23s" / "45s", matching the design.
 	const fmtDurMs = (ms: number): string => fmtDur(Math.round(ms / 1000));
 
-	// Actual observed duration between two timestamps — independent of "now", so a
-	// pile-up that ended in the past shows how long it really lasted.
+	// Independent of "now", so a pile-up that ended in the past shows its real length.
 	const durationMs = (from?: Timestamp, to?: Timestamp): number =>
 		from && to ? Math.max(0, timestampDate(to).getTime() - timestampDate(from).getTime()) : 0;
 
@@ -108,7 +103,6 @@
 {:else}
 	{#each trees as tree (tree.rootPid)}
 		<div class="mb-[16px] border border-ink/16 bg-card last:mb-0">
-			<!-- root blocker -->
 			<div class="flex items-center gap-[16px] border-l-4 border-warn bg-warn/[0.06] px-[18px] py-[10px]">
 				<div class="min-w-0 flex-1">
 					<div class="flex flex-wrap items-baseline gap-[10px]">
@@ -129,11 +123,9 @@
 				</div>
 			</div>
 
-			<!-- victims -->
 			{#each orderVictims(tree) as { event, level } (event.pid)}
 				<div class="flex items-start border-t border-ink/8 py-[11px] pr-[18px]" style:padding-left={`${level * 22}px`}>
-					<!-- Fixed 22px arrow column = one indent step, so pid columns step evenly
-					     from the (arrowless) root down through the tree. -->
+					<!-- Arrow column width matches the 22px indent step, so pids align across levels. -->
 					<span class="w-[22px] flex-none font-mono text-[11px] leading-[18px] text-ink/40">↳</span>
 					<div class="min-w-0 flex-1">
 						<div class="flex flex-wrap items-baseline gap-[9px]">

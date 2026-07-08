@@ -56,7 +56,6 @@
 		return () => clearTimeout(id);
 	});
 
-	// Re-fetch whenever the context bar (server · database · time range) or filter changes.
 	$effect(() => {
 		const { from, to } = ctx.timeRange();
 		const request = {
@@ -139,12 +138,10 @@
 	}
 </script>
 
-<!-- metric time-series -->
 <div class="mb-[22px]">
 	<MetricPanel {metrics} {loading} {error} />
 </div>
 
-<!-- table -->
 <div class="border border-ink/16 bg-card">
 	<div class="border-b border-ink/14 p-[14px]">
 		<div class="flex items-center gap-[10px] border border-ink/20 bg-paper px-[14px] py-[10px]">

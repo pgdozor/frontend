@@ -1,7 +1,4 @@
-// PGDOZOR palette — kept in TS for data-driven (inline) colors such as severity
-// shading, where the value is computed at runtime rather than known at authoring
-// time. Mirrors the `@theme` tokens in routes/layout.css and the `const C` block
-// in the source design.
+// Duplicated in TS for runtime/inline colors; mirrors the @theme tokens in routes/layout.css.
 export const C = {
 	paper: '#F4EFE6',
 	ink: '#3A2A1F',

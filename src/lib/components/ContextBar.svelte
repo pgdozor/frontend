@@ -12,7 +12,6 @@
 	const title = $derived(screenTitle(page.url.pathname));
 	const selfHealth = $derived(serversState.health(ctx.server));
 
-	/** Tailwind dot color for a server's collector health. */
 	function healthClass(server: string): string {
 		return serversState.health(server) === 'ok' ? 'bg-ok' : 'bg-warn';
 	}
@@ -61,7 +60,6 @@
 			></button>
 		{/if}
 
-		<!-- server + database -->
 		<div class="relative z-[2] flex border border-ink/18 bg-card">
 			<button
 				type="button"
@@ -147,7 +145,6 @@
 			{/if}
 		</div>
 
-		<!-- time range -->
 		<div class="relative z-[2]">
 			<button
 				type="button"

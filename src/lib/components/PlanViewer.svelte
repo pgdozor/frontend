@@ -1,6 +1,5 @@
 <script lang="ts">
-	// pev2 (a Vue component) renders the plan inside a same-origin iframe, keeping its
-	// CDN-loaded Vue/Bootstrap isolated from the app. Once it loads, post the plan in.
+	// pev2 is a Vue component; a same-origin iframe keeps its CDN-loaded Vue/Bootstrap isolated from the app.
 	let { planJson, statement }: { planJson: string; statement: string } = $props();
 
 	let iframeEl = $state<HTMLIFrameElement>();

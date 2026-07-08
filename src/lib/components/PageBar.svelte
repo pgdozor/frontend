@@ -3,17 +3,14 @@
 
 	type Props = {
 		title: string;
-		/** Right-aligned bar actions (e.g. a "New …" button). */
 		actions?: Snippet;
 	};
 
 	let { title, actions }: Props = $props();
 </script>
 
-<!-- Same sticky top bar as ContextBar, minus the server/db/time controls: keeps
-     the title + bottom separator consistent across every section. The min-height
-     matches ContextBar's control-driven height so the title sits at the same
-     vertical position on every screen. -->
+<!-- min-height matches ContextBar's control-driven height so the title sits at
+     the same vertical position across sections. -->
 <div
 	class="sticky top-0 z-30 flex min-h-[63px] items-center gap-[18px] border-b border-ink/14 bg-paper/70 px-[28px] py-[14px] backdrop-blur-[3px] backdrop-saturate-[1.1]"
 >

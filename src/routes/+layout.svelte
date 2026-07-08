@@ -6,7 +6,6 @@
 
 	let { children } = $props();
 
-	// Resolve the signed-in user once for the whole app (client-side only).
 	onMount(() => {
 		session.load();
 	});

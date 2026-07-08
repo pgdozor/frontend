@@ -28,9 +28,7 @@
 	let search = $state('');
 	let filter = $state('');
 
-	// Empty selection means "all". Levels filter only the table + chart; the chips
-	// keep their counts from the histogram's level_totals so they stay togglable.
-	// Classifications come from the full enum (ALL_CLASSIFICATIONS).
+	// Empty selection means "all"; chips keep counts from level_totals so they stay togglable.
 	let selectedLevels = $state<LogEvent_LogLevel[]>([]);
 	let selectedClasses = $state<LogEvent_LogClassification[]>([]);
 
@@ -38,14 +36,12 @@
 	let menu = $state<'class' | null>(null);
 
 	$effect(() => {
-		// Switching servers clears the facet selection.
 		if (ctx.server) {
 			selectedLevels = [];
 			selectedClasses = [];
 		}
 	});
 
-	// Debounce the search box into the server-side text filter.
 	$effect(() => {
 		const term = search;
 		const id = setTimeout(() => {
@@ -54,7 +50,6 @@
 		return () => clearTimeout(id);
 	});
 
-	// Re-fetch whenever server · time range · text filter · any facet changes.
 	$effect(() => {
 		const { from, to } = ctx.timeRange();
 		const request = {
@@ -94,12 +89,9 @@
 	const buckets = $derived(resp?.histogram?.buckets ?? []);
 	const levelTotals = $derived(resp?.histogram?.levelTotals ?? []);
 
-	// A level is "active" (drawn in the chart / not dimmed) when nothing is
-	// selected, or when it is one of the selected levels.
 	const levelActive = (level: LogEvent_LogLevel): boolean =>
 		selectedLevels.length === 0 || selectedLevels.includes(level);
 
-	// Chips: one per level present in the range, most-severe first.
 	const chips = $derived.by(() => {
 		const counts = new Map(levelTotals.map((c) => [c.level, Number(c.count)]));
 		return LEVEL_ORDER.filter((l) => counts.has(l)).map((l) => ({
@@ -110,11 +102,8 @@
 		}));
 	});
 
-	// Total events across the effective (selected) levels.
 	const totalEvents = $derived(levelTotals.reduce((sum, c) => (levelActive(c.level) ? sum + Number(c.count) : sum), 0));
 
-	// Chart bars stack one segment per level, colored the same as that level's
-	// chip, least-severe at the bottom. Deselected levels are dropped.
 	const STACK_ORDER = [...LEVEL_ORDER].reverse();
 	const chartData = $derived(
 		buckets.map((b) => {
@@ -171,7 +160,6 @@
 	const td = 'px-[14px] py-[10px] border-b border-ink/8 align-top';
 </script>
 
-<!-- ===== severity timeline ===== -->
 <div class="mb-[16px] border border-ink/16 bg-card px-[20px] pt-[18px] pb-[14px]">
 	<div class="mb-[16px] flex flex-wrap items-start justify-between gap-[18px]">
 		<div class="flex items-baseline gap-[10px]">
@@ -213,7 +201,6 @@
 	{/if}
 </div>
 
-<!-- dropdown backdrop -->
 {#if menu !== null}
 	<button
 		type="button"
@@ -223,7 +210,6 @@
 	></button>
 {/if}
 
-<!-- ===== filter bar + table ===== -->
 <div class="border border-ink/16 bg-card">
 	<div class="flex flex-wrap items-center gap-[10px] border-b border-ink/14 p-[12px] px-[14px]">
 		<div class="flex h-[38px] min-w-[240px] flex-1 items-center gap-[10px] border border-ink/20 bg-paper px-[12px]">
@@ -245,7 +231,6 @@
 			{/if}
 		</div>
 
-		<!-- Classification facet -->
 		<div class="relative z-[21]">
 			<button
 				type="button"
@@ -275,7 +260,6 @@
 		</div>
 	</div>
 
-	<!-- table -->
 	<div class="overflow-x-auto">
 		<table class="w-full min-w-[1072px] table-fixed border-collapse font-sans">
 			<thead>

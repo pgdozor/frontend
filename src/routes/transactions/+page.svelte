@@ -21,7 +21,6 @@
 
 	const sql = new SqlPopoverState();
 
-	// Re-fetch whenever the context bar (server · database · time range) changes.
 	$effect(() => {
 		const { from, to } = ctx.timeRange();
 		const request = {
@@ -55,7 +54,7 @@
 		};
 	});
 
-	// A transaction has no stable id; identify it by pid + start for expansion state.
+	// No stable id; key expansion state by pid + start.
 	const rowKey = (t: Transaction): string => `${t.pid}-${t.start ? timestampDate(t.start).getTime() : 0}`;
 
 	function toggle(t: Transaction) {
@@ -75,10 +74,8 @@
 		return timestampDate(to).getTime() - timestampDate(from).getTime();
 	}
 
-	// Durations show whole seconds as "1m 23s" / "45s", matching the design.
 	const fmtDurMs = (ms: number): string => fmtDur(Math.round(ms / 1000));
 
-	// Event times are relative to the transaction start (00:00), e.g. "0:00–1:05".
 	const relFrom = (start: Timestamp, ts: Timestamp): string =>
 		fmtRel((timestampDate(ts).getTime() - timestampDate(start).getTime()) / 1000);
 
@@ -102,11 +99,10 @@
 			case TransactionEventStatus.ABORTED:
 				return C.danger;
 			default:
-				return C.steel; // IDLE / unspecified
+				return C.steel;
 		}
 	}
 
-	// The backend's wait fields, joined for display: "IO · DataFileRead · ExclusiveLock".
 	const waitText = (e: TransactionEvent): string =>
 		[e.waitEventType, e.waitEvent, e.lockMode].filter(Boolean).join(' · ');
 
@@ -117,9 +113,8 @@
 		events: TransactionEvent[];
 	};
 
-	// Consecutive events that run the same statement share one query header; a new
-	// group opens whenever the statement (or query text) changes. Idle/aborted
-	// stretches carry no query and group under a muted "no query running" header.
+	// Consecutive events on the same statement share one query header; idle/aborted
+	// stretches carry no query and group under a "no query running" header.
 	function groupEvents(events: TransactionEvent[]): EventGroup[] {
 		const groups: EventGroup[] = [];
 		for (const e of events) {
@@ -133,7 +128,6 @@
 		return groups;
 	}
 
-	// Timeline row within a group: dot, time range, duration, status, wait/lock.
 	const timelineGrid =
 		'grid grid-cols-[9px_minmax(64px,auto)_minmax(40px,auto)_minmax(64px,auto)_minmax(0,1fr)] items-start gap-x-[12px] py-[5px]';
 </script>

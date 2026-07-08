@@ -8,12 +8,9 @@
 
 	type Props = {
 		children: Snippet;
-		/** Show the server/database/time selector bar (monitoring screens only). */
 		contextBar?: boolean;
-		/** Enable the database selector in the context bar. LOGS disables it
-		 *  because log events are server-wide, not scoped to one database. */
+		/** LOGS disables this because log events are server-wide, not per-database. */
 		dbSwitch?: boolean;
-		/** Restrict the section to the super admin (the ADMIN pages). */
 		requireSuperAdmin?: boolean;
 	};
 
@@ -23,14 +20,13 @@
 
 	const allowed = $derived(session.isAuthenticated && (!requireSuperAdmin || session.isSuperAdmin));
 
-	// Once the session state is known, bounce anyone who may not be here.
+	// Wait until the session loads, then redirect anyone not allowed here.
 	$effect(() => {
 		if (!session.loaded) return;
 		if (!session.isAuthenticated) goto('/login');
 		else if (requireSuperAdmin && !session.isSuperAdmin) goto('/queries');
 	});
 
-	// Poll monitored servers for the context bar while allowed in.
 	$effect(() => {
 		if (!contextBar || !allowed) return;
 		serversState.load();
@@ -49,7 +45,6 @@
 					{@render children()}
 				</div>
 			{:else}
-				<!-- Admin sections render their own PageBar (full-width sticky bar) + content. -->
 				{@render children()}
 			{/if}
 		</div>

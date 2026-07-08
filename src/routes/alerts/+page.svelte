@@ -68,8 +68,6 @@
 		}
 	}
 
-	// Severity chip label + Tailwind classes, matching the dashboard palette
-	// (critical → danger, warning → warn, info → steel).
 	const sev: Record<AlertLevel, { label: string; chip: string }> = {
 		[AlertLevel.CRITICAL]: { label: 'Critical', chip: 'border-danger/34 bg-danger/10 text-danger' },
 		[AlertLevel.WARNING]: { label: 'Warning', chip: 'border-warn/34 bg-warn/10 text-warn' },

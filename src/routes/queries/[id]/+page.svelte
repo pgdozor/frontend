@@ -61,7 +61,7 @@
 
 	const tags = $derived(kvTags(detail?.tags ?? {}));
 
-	// Raw normalized query by default (compact); the Prettify toggle pretty-prints it.
+	// Raw normalized query by default; the Prettify toggle pretty-prints it.
 	let prettified = $state(false);
 	const queryText = $derived.by(() => {
 		const q = detail?.query ?? '';
@@ -97,7 +97,6 @@
 	<ArrowLeftIcon class="size-[14px]" /><span>Back</span>
 </a>
 
-<!-- query block -->
 <div class="border border-ink/16 bg-ink px-[20px] py-[18px]">
 	{#if detail}
 		<div class="font-mono text-[14px] leading-[1.85] break-words whitespace-pre-wrap text-paper">
@@ -114,7 +113,6 @@
 	{/if}
 </div>
 
-<!-- tags -->
 {#if tags.length > 0}
 	<div class="mt-[12px] flex flex-wrap gap-[6px]">
 		{#each tags as t (t)}
@@ -123,12 +121,10 @@
 	</div>
 {/if}
 
-<!-- per-query metric time-series -->
 <div class="mt-[16px]">
 	<MetricPanel metrics={detail?.metrics} {loading} {error} />
 </div>
 
-<!-- captured samples -->
 <div class="mt-[16px] border border-ink/16 bg-card">
 	<div class="flex items-center gap-[11px] border-b border-ink/14 px-[18px] py-[13px]">
 		<span class="font-condensed text-[14px] font-bold tracking-[0.8px] text-ink uppercase">Captured Samples</span>

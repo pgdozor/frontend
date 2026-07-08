@@ -105,8 +105,7 @@
 			at: p.at ? timestampDate(p.at) : new Date(0),
 			value: p.value
 		}));
-		// Split a formatted value like "69 s" into its number and unit so the unit can
-		// render smaller and tight against the number instead of a wide 34px space.
+		// Split "69 s" into number and unit so the unit can render smaller.
 		const valueFmt = def.format(value);
 		const sp = valueFmt.indexOf(' ');
 		const valueNum = sp === -1 ? valueFmt : valueFmt.slice(0, sp);

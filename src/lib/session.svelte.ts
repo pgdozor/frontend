@@ -1,15 +1,11 @@
 import type { User } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/auth_pb';
 import { authClient } from './connect';
 
-/** The signed-in user, shared across the app. Replaces the old `data.ts`
- *  placeholder identity. Import and read it directly; do not wrap it in a store. */
 class SessionState {
 	user = $state<User | null>(null);
-	/** True once the initial `load()` has resolved, so guards can tell
-	 *  "not logged in yet" apart from "still checking". */
+	// Distinguishes "not logged in yet" from "still checking".
 	loaded = $state(false);
 
-	/** Fetch the current user from the session cookie (or clear it on 401). */
 	async load(): Promise<void> {
 		try {
 			const { user } = await authClient.currentUser({});

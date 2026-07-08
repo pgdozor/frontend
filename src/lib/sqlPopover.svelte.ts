@@ -1,10 +1,6 @@
-/** Popover width in px; shared with SqlPopover.svelte so the positioning math and
- *  the rendered element stay in sync. */
+// Shared with SqlPopover.svelte so the positioning math and rendered element stay in sync.
 export const POPOVER_WIDTH = 440;
 
-/** Shared state for the full-query hover popover used by the QUERIES table and
- *  the Query Detail samples table. One instance per page; the trigger cells call
- *  `show`, the popover overlay binds `keep`/`hide`/`copy`. */
 export class SqlPopoverState {
 	pop = $state<{
 		text: string;

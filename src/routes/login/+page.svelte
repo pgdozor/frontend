@@ -10,7 +10,6 @@
 	let error = $state<string | null>(null);
 	let submitting = $state(false);
 
-	// Already signed in → skip the form.
 	$effect(() => {
 		if (session.loaded && session.isAuthenticated) goto('/queries');
 	});
