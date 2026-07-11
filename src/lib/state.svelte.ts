@@ -29,6 +29,11 @@ function todayAt(time: string): string {
 	return `${date} ${time}`;
 }
 
+function toInputStr(d: Date): string {
+	const p = (n: number) => String(n).padStart(2, '0');
+	return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+
 class ContextState {
 	server = $state('');
 	db = $state('');
@@ -36,10 +41,20 @@ class ContextState {
 	customFrom = $state(todayAt('00:00:00'));
 	customTo = $state(todayAt('23:59:59'));
 
+	get isCustom(): boolean {
+		return this.range === 'custom';
+	}
+
 	get timeLabel(): string {
-		return this.range === 'custom'
-			? `${fmtClock(this.customFrom)}  →  ${fmtClock(this.customTo)}`
-			: (presetMap[this.range] ?? presetMap[DEFAULT_RANGE]);
+		return presetMap[this.range] ?? presetMap[DEFAULT_RANGE];
+	}
+
+	get customFromLabel(): string {
+		return fmtClock(this.customFrom);
+	}
+
+	get customToLabel(): string {
+		return fmtClock(this.customTo);
 	}
 
 	timeRange(): { from: Date; to: Date } {
@@ -54,6 +69,37 @@ class ContextState {
 		const to = new Date();
 		const span = presetMs[this.range] ?? presetMs[DEFAULT_RANGE];
 		return { from: new Date(to.getTime() - span), to };
+	}
+
+	applyQuery(params: URLSearchParams): void {
+		const server = params.get('server');
+		const db = params.get('db');
+		if (server) this.server = server;
+		if (db) this.db = db;
+
+		const from = Number(params.get('from'));
+		const to = Number(params.get('to'));
+		const range = params.get('range');
+		if (params.has('from') && params.has('to') && Number.isFinite(from) && Number.isFinite(to) && from <= to) {
+			this.customFrom = toInputStr(new Date(from));
+			this.customTo = toInputStr(new Date(to));
+			this.range = 'custom';
+		} else if (range && range in presetMs) {
+			this.range = range;
+		}
+	}
+
+	queryString(): string {
+		const parts: string[] = [];
+		if (this.server) parts.push(`server=${encodeURIComponent(this.server)}`);
+		if (this.db) parts.push(`db=${encodeURIComponent(this.db)}`);
+		if (this.range === 'custom') {
+			const { from, to } = this.timeRange();
+			parts.push(`from=${from.getTime()}`, `to=${to.getTime()}`);
+		} else {
+			parts.push(`range=${encodeURIComponent(this.range)}`);
+		}
+		return parts.join('&');
 	}
 }
 

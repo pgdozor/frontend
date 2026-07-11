@@ -1,11 +1,20 @@
 <script lang="ts">
-	import { SearchIcon } from '@lucide/svelte';
+	import { SearchIcon, ArrowUpIcon, ArrowDownIcon } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { timestampFromDate } from '@bufbuild/protobuf/wkt';
 	import type { StatementMetrics } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 	import { statementClient } from '$lib/connect';
 	import { ctx } from '$lib/state.svelte';
-	import { fmtMs, fmtNum, fmtCalls, sevByMean, kvTags, truncate, errMsg } from '$lib/format';
+	import {
+		fmtDuration,
+		fmtCount,
+		fmtDurationFull,
+		fmtCountFull,
+		sevByMean,
+		kvTags,
+		truncate,
+		errMsg
+	} from '$lib/format';
 	import MetricPanel from '$lib/components/MetricPanel.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
@@ -29,7 +38,7 @@
 
 	const headDef: { key: SortCol; label: string; align: 'left' | 'right'; width?: string }[] = [
 		{ key: 'query', label: 'Query', align: 'left' },
-		{ key: 'usr', label: 'User', align: 'right', width: '150px' },
+		{ key: 'usr', label: 'User', align: 'left', width: '120px' },
 		{ key: 'totalMs', label: 'Total', align: 'right', width: '90px' },
 		{ key: 'pctTime', label: '% Time', align: 'right', width: '84px' },
 		{ key: 'calls', label: 'Calls', align: 'right', width: '90px' },
@@ -39,6 +48,7 @@
 
 	let statements = $state<Row[]>([]);
 	let metrics = $state<StatementMetrics | undefined>(undefined);
+	let chartRange = $state<{ from: Date; to: Date } | null>(null);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 	let search = $state('');
@@ -58,6 +68,7 @@
 
 	$effect(() => {
 		const { from, to } = ctx.timeRange();
+		chartRange = { from, to };
 		const request = {
 			serverName: ctx.server,
 			databaseName: ctx.db,
@@ -121,8 +132,6 @@
 		});
 	});
 
-	const arrow = (key: SortCol) => (sort.col === key ? (sort.dir === 'asc' ? '▲' : '▼') : '');
-
 	// Numeric/text cells never truncate — only the query text (the <code>) does.
 	const numCell =
 		'px-[16px] py-[11px] border-b border-ink/8 text-right align-top leading-[20px] font-mono text-[13px] text-ink whitespace-nowrap';
@@ -139,7 +148,7 @@
 </script>
 
 <div class="mb-[22px]">
-	<MetricPanel {metrics} {loading} {error} />
+	<MetricPanel {metrics} {loading} {error} range={chartRange} />
 </div>
 
 <div class="border border-ink/16 bg-card">
@@ -168,7 +177,16 @@
 								? 'pl-[33px]'
 								: 'pl-[16px]'} {h.align === 'right' ? 'text-right' : 'text-left'}"
 						>
-							<span>{h.label}</span><span class="ml-[4px] text-[9px] text-command">{arrow(h.key)}</span>
+							<span class="inline-flex items-center gap-[4px] align-middle">
+								<span>{h.label}</span>
+								{#if sort.col === h.key}
+									{#if sort.dir === 'asc'}
+										<ArrowUpIcon class="size-[12px] flex-none text-command" />
+									{:else}
+										<ArrowDownIcon class="size-[12px] flex-none text-command" />
+									{/if}
+								{/if}
+							</span>
 						</th>
 					{/each}
 				</tr>
@@ -202,17 +220,23 @@
 								</div>
 							</div>
 						</td>
-						<td class={numCell}>{q.usr}</td>
-						<td class={numCell}>{fmtMs(q.totalMs)}</td>
-						<td class={numCell}>{q.pctTime.toFixed(1)}%</td>
-						<td class={numCell}>{fmtCalls(q.calls)}</td>
 						<td
+							title={q.usr}
+							class="border-b border-ink/8 px-[16px] py-[11px] align-top font-mono text-[13px] leading-[20px] text-ink"
+						>
+							<span class="block truncate">{q.usr}</span>
+						</td>
+						<td class={numCell} title={fmtDurationFull(q.totalMs)}>{fmtDuration(q.totalMs)}</td>
+						<td class={numCell}>{q.pctTime.toFixed(1)}%</td>
+						<td class={numCell} title={fmtCountFull(q.calls)}>{fmtCount(q.calls)}</td>
+						<td
+							title={fmtDurationFull(q.meanMs)}
 							class="border-b border-ink/8 px-[16px] py-[11px] text-right align-top leading-[20px] font-mono text-[13px] font-semibold whitespace-nowrap"
 							style:color={q.sev}
 						>
-							{fmtMs(q.meanMs)}
+							{fmtDuration(q.meanMs)}
 						</td>
-						<td class={numCell}>{fmtNum(q.rowsAvg)}</td>
+						<td class={numCell} title={fmtCountFull(q.rowsAvg)}>{fmtCount(q.rowsAvg)}</td>
 					</tr>
 				{/each}
 			</tbody>

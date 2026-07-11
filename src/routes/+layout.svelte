@@ -11,6 +11,9 @@
 	});
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:head>
+	<title>PGDOZOR</title>
+	<link rel="icon" href={favicon} />
+</svelte:head>
 
 {@render children()}

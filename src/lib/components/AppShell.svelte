@@ -1,9 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { goto } from '$app/navigation';
+	import { afterNavigate, goto, replaceState } from '$app/navigation';
+	import { page } from '$app/state';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import ContextBar from '$lib/components/ContextBar.svelte';
-	import { serversState } from '$lib/state.svelte';
+	import { ctx, serversState } from '$lib/state.svelte';
 	import { session } from '$lib/session.svelte';
 
 	type Props = {
@@ -32,6 +33,18 @@
 		serversState.load();
 		const id = setInterval(() => serversState.load(), REFRESH_MS);
 		return () => clearInterval(id);
+	});
+
+	let urlSynced = $state(false);
+	afterNavigate(() => {
+		if (!urlSynced && contextBar) ctx.applyQuery(new URLSearchParams(page.url.search));
+		urlSynced = true;
+	});
+
+	$effect(() => {
+		if (!urlSynced || !contextBar) return;
+		const qs = ctx.queryString();
+		if (qs !== page.url.search.replace(/^\?/, '')) replaceState(`?${qs}`, page.state);
 	});
 </script>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { timestampDate } from '@bufbuild/protobuf/wkt';
 	import type { StatementMetric, StatementMetrics } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
-	import { fmtMs, fmtCompact } from '$lib/format';
+	import { fmtDuration, fmtCount, fmtDurationFull, fmtCountFull, fmtDurationParts } from '$lib/format';
 	import { C } from '$lib/theme';
 	import MetricChart from '$lib/components/MetricChart.svelte';
 
@@ -10,60 +10,79 @@
 	let {
 		metrics,
 		loading = false,
-		error = null
-	}: { metrics: StatementMetrics | undefined; loading?: boolean; error?: string | null } = $props();
+		error = null,
+		range = null
+	}: {
+		metrics: StatementMetrics | undefined;
+		loading?: boolean;
+		error?: string | null;
+		range?: { from: Date; to: Date } | null;
+	} = $props();
 
 	const faint = hexAlpha(C.ink, 0.55);
 
 	const metricDefs: {
 		key: MetricKey;
+		kind: 'duration' | 'count';
 		color: string;
 		polarity: 'badUp' | 'neutral';
 		desc: string;
 		format: (value: number) => string;
+		formatFull: (value: number) => string;
 	}[] = [
 		{
 			key: 'TOTAL',
+			kind: 'duration',
 			color: C.command,
 			polarity: 'badUp',
 			desc: 'Total time spent running queries',
-			format: (v) => `${fmtCompact(v / 1000)} s`
+			format: fmtDuration,
+			formatFull: fmtDurationFull
 		},
 		{
 			key: 'CALLS',
+			kind: 'count',
 			color: C.steel,
 			polarity: 'neutral',
 			desc: 'Number of times queries were executed',
-			// CALLS is an integer count — round small values rather than showing "8.0".
-			format: (v) => (v >= 1000 ? fmtCompact(v) : Math.round(v).toLocaleString('en-US'))
+			format: fmtCount,
+			formatFull: fmtCountFull
 		},
 		{
 			key: 'AVG',
+			kind: 'duration',
 			color: C.warn,
 			polarity: 'badUp',
 			desc: 'Average time per query call',
-			format: (v) => fmtMs(Math.round(v))
+			format: fmtDuration,
+			formatFull: fmtDurationFull
 		},
 		{
 			key: 'ROWS',
+			kind: 'count',
 			color: C.ok,
 			polarity: 'neutral',
 			desc: 'Number of rows returned or changed by queries',
-			format: fmtCompact
+			format: fmtCount,
+			formatFull: fmtCountFull
 		},
 		{
 			key: 'READS',
+			kind: 'count',
 			color: '#4B6A8A',
 			polarity: 'badUp',
 			desc: 'Data pages read from storage instead of cache',
-			format: fmtCompact
+			format: fmtCount,
+			formatFull: fmtCountFull
 		},
 		{
 			key: 'SPILLS',
+			kind: 'count',
 			color: C.danger,
 			polarity: 'badUp',
 			desc: 'Temporary data written to disk when work did not fit in memory',
-			format: fmtCompact
+			format: fmtCount,
+			formatFull: fmtCountFull
 		}
 	];
 
@@ -105,18 +124,17 @@
 			at: p.at ? timestampDate(p.at) : new Date(0),
 			value: p.value
 		}));
-		// Split "69 s" into number and unit so the unit can render smaller.
-		const valueFmt = def.format(value);
-		const sp = valueFmt.indexOf(' ');
-		const valueNum = sp === -1 ? valueFmt : valueFmt.slice(0, sp);
-		const valueUnit = sp === -1 ? '' : valueFmt.slice(sp + 1);
+		const valueParts =
+			def.kind === 'duration'
+				? fmtDurationParts(value)
+				: [{ value: fmtCountFull(value), unit: '' }];
 		return {
 			color: def.color,
 			fill: hexAlpha(def.color, 0.13),
 			format: def.format,
+			formatFull: def.formatFull,
 			desc: def.desc,
-			valueNum,
-			valueUnit,
+			valueParts,
 			trendFmt: pct === 0 ? '—' : `${pct > 0 ? '+' : ''}${pct.toFixed(1)}%`,
 			trendColor: trendColor(pct, def.polarity),
 			chart
@@ -128,11 +146,15 @@
 	<div class="mb-[18px] flex flex-wrap items-start justify-between gap-[18px]">
 		<div>
 			<div class="flex items-baseline gap-[12px] leading-none">
-				<span class="font-mono text-[34px] leading-none font-semibold tracking-[-0.5px] whitespace-nowrap text-ink"
-					>{active.valueNum}{#if active.valueUnit}<span class="ml-[3px] text-[20px] font-medium text-ink/55"
-							>{active.valueUnit}</span
-						>{/if}</span
-				>
+				<span class="inline-flex items-baseline gap-[7px] font-mono tracking-[-0.5px] whitespace-nowrap">
+					{#each active.valueParts as p, i (i)}
+						<span class="text-[34px] leading-none font-semibold text-ink"
+							>{p.value}{#if p.unit}<span class="ml-[2px] text-[20px] font-medium text-ink/40"
+									>{p.unit}</span
+								>{/if}</span
+						>
+					{/each}
+				</span>
 				<span class="font-mono text-[15px] font-semibold whitespace-nowrap" style:color={active.trendColor}
 					>{active.trendFmt}</span
 				>
@@ -158,8 +180,16 @@
 		</div>
 	</div>
 
-	{#if active.chart.length > 0}
-		<MetricChart data={active.chart} stroke={active.color} fill={active.fill} format={active.format} />
+	{#if active.chart.length > 0 && range}
+		<MetricChart
+			data={active.chart}
+			from={range.from}
+			to={range.to}
+			stroke={active.color}
+			fill={active.fill}
+			format={active.format}
+			formatFull={active.formatFull}
+		/>
 	{:else}
 		<div class="flex h-[240px] items-center justify-center font-mono text-[13px] text-ink/45">
 			{loading ? 'Loading…' : error ? error : 'No data for this range.'}

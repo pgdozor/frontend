@@ -9,7 +9,7 @@
 	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/log_pb';
 	import { logClient } from '$lib/connect';
 	import { ctx } from '$lib/state.svelte';
-	import { fmtNum, fmtTs, errMsg } from '$lib/format';
+	import { fmtCount, fmtTs, errMsg } from '$lib/format';
 	import {
 		levelLabel,
 		levelColor,
@@ -164,7 +164,7 @@
 	<div class="mb-[16px] flex flex-wrap items-start justify-between gap-[18px]">
 		<div class="flex items-baseline gap-[10px]">
 			<span class="font-mono text-[30px] leading-none font-semibold tracking-[-0.5px] text-ink">
-				{fmtNum(totalEvents)}
+				{fmtCount(totalEvents)}
 			</span>
 			<span class="font-condensed text-[12px] font-semibold tracking-[0.8px] text-ink/55 uppercase">log events</span>
 		</div>
@@ -181,7 +181,7 @@
 					style:border={cs.border}
 				>
 					<span>{chip.label}</span>
-					<span class="font-mono">{fmtNum(chip.count)}</span>
+					<span class="font-mono">{fmtCount(chip.count)}</span>
 				</button>
 			{/each}
 			{#if filterActive}

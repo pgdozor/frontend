@@ -2,22 +2,55 @@ import { C } from './theme';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-export function fmtMs(ms: number): string {
-	if (ms >= 1000) return (ms / 1000).toFixed(ms >= 10000 ? 1 : 2) + ' s';
-	return ms.toFixed(ms < 10 ? 1 : 0) + ' ms';
+function sig3(n: number): string {
+	const abs = Math.abs(n);
+	const decimals = abs >= 100 ? 0 : abs >= 10 ? 1 : 2;
+	const s = n.toFixed(decimals);
+	return s.indexOf('.') === -1 ? s : s.replace(/\.?0+$/, '');
 }
 
-export function fmtNum(n: number): string {
-	return n.toLocaleString('en-US');
+export function fmtDuration(ms: number): string {
+	if (ms < 1000) return `${sig3(ms)}ms`;
+	if (ms < 60_000) return `${sig3(ms / 1000)}s`;
+	if (ms < 3_600_000) return `${sig3(ms / 60_000)}min`;
+	if (ms < 86_400_000) return `${sig3(ms / 3_600_000)}h`;
+	return `${sig3(ms / 86_400_000)}d`;
 }
 
-export function fmtDur(sec: number): string {
-	if (sec >= 60) {
-		const m = Math.floor(sec / 60);
-		const s = sec % 60;
-		return `${m}m ${s}s`;
+export function fmtCount(n: number): string {
+	const abs = Math.abs(n);
+	if (abs < 1000) return sig3(n);
+	if (abs < 1e6) return sig3(n / 1e3) + 'K';
+	if (abs < 1e9) return sig3(n / 1e6) + 'M';
+	return sig3(n / 1e9) + 'B';
+}
+
+export function fmtDurationParts(ms: number): { value: string; unit: string }[] {
+	if (ms < 1000) return [{ value: String(Math.round(ms)), unit: 'ms' }];
+	const units: [number, string][] = [
+		[86_400, 'd'],
+		[3_600, 'h'],
+		[60, 'min'],
+		[1, 's']
+	];
+	const parts: { value: string; unit: string }[] = [];
+	let rem = Math.round(ms / 1000);
+	for (const [size, label] of units) {
+		const v = Math.floor(rem / size);
+		if (v > 0) parts.push({ value: String(v), unit: label });
+		rem %= size;
 	}
-	return `${sec}s`;
+	return parts.length ? parts : [{ value: '0', unit: 's' }];
+}
+
+export function fmtDurationFull(ms: number): string {
+	return fmtDurationParts(ms)
+		.map((p) => `${p.value} ${p.unit}`)
+		.join(', ');
+}
+
+export function fmtCountFull(n: number): string {
+	return Math.round(n).toLocaleString('en-US');
 }
 
 export function fmtRel(sec: number): string {
@@ -51,21 +84,6 @@ export function fmtAxisTime(value: Date | number): string {
 	const p = (n: number) => String(n).padStart(2, '0');
 	if (d.getHours() === 0 && d.getMinutes() === 0) return `${d.getMonth() + 1}/${d.getDate()}`;
 	return `${p(d.getHours())}:${p(d.getMinutes())}`;
-}
-
-export function fmtCalls(n: number): string {
-	if (n >= 1e6) return (n / 1e6).toFixed(2) + ' M';
-	if (n >= 1e3) return (n / 1e3).toFixed(1) + ' K';
-	return String(Math.round(n));
-}
-
-export function fmtCompact(n: number): string {
-	const x = Math.abs(n);
-	if (x >= 1e6) return (n / 1e6).toFixed(2) + 'M';
-	if (x >= 1e4) return Math.round(n / 1e3) + 'K';
-	if (x >= 1e3) return (n / 1e3).toFixed(1) + 'K';
-	if (x >= 10) return Math.round(n).toLocaleString('en-US');
-	return n.toFixed(1);
 }
 
 export function kvTags(tags: Record<string, string>): string[] {

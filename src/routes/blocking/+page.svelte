@@ -3,7 +3,7 @@
 	import { type BlockingTree, type BlockedEvent } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/activity_pb';
 	import { activityClient } from '$lib/connect';
 	import { ctx } from '$lib/state.svelte';
-	import { fmtDur, fmtClockDate, errMsg } from '$lib/format';
+	import { fmtDuration, fmtClockDate, errMsg } from '$lib/format';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
 
@@ -79,7 +79,7 @@
 		return rows;
 	}
 
-	const fmtDurMs = (ms: number): string => fmtDur(Math.round(ms / 1000));
+	const fmtDurMs = (ms: number): string => fmtDuration(ms);
 
 	// Independent of "now", so a pile-up that ended in the past shows its real length.
 	const durationMs = (from?: Timestamp, to?: Timestamp): number =>

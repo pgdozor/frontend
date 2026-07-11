@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DatabaseIcon, ClockIcon, ChevronDownIcon, CheckIcon } from '@lucide/svelte';
+	import { DatabaseIcon, ClockIcon, ChevronDownIcon, CheckIcon, ArrowRightIcon } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import { screenTitle } from '$lib/nav';
 	import { ctx, serversState, presets } from '$lib/state.svelte';
@@ -9,6 +9,9 @@
 	type Menu = 'server' | 'db' | 'time' | null;
 	let open = $state<Menu>(null);
 
+	let draftFrom = $state(ctx.customFrom);
+	let draftTo = $state(ctx.customTo);
+
 	const title = $derived(screenTitle(page.url.pathname));
 	const selfHealth = $derived(serversState.health(ctx.server));
 
@@ -17,7 +20,15 @@
 	}
 
 	function toggle(m: Exclude<Menu, null>) {
-		open = open === m ? null : m;
+		if (open === m) {
+			open = null;
+			return;
+		}
+		if (m === 'time') {
+			draftFrom = ctx.customFrom;
+			draftTo = ctx.customTo;
+		}
+		open = m;
 	}
 	function close() {
 		open = null;
@@ -36,6 +47,8 @@
 		open = null;
 	}
 	function applyCustom() {
+		ctx.customFrom = draftFrom;
+		ctx.customTo = draftTo;
 		ctx.range = 'custom';
 		open = null;
 	}
@@ -152,7 +165,15 @@
 				class="flex cursor-pointer items-center gap-[8px] border border-ink/18 bg-card px-[12px] py-[7px] hover:bg-ink/4"
 			>
 				<ClockIcon class="size-[13px] flex-none text-warn" />
-				<span class="font-mono text-[12px] font-medium whitespace-nowrap text-ink">{ctx.timeLabel}</span>
+				{#if ctx.isCustom}
+					<span class="flex items-center gap-[6px] font-mono text-[12px] font-medium whitespace-nowrap text-ink">
+						{ctx.customFromLabel}
+						<ArrowRightIcon class="size-[12px] flex-none text-ink/40" />
+						{ctx.customToLabel}
+					</span>
+				{:else}
+					<span class="font-mono text-[12px] font-medium whitespace-nowrap text-ink">{ctx.timeLabel}</span>
+				{/if}
 				<ChevronDownIcon class="size-[13px] text-ink/45" />
 			</button>
 
@@ -187,7 +208,7 @@
 						<input
 							id="ctx-from"
 							type="text"
-							bind:value={ctx.customFrom}
+							bind:value={draftFrom}
 							placeholder="YYYY-MM-DD HH:MM:SS"
 							spellcheck="false"
 							class="mb-[11px] w-full border border-ink/22 bg-paper px-[9px] py-[7px] font-mono text-[12px] text-ink"
@@ -196,7 +217,7 @@
 						<input
 							id="ctx-to"
 							type="text"
-							bind:value={ctx.customTo}
+							bind:value={draftTo}
 							placeholder="YYYY-MM-DD HH:MM:SS"
 							spellcheck="false"
 							class="mb-[14px] w-full border border-ink/22 bg-paper px-[9px] py-[7px] font-mono text-[12px] text-ink"

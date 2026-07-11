@@ -8,7 +8,7 @@
 	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/activity_pb';
 	import { activityClient } from '$lib/connect';
 	import { ctx } from '$lib/state.svelte';
-	import { fmtDur, fmtRel, fmtClockDate, errMsg, kvTags } from '$lib/format';
+	import { fmtDuration, fmtRel, fmtClockDate, errMsg, kvTags } from '$lib/format';
 	import { C } from '$lib/theme';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
@@ -74,7 +74,7 @@
 		return timestampDate(to).getTime() - timestampDate(from).getTime();
 	}
 
-	const fmtDurMs = (ms: number): string => fmtDur(Math.round(ms / 1000));
+	const fmtDurMs = (ms: number): string => fmtDuration(ms);
 
 	const relFrom = (start: Timestamp, ts: Timestamp): string =>
 		fmtRel((timestampDate(ts).getTime() - timestampDate(start).getTime()) / 1000);

@@ -6,13 +6,14 @@
 	import { statementClient } from '$lib/connect';
 	import { ctx } from '$lib/state.svelte';
 	import { format } from 'sql-formatter';
-	import { fmtMs, sevByDuration, fmtTs, kvTags, truncate, errMsg } from '$lib/format';
+	import { fmtDuration, sevByDuration, fmtTs, kvTags, truncate, errMsg } from '$lib/format';
 	import MetricPanel from '$lib/components/MetricPanel.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
 	import Tag from '$lib/components/Tag.svelte';
 
 	let detail = $state<QueryStatementDetailResponse | undefined>(undefined);
+	let chartRange = $state<{ from: Date; to: Date } | null>(null);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 
@@ -23,6 +24,7 @@
 	$effect(() => {
 		const statementId = id;
 		const { from, to } = ctx.timeRange();
+		chartRange = { from, to };
 
 		if (!/^\d+$/.test(statementId)) {
 			error = 'Invalid query id';
@@ -81,7 +83,7 @@
 			short: truncate(s.query, 120),
 			tags: kvTags(s.tags),
 			hasPlan: s.hasPlan,
-			durFmt: fmtMs(s.durationMs),
+			durFmt: fmtDuration(s.durationMs),
 			sev: sevByDuration(s.durationMs)
 		}))
 	);
@@ -122,7 +124,7 @@
 {/if}
 
 <div class="mt-[16px]">
-	<MetricPanel metrics={detail?.metrics} {loading} {error} />
+	<MetricPanel metrics={detail?.metrics} {loading} {error} range={chartRange} />
 </div>
 
 <div class="mt-[16px] border border-ink/16 bg-card">
