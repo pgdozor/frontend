@@ -3,6 +3,7 @@ import { C } from './theme';
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function sig3(n: number): string {
+	if (!Number.isFinite(n)) return '—';
 	const abs = Math.abs(n);
 	const decimals = abs >= 100 ? 0 : abs >= 10 ? 1 : 2;
 	const s = n.toFixed(decimals);
@@ -26,21 +27,23 @@ export function fmtCount(n: number): string {
 }
 
 export function fmtDurationParts(ms: number): { value: string; unit: string }[] {
-	if (ms < 1000) return [{ value: String(Math.round(ms)), unit: 'ms' }];
+	if (ms < 1000) return [{ value: sig3(ms), unit: 'ms' }];
+	const total = Math.round(ms);
 	const units: [number, string][] = [
-		[86_400, 'd'],
-		[3_600, 'h'],
-		[60, 'min'],
-		[1, 's']
+		[86_400_000, 'd'],
+		[3_600_000, 'h'],
+		[60_000, 'min'],
+		[1_000, 's'],
+		[1, 'ms']
 	];
 	const parts: { value: string; unit: string }[] = [];
-	let rem = Math.round(ms / 1000);
+	let rem = total;
 	for (const [size, label] of units) {
 		const v = Math.floor(rem / size);
 		if (v > 0) parts.push({ value: String(v), unit: label });
 		rem %= size;
 	}
-	return parts.length ? parts : [{ value: '0', unit: 's' }];
+	return parts;
 }
 
 export function fmtDurationFull(ms: number): string {

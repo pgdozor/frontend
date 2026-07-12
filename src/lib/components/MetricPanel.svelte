@@ -120,14 +120,10 @@
 		const m = metrics ? metricFor(metrics, def.key) : undefined;
 		const value = m?.value ?? 0;
 		const pct = m?.trendPct ?? 0;
-		const chart = (m?.series ?? []).map((p) => ({
-			at: p.at ? timestampDate(p.at) : new Date(0),
-			value: p.value
-		}));
-		const valueParts =
-			def.kind === 'duration'
-				? fmtDurationParts(value)
-				: [{ value: fmtCountFull(value), unit: '' }];
+		const chart = (m?.series ?? [])
+			.filter((p) => p.at != null)
+			.map((p) => ({ at: timestampDate(p.at!), value: p.value }));
+		const valueParts = def.kind === 'duration' ? fmtDurationParts(value) : [{ value: fmtCountFull(value), unit: '' }];
 		return {
 			color: def.color,
 			fill: hexAlpha(def.color, 0.13),
@@ -149,8 +145,7 @@
 				<span class="inline-flex items-baseline gap-[7px] font-mono tracking-[-0.5px] whitespace-nowrap">
 					{#each active.valueParts as p, i (i)}
 						<span class="text-[34px] leading-none font-semibold text-ink"
-							>{p.value}{#if p.unit}<span class="ml-[2px] text-[20px] font-medium text-ink/40"
-									>{p.unit}</span
+							>{p.value}{#if p.unit}<span class="ml-[2px] text-[20px] font-medium text-ink/40">{p.unit}</span
 								>{/if}</span
 						>
 					{/each}
@@ -185,6 +180,7 @@
 			data={active.chart}
 			from={range.from}
 			to={range.to}
+			bucketMs={Number(metrics?.bucketMs ?? 0n)}
 			stroke={active.color}
 			fill={active.fill}
 			format={active.format}

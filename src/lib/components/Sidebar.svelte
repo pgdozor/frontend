@@ -6,9 +6,7 @@
 	import { session } from '$lib/session.svelte';
 	import PgdozorMark from '$lib/icons/PgdozorMark.svelte';
 
-	const visibleNav = $derived(
-		session.isSuperAdmin ? navItems : navItems.filter((i) => i.key === 'slow-queries')
-	);
+	const visibleNav = $derived(session.isSuperAdmin ? navItems : navItems.filter((i) => i.key === 'slow-queries'));
 
 	const navClass = (active: boolean): string =>
 		`flex flex-col gap-[2px] border-l-[3px] py-[9px] pr-[12px] pl-[13px] transition-colors ${

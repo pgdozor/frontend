@@ -29,12 +29,12 @@
 		pctTime: number;
 		calls: number;
 		meanMs: number;
-		rowsAvg: number;
+		rowsTotal: number;
 		sev: string;
 		tags: string[];
 	};
 
-	type SortCol = 'query' | 'usr' | 'totalMs' | 'pctTime' | 'calls' | 'meanMs' | 'rowsAvg';
+	type SortCol = 'query' | 'usr' | 'totalMs' | 'pctTime' | 'calls' | 'meanMs' | 'rowsTotal';
 
 	const headDef: { key: SortCol; label: string; align: 'left' | 'right'; width?: string }[] = [
 		{ key: 'query', label: 'Query', align: 'left' },
@@ -43,7 +43,7 @@
 		{ key: 'pctTime', label: '% Time', align: 'right', width: '84px' },
 		{ key: 'calls', label: 'Calls', align: 'right', width: '90px' },
 		{ key: 'meanMs', label: 'Avg', align: 'right', width: '90px' },
-		{ key: 'rowsAvg', label: 'Rows', align: 'right', width: '78px' }
+		{ key: 'rowsTotal', label: 'Rows', align: 'right', width: '78px' }
 	];
 
 	let statements = $state<Row[]>([]);
@@ -95,7 +95,7 @@
 					pctTime: s.pctOfTotal,
 					calls: Number(s.calls),
 					meanMs: s.avgExecTime,
-					rowsAvg: Number(s.rows),
+					rowsTotal: Number(s.rows),
 					sev: sevByMean(s.avgExecTime),
 					tags: kvTags(s.tags)
 				}));
@@ -236,7 +236,7 @@
 						>
 							{fmtDuration(q.meanMs)}
 						</td>
-						<td class={numCell} title={fmtCountFull(q.rowsAvg)}>{fmtCount(q.rowsAvg)}</td>
+						<td class={numCell} title={fmtCountFull(q.rowsTotal)}>{fmtCount(q.rowsTotal)}</td>
 					</tr>
 				{/each}
 			</tbody>
