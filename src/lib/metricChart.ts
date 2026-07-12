@@ -11,11 +11,10 @@ export function buildMetricChartModel(
 	data: MetricSeriesPoint[],
 	from: Date,
 	to: Date,
-	bucketMs: number,
-	nowMs: number
+	bucketMs: number
 ): MetricChartModel {
 	const fromMs = from.getTime();
-	const toMs = Math.min(to.getTime(), nowMs);
+	const toMs = to.getTime();
 	const step = bucketMs > 0 ? bucketMs : Math.max(60_000, (toMs - fromMs) / 60);
 	const threshold = step * 1.5;
 
@@ -39,8 +38,7 @@ export function buildMetricChartModel(
 
 	const firstSample = data.length ? data[0].at.getTime() : fromMs;
 	const lastSample = data.length ? data[data.length - 1].at.getTime() : fromMs;
-	const currentBucket = Math.floor(toMs / 60_000) * 60_000;
-	const rightMs = currentBucket - lastSample <= threshold ? lastSample : currentBucket;
+	const rightMs = toMs - lastSample <= threshold ? lastSample : toMs;
 	const left = firstSample - fromMs <= 2 * step ? firstSample : fromMs;
 	const [xLeft, xRight] = rightMs > left ? [left, rightMs] : [fromMs, rightMs];
 
