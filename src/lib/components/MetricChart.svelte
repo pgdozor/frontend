@@ -26,7 +26,7 @@
 		formatFull: (value: number) => string;
 	} = $props();
 
-	const model = $derived(buildMetricChartModel(data, from, to, bucketMs));
+	const model = $derived(buildMetricChartModel(data, from, to, bucketMs, Date.now()));
 </script>
 
 <div class="h-[240px]">

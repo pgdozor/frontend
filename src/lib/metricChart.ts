@@ -11,10 +11,11 @@ export function buildMetricChartModel(
 	data: MetricSeriesPoint[],
 	from: Date,
 	to: Date,
-	bucketMs: number
+	bucketMs: number,
+	nowMs: number
 ): MetricChartModel {
 	const fromMs = from.getTime();
-	const toMs = to.getTime();
+	const toMs = Math.min(to.getTime(), nowMs);
 	const step = bucketMs > 0 ? bucketMs : Math.max(60_000, (toMs - fromMs) / 60);
 	const threshold = step * 1.5;
 
