@@ -22,10 +22,13 @@
 	const allowed = $derived(session.isAuthenticated && (!requireSuperAdmin || session.isSuperAdmin));
 
 	// Wait until the session loads, then redirect anyone not allowed here.
+	const superAdminOnlyPath = /^\/(transactions|blocking|logs|alerts)(\/|$)/;
+
 	$effect(() => {
 		if (!session.loaded) return;
 		if (!session.isAuthenticated) goto('/login');
 		else if (requireSuperAdmin && !session.isSuperAdmin) goto('/queries');
+		else if (!session.isSuperAdmin && superAdminOnlyPath.test(page.url.pathname)) goto('/queries');
 	});
 
 	$effect(() => {

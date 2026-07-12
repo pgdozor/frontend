@@ -6,6 +6,10 @@
 	import { session } from '$lib/session.svelte';
 	import PgdozorMark from '$lib/icons/PgdozorMark.svelte';
 
+	const visibleNav = $derived(
+		session.isSuperAdmin ? navItems : navItems.filter((i) => i.key === 'slow-queries')
+	);
+
 	const navClass = (active: boolean): string =>
 		`flex flex-col gap-[2px] border-l-[3px] py-[9px] pr-[12px] pl-[13px] transition-colors ${
 			active ? 'border-command bg-command/10 text-ink' : 'border-transparent text-ink/55 hover:bg-ink/4'
@@ -24,7 +28,7 @@
 	</div>
 
 	<nav class="flex flex-col gap-[2px] px-[8px] py-[10px]">
-		{#each navItems as item (item.key)}
+		{#each visibleNav as item (item.key)}
 			<a href={item.href} title={item.label} class={navClass(isNavActive(item, page.url.pathname))}>
 				<span class="font-condensed text-[14px] font-semibold tracking-[0.4px] uppercase">{item.label}</span>
 			</a>
