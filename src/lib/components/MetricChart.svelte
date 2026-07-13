@@ -76,6 +76,7 @@
 			anchor="top-left"
 			xOffset={18}
 			yOffset={10}
+			variant="none"
 			class="border border-ink/16 bg-card px-[11px] py-[8px] shadow-[0_4px_16px_rgba(0,0,0,0.1)]"
 		>
 			{#snippet children({ data: point }: { data: { at: Date; value: number | null } })}
