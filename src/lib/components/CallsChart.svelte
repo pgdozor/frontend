@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Area, Axis, Chart, Grid, Highlight, Points, Svg, Tooltip } from 'layerchart';
+	import { Axis, Chart, Grid, Highlight, Svg, Tooltip } from 'layerchart';
 	import { scaleTime } from 'd3-scale';
-	import { curveMonotoneX } from 'd3-shape';
-	import { fmtAxisTime, fmtClockDate } from '$lib/format';
+	import { fmtAxisTime, fmtClockDate, fmtCount, fmtCountFull } from '$lib/format';
 	import GapBands from '$lib/components/GapBands.svelte';
+	import MetricBars from '$lib/components/MetricBars.svelte';
 	import { buildMetricChartModel, type MetricSeriesPoint } from '$lib/metricChart';
 
 	let {
@@ -11,19 +11,13 @@
 		from,
 		to,
 		bucketMs,
-		stroke,
-		fill,
-		format,
-		formatFull
+		fill
 	}: {
 		data: MetricSeriesPoint[];
 		from: Date;
 		to: Date;
 		bucketMs: number;
-		stroke: string;
 		fill: string;
-		format: (value: number) => string;
-		formatFull: (value: number) => string;
 	} = $props();
 
 	const model = $derived(buildMetricChartModel(data, from, to, bucketMs));
@@ -48,7 +42,7 @@
 				placement="left"
 				rule
 				ticks={4}
-				{format}
+				format={fmtCount}
 				tickLabelProps={{ class: 'fill-ink/45 font-mono text-[10.5px]', stroke: 'none' }}
 			/>
 			<Axis
@@ -58,17 +52,8 @@
 				format={fmtAxisTime}
 				tickLabelProps={{ class: 'fill-ink/45 font-mono text-[10.5px]', stroke: 'none' }}
 			/>
-			<Area
-				data={model.gapData}
-				defined={(d) => d.value != null}
-				curve={curveMonotoneX}
-				{fill}
-				line={{ stroke, 'stroke-width': 2 }}
-			/>
-			{#if data.length <= 30}
-				<Points r={2} fill={stroke} />
-			{/if}
-			<Highlight lines points={{ fill: stroke }} />
+			<MetricBars {data} {bucketMs} {fill} />
+			<Highlight lines />
 		</Svg>
 		<Tooltip.Root
 			x="data"
@@ -85,9 +70,7 @@
 					{#if point.value == null}
 						<div class="text-ink/40">No data</div>
 					{:else}
-						{#each formatFull(point.value).split('\n') as line, i (i)}
-							<div class={i === 0 ? 'font-semibold text-ink' : 'text-ink/55'}>{line}</div>
-						{/each}
+						<div class="font-semibold text-ink">{fmtCountFull(point.value)} calls</div>
 					{/if}
 				</div>
 			{/snippet}

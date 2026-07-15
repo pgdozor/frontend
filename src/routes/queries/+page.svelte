@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { SearchIcon, ArrowUpIcon, ArrowDownIcon } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
-	import { timestampFromDate } from '@bufbuild/protobuf/wkt';
-	import type { StatementMetrics } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
+	import { timestampFromDate, timestampDate } from '@bufbuild/protobuf/wkt';
+	import type { StatementMetrics, StatementMetric } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 	import { statementClient } from '$lib/connect';
 	import { ctx } from '$lib/state.svelte';
 	import {
@@ -15,7 +15,10 @@
 		truncate,
 		errMsg
 	} from '$lib/format';
-	import MetricPanel from '$lib/components/MetricPanel.svelte';
+	import { C } from '$lib/theme';
+	import type { MetricSeriesPoint } from '$lib/metricChart';
+	import CallsChart from '$lib/components/CallsChart.svelte';
+	import LineChart from '$lib/components/LineChart.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
 	import Tag from '$lib/components/Tag.svelte';
@@ -25,25 +28,25 @@
 		query: string;
 		short: string;
 		usr: string;
-		totalMs: number;
-		pctTime: number;
-		calls: number;
 		meanMs: number;
-		rowsTotal: number;
+		calls: number;
+		rowsPerCall: number;
+		pctIo: number;
+		pctTime: number;
 		sev: string;
 		tags: string[];
 	};
 
-	type SortCol = 'query' | 'usr' | 'totalMs' | 'pctTime' | 'calls' | 'meanMs' | 'rowsTotal';
+	type SortCol = 'query' | 'usr' | 'meanMs' | 'calls' | 'rowsPerCall' | 'pctIo' | 'pctTime';
 
 	const headDef: { key: SortCol; label: string; align: 'left' | 'right'; width?: string }[] = [
 		{ key: 'query', label: 'Query', align: 'left' },
 		{ key: 'usr', label: 'User', align: 'left', width: '120px' },
-		{ key: 'totalMs', label: 'Total', align: 'right', width: '90px' },
-		{ key: 'pctTime', label: '% Time', align: 'right', width: '84px' },
-		{ key: 'calls', label: 'Calls', align: 'right', width: '90px' },
 		{ key: 'meanMs', label: 'Avg', align: 'right', width: '90px' },
-		{ key: 'rowsTotal', label: 'Rows', align: 'right', width: '78px' }
+		{ key: 'calls', label: 'Calls', align: 'right', width: '90px' },
+		{ key: 'rowsPerCall', label: 'Rows/Call', align: 'right', width: '98px' },
+		{ key: 'pctIo', label: '% IO', align: 'right', width: '78px' },
+		{ key: 'pctTime', label: '% Time', align: 'right', width: '84px' }
 	];
 
 	let statements = $state<Row[]>([]);
@@ -53,7 +56,7 @@
 	let error = $state<string | null>(null);
 	let search = $state('');
 	let filter = $state('');
-	let sort = $state<{ col: SortCol; dir: 'asc' | 'desc' }>({ col: 'totalMs', dir: 'desc' });
+	let sort = $state<{ col: SortCol; dir: 'asc' | 'desc' }>({ col: 'pctTime', dir: 'desc' });
 
 	const sql = new SqlPopoverState();
 
@@ -91,11 +94,11 @@
 					query: s.query,
 					short: truncate(s.query, 96),
 					usr: s.userName,
-					totalMs: s.totalExecTime,
-					pctTime: s.pctOfTotal,
-					calls: Number(s.calls),
 					meanMs: s.avgExecTime,
-					rowsTotal: Number(s.rows),
+					calls: Number(s.calls),
+					rowsPerCall: Number(s.calls) > 0 ? Number(s.rows) / Number(s.calls) : 0,
+					pctIo: s.pctIo,
+					pctTime: s.pctOfTotal,
 					sev: sevByMean(s.avgExecTime),
 					tags: kvTags(s.tags)
 				}));
@@ -114,6 +117,18 @@
 			cancelled = true;
 		};
 	});
+
+	function toPoints(m?: StatementMetric): MetricSeriesPoint[] {
+		return (m?.series ?? []).filter((p) => p.at != null).map((p) => ({ at: timestampDate(p.at!), value: p.value }));
+	}
+
+	const bucketMs = $derived(Number(metrics?.bucketMs ?? 0n));
+	const callsPoints = $derived(toPoints(metrics?.calls));
+	const latency = $derived([
+		{ label: 'p90', color: C.steel, points: toPoints(metrics?.p90) },
+		{ label: 'p95', color: C.command, points: toPoints(metrics?.p95) },
+		{ label: 'p99', color: C.danger, points: toPoints(metrics?.p99) }
+	]);
 
 	function sortBy(key: SortCol) {
 		if (sort.col === key) sort = { col: key, dir: sort.dir === 'asc' ? 'desc' : 'asc' };
@@ -147,8 +162,28 @@
 	}
 </script>
 
-<div class="mb-[22px]">
-	<MetricPanel {metrics} {loading} {error} range={chartRange} />
+<div class="mb-[22px] grid gap-[16px]">
+	<section class="border border-ink/16 bg-card px-[16px] pt-[14px] pb-[12px]">
+		<h2 class="mb-[10px] font-condensed text-[12px] font-bold tracking-[0.8px] text-ink/70 uppercase">Calls / min</h2>
+		{#if chartRange && callsPoints.length > 0}
+			<CallsChart data={callsPoints} from={chartRange.from} to={chartRange.to} {bucketMs} fill={C.steel} />
+		{:else}
+			<div class="flex h-[240px] items-center justify-center font-mono text-[13px] text-ink/40">
+				{loading ? 'Loading…' : (error ?? 'No data')}
+			</div>
+		{/if}
+	</section>
+
+	<section class="border border-ink/16 bg-card px-[16px] pt-[14px] pb-[12px]">
+		<h2 class="mb-[10px] font-condensed text-[12px] font-bold tracking-[0.8px] text-ink/70 uppercase">Latency</h2>
+		{#if chartRange && latency.some((s) => s.points.length > 0)}
+			<LineChart series={latency} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
+		{:else}
+			<div class="flex h-[240px] items-center justify-center font-mono text-[13px] text-ink/40">
+				{loading ? 'Loading…' : (error ?? 'No data')}
+			</div>
+		{/if}
+	</section>
 </div>
 
 <div class="border border-ink/16 bg-card">
@@ -226,9 +261,6 @@
 						>
 							<span class="block truncate">{q.usr}</span>
 						</td>
-						<td class={numCell} title={fmtDurationFull(q.totalMs)}>{fmtDuration(q.totalMs)}</td>
-						<td class={numCell}>{q.pctTime.toFixed(1)}%</td>
-						<td class={numCell} title={fmtCountFull(q.calls)}>{fmtCount(q.calls)}</td>
 						<td
 							title={fmtDurationFull(q.meanMs)}
 							class="border-b border-ink/8 px-[16px] py-[11px] text-right align-top leading-[20px] font-mono text-[13px] font-semibold whitespace-nowrap"
@@ -236,7 +268,10 @@
 						>
 							{fmtDuration(q.meanMs)}
 						</td>
-						<td class={numCell} title={fmtCountFull(q.rowsTotal)}>{fmtCount(q.rowsTotal)}</td>
+						<td class={numCell} title={fmtCountFull(q.calls)}>{fmtCount(q.calls)}</td>
+						<td class={numCell} title={fmtCountFull(q.rowsPerCall)}>{fmtCount(q.rowsPerCall)}</td>
+						<td class={numCell}>{q.pctIo.toFixed(1)}%</td>
+						<td class={numCell}>{q.pctTime.toFixed(1)}%</td>
 					</tr>
 				{/each}
 			</tbody>

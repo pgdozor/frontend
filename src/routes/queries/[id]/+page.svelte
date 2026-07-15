@@ -2,12 +2,18 @@
 	import { ArrowLeftIcon, ExternalLinkIcon } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import { timestampFromDate, timestampDate } from '@bufbuild/protobuf/wkt';
-	import type { QueryStatementDetailResponse } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
+	import type {
+		QueryStatementDetailResponse,
+		StatementMetric
+	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 	import { statementClient } from '$lib/connect';
 	import { ctx } from '$lib/state.svelte';
 	import { format } from 'sql-formatter';
 	import { fmtDuration, sevByDuration, fmtTs, kvTags, truncate, errMsg } from '$lib/format';
-	import MetricPanel from '$lib/components/MetricPanel.svelte';
+	import { C } from '$lib/theme';
+	import type { MetricSeriesPoint } from '$lib/metricChart';
+	import CallsChart from '$lib/components/CallsChart.svelte';
+	import LineChart from '$lib/components/LineChart.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
 	import Tag from '$lib/components/Tag.svelte';
@@ -75,6 +81,17 @@
 		}
 	});
 
+	function toPoints(m?: StatementMetric): MetricSeriesPoint[] {
+		return (m?.series ?? []).filter((p) => p.at != null).map((p) => ({ at: timestampDate(p.at!), value: p.value }));
+	}
+
+	const bucketMs = $derived(Number(detail?.metrics?.bucketMs ?? 0n));
+	const callsPoints = $derived(toPoints(detail?.metrics?.calls));
+	const timing = $derived([
+		{ label: 'avg total', color: C.command, points: toPoints(detail?.metrics?.avg) },
+		{ label: 'avg IO', color: C.teal, points: toPoints(detail?.metrics?.avgIo) }
+	]);
+
 	const samples = $derived(
 		(detail?.samples ?? []).map((s) => ({
 			id: s.id.toString(),
@@ -101,7 +118,7 @@
 
 <div class="border border-ink/16 bg-ink px-[20px] py-[18px]">
 	{#if detail}
-		<div class="font-mono text-[14px] leading-[1.85] break-words whitespace-pre-wrap text-paper">
+		<div class="font-mono text-[12.5px] leading-[1.7] break-words whitespace-pre-wrap text-paper">
 			<button
 				type="button"
 				onclick={() => (prettified = !prettified)}
@@ -111,7 +128,7 @@
 			>{queryText}
 		</div>
 	{:else}
-		<div class="font-mono text-[14px] text-paper/50">{loading ? 'Loading…' : (error ?? '')}</div>
+		<div class="font-mono text-[12.5px] text-paper/50">{loading ? 'Loading…' : (error ?? '')}</div>
 	{/if}
 </div>
 
@@ -123,8 +140,28 @@
 	</div>
 {/if}
 
-<div class="mt-[16px]">
-	<MetricPanel metrics={detail?.metrics} {loading} {error} range={chartRange} />
+<div class="mt-[16px] grid gap-[16px]">
+	<section class="border border-ink/16 bg-card px-[16px] pt-[14px] pb-[12px]">
+		<h2 class="mb-[10px] font-condensed text-[12px] font-bold tracking-[0.8px] text-ink/70 uppercase">Calls / min</h2>
+		{#if chartRange && callsPoints.length > 0}
+			<CallsChart data={callsPoints} from={chartRange.from} to={chartRange.to} {bucketMs} fill={C.steel} />
+		{:else}
+			<div class="flex h-[240px] items-center justify-center font-mono text-[13px] text-ink/40">
+				{loading ? 'Loading…' : (error ?? 'No data')}
+			</div>
+		{/if}
+	</section>
+
+	<section class="border border-ink/16 bg-card px-[16px] pt-[14px] pb-[12px]">
+		<h2 class="mb-[10px] font-condensed text-[12px] font-bold tracking-[0.8px] text-ink/70 uppercase">Time</h2>
+		{#if chartRange && timing.some((s) => s.points.length > 0)}
+			<LineChart series={timing} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
+		{:else}
+			<div class="flex h-[240px] items-center justify-center font-mono text-[13px] text-ink/40">
+				{loading ? 'Loading…' : (error ?? 'No data')}
+			</div>
+		{/if}
+	</section>
 </div>
 
 <div class="mt-[16px] border border-ink/16 bg-card">
