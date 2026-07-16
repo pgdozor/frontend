@@ -11,15 +11,20 @@
 		return data
 			.filter((d) => d.value != null)
 			.map((d) => {
-				const right = Number(c.xScale(d.at));
 				const left = Number(c.xScale(new Date(d.at.getTime() - bucketMs)));
+				const right = Number(c.xScale(d.at));
 				const top = Number(c.yScale(d.value as number));
-				const width = Math.max(1, right - left - 1);
-				return { x: right - width, y: Math.min(top, y0), width, height: Math.abs(y0 - top) };
+				return {
+					at: d.at.getTime(),
+					x: left,
+					y: Math.min(top, y0),
+					width: Math.max(1, right - left - 1),
+					height: Math.abs(y0 - top)
+				};
 			});
 	});
 </script>
 
-{#each bars as b, i (i)}
+{#each bars as b (b.at)}
 	<rect x={b.x} y={b.y} width={b.width} height={b.height} {fill} />
 {/each}

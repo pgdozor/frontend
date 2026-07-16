@@ -82,6 +82,20 @@ export function fmtClockDate(d: Date): string {
 	return `${MONTHS[d.getMonth()]} ${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
 
+export function fmtClockMinute(d: Date): string {
+	const p = (n: number) => String(n).padStart(2, '0');
+	return `${MONTHS[d.getMonth()]} ${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+export function fmtBucketRange(end: Date, bucketMs: number): string {
+	const start = new Date(end.getTime() - bucketMs);
+	const p = (n: number) => String(n).padStart(2, '0');
+	const hm = (d: Date) => `${p(d.getHours())}:${p(d.getMinutes())}`;
+	const head = `${MONTHS[start.getMonth()]} ${start.getDate()} ${hm(start)}`;
+	if (start.toDateString() === end.toDateString()) return `${head} – ${hm(end)}`;
+	return `${head} – ${MONTHS[end.getMonth()]} ${end.getDate()} ${hm(end)}`;
+}
+
 export function fmtAxisTime(value: Date | number): string {
 	const d = value instanceof Date ? value : new Date(value);
 	const p = (n: number) => String(n).padStart(2, '0');

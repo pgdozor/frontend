@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { DatabaseIcon, ClockIcon, ChevronDownIcon, CheckIcon, ArrowRightIcon } from '@lucide/svelte';
 	import { page } from '$app/state';
-	import { screenTitle } from '$lib/nav';
+	import { screenDescription, screenTitle } from '$lib/nav';
 	import { ctx, serversState, presets } from '$lib/state.svelte';
 
 	let { dbSwitch = true }: { dbSwitch?: boolean } = $props();
@@ -13,6 +13,7 @@
 	let draftTo = $state(ctx.customTo);
 
 	const title = $derived(screenTitle(page.url.pathname));
+	const description = $derived(screenDescription(page.url.pathname));
 	const selfHealth = $derived(serversState.health(ctx.server));
 
 	function healthClass(server: string): string {
@@ -57,10 +58,13 @@
 <div
 	class="sticky top-0 z-30 flex items-center gap-[18px] border-b border-ink/14 bg-paper/70 px-[28px] py-[14px] backdrop-blur-[3px] backdrop-saturate-[1.1]"
 >
-	<div class="flex max-w-[46%] flex-none flex-col gap-[3px]">
+	<div class="flex max-w-[46%] flex-none flex-col gap-[2px]">
 		<div class="flex items-baseline gap-[9px] whitespace-nowrap">
-			<span class="font-condensed text-[21px] font-bold tracking-[0.6px] text-ink uppercase">{title}</span>
+			<span class="font-condensed text-[16px] leading-[1.15] font-bold tracking-[0.6px] text-ink uppercase"
+				>{title}</span
+			>
 		</div>
+		<p class="truncate text-[11px] leading-[1.2] text-ink/45">{description}</p>
 	</div>
 
 	<div class="relative z-[3] ml-auto flex items-center gap-[10px]">

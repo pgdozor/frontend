@@ -18,6 +18,7 @@
 	import { C } from '$lib/theme';
 	import type { MetricSeriesPoint } from '$lib/metricChart';
 	import CallsChart from '$lib/components/CallsChart.svelte';
+	import ChartPanel from '$lib/components/ChartPanel.svelte';
 	import LineChart from '$lib/components/LineChart.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
@@ -126,7 +127,7 @@
 	const callsPoints = $derived(toPoints(metrics?.calls));
 	const latency = $derived([
 		{ label: 'p90', color: C.steel, points: toPoints(metrics?.p90) },
-		{ label: 'p95', color: C.command, points: toPoints(metrics?.p95) },
+		{ label: 'p95', color: C.warn, points: toPoints(metrics?.p95) },
 		{ label: 'p99', color: C.danger, points: toPoints(metrics?.p99) }
 	]);
 
@@ -163,19 +164,27 @@
 </script>
 
 <div class="mb-[22px] grid gap-[16px]">
-	<section class="border border-ink/16 bg-card px-[16px] pt-[14px] pb-[12px]">
-		<h2 class="mb-[10px] font-condensed text-[12px] font-bold tracking-[0.8px] text-ink/70 uppercase">Calls / min</h2>
+	<ChartPanel title="Query volume over time" description="How many queries ran in each time interval">
 		{#if chartRange && callsPoints.length > 0}
-			<CallsChart data={callsPoints} from={chartRange.from} to={chartRange.to} {bucketMs} fill={C.steel} />
+			<CallsChart
+				data={callsPoints}
+				from={chartRange.from}
+				to={chartRange.to}
+				{bucketMs}
+				fill={C.steel}
+				label="calls"
+			/>
 		{:else}
 			<div class="flex h-[240px] items-center justify-center font-mono text-[13px] text-ink/40">
 				{loading ? 'Loading…' : (error ?? 'No data')}
 			</div>
 		{/if}
-	</section>
+	</ChartPanel>
 
-	<section class="border border-ink/16 bg-card px-[16px] pt-[14px] pb-[12px]">
-		<h2 class="mb-[10px] font-condensed text-[12px] font-bold tracking-[0.8px] text-ink/70 uppercase">Latency</h2>
+	<ChartPanel
+		title="Query speed over time"
+		description="How long queries took — p90 means roughly 9 in 10 finished faster"
+	>
 		{#if chartRange && latency.some((s) => s.points.length > 0)}
 			<LineChart series={latency} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
 		{:else}
@@ -183,7 +192,7 @@
 				{loading ? 'Loading…' : (error ?? 'No data')}
 			</div>
 		{/if}
-	</section>
+	</ChartPanel>
 </div>
 
 <div class="border border-ink/16 bg-card">

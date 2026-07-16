@@ -2,9 +2,11 @@
 	import { Axis, Chart, Grid, Highlight, Spline, Svg, Tooltip } from 'layerchart';
 	import { scaleTime } from 'd3-scale';
 	import { curveMonotoneX } from 'd3-shape';
-	import { fmtAxisTime, fmtClockDate } from '$lib/format';
+	import { fmtAxisTime, fmtClockMinute } from '$lib/format';
+	import ChartLegend from '$lib/components/ChartLegend.svelte';
 	import GapBands from '$lib/components/GapBands.svelte';
-	import { buildMetricChartModel, type MetricSeriesPoint } from '$lib/metricChart';
+	import SeriesPoints from '$lib/components/SeriesPoints.svelte';
+	import { buildMetricMultiChartModel, type MetricSeriesPoint, type MetricSeriesRow } from '$lib/metricChart';
 
 	type Series = { label: string; color: string; points: MetricSeriesPoint[] };
 
@@ -22,18 +24,14 @@
 		format: (value: number) => string;
 	} = $props();
 
-	const models = $derived(series.map((s) => ({ ...s, model: buildMetricChartModel(s.points, from, to, bucketMs) })));
-
-	const domain = $derived.by(() => {
-		let lo = Infinity;
-		let hi = -Infinity;
-		for (const m of models) {
-			lo = Math.min(lo, m.model.xFrom.getTime());
-			hi = Math.max(hi, m.model.xTo.getTime());
-		}
-		if (!Number.isFinite(lo)) return [from, to] as [Date, Date];
-		return [new Date(lo), new Date(hi)] as [Date, Date];
-	});
+	const model = $derived(
+		buildMetricMultiChartModel(
+			series.map((s) => s.points),
+			from,
+			to,
+			bucketMs
+		)
+	);
 
 	const yMax = $derived.by(() => {
 		let m = 0;
@@ -44,49 +42,25 @@
 		}
 		return m;
 	});
-
-	// One row per bucket carrying every series' value, so a single bisect-x
-	// lookup drives a combined tooltip.
-	const merged = $derived.by(() => {
-		const byTime: Record<number, { at: Date; values: (number | null)[] }> = {};
-		series.forEach((s, si) => {
-			for (const p of s.points) {
-				const t = p.at.getTime();
-				let row = byTime[t];
-				if (!row) {
-					row = { at: p.at, values: series.map(() => null) };
-					byTime[t] = row;
-				}
-				row.values[si] = p.value;
-			}
-		});
-		return Object.values(byTime).sort((a, b) => a.at.getTime() - b.at.getTime());
-	});
 </script>
 
 <div>
-	<div class="mb-[10px] flex flex-wrap gap-[16px]">
-		{#each series as s (s.label)}
-			<div class="flex items-center gap-[6px] font-mono text-[11px] text-ink/60">
-				<span class="h-[2px] w-[16px]" style:background={s.color}></span>{s.label}
-			</div>
-		{/each}
-	</div>
+	<ChartLegend items={series.map((s) => ({ label: s.label, color: s.color }))} />
 	<div class="h-[240px]">
 		<Chart
-			data={merged}
+			data={model.rows}
 			x="at"
 			xScale={scaleTime()}
-			xDomain={domain}
+			xDomain={[model.xFrom, model.xTo]}
 			y={() => 0}
 			yDomain={[0, yMax || 1]}
 			yNice
-			padding={{ left: 40, bottom: 24 }}
+			padding={{ left: 36, bottom: 24 }}
 			tooltipContext={{ mode: 'bisect-x' }}
 		>
 			<Svg>
 				<Grid y={{ class: 'stroke-ink/10' }} />
-				<GapBands gaps={models[0]?.model.gaps ?? []} />
+				<GapBands gaps={model.gaps} />
 				<Axis
 					placement="left"
 					rule
@@ -97,35 +71,34 @@
 				<Axis
 					placement="bottom"
 					rule
-					ticks={4}
+					ticks={6}
 					format={fmtAxisTime}
 					tickLabelProps={{ class: 'fill-ink/45 font-mono text-[10.5px]', stroke: 'none' }}
 				/>
-				{#each models as m (m.label)}
+				{#each series as s, i (s.label)}
 					<Spline
-						data={m.model.gapData}
-						x="at"
-						y="value"
-						defined={(d) => d.value != null}
+						y={(d: MetricSeriesRow) => d.values[i]}
+						defined={(d: MetricSeriesRow) => d.values[i] != null}
 						curve={curveMonotoneX}
-						stroke={m.color}
+						stroke={s.color}
 						stroke-width={2}
 					/>
 				{/each}
-				<Highlight lines />
+				<Highlight lines motion="none" />
+				<SeriesPoints colors={series.map((s) => s.color)} values={(d: MetricSeriesRow) => d.values} />
 			</Svg>
 			<Tooltip.Root
 				x="data"
-				y={0}
+				y="pointer"
 				anchor="top-left"
 				xOffset={18}
 				yOffset={10}
 				variant="none"
 				class="border border-ink/16 bg-card px-[11px] py-[8px] shadow-[0_4px_16px_rgba(0,0,0,0.1)]"
 			>
-				{#snippet children({ data: point }: { data: { at: Date; values: (number | null)[] } })}
+				{#snippet children({ data: point }: { data: MetricSeriesRow })}
 					<div class="flex flex-col gap-[3px] font-mono text-[11.5px] leading-[1.4] whitespace-nowrap">
-						<div class="text-ink/50">{fmtClockDate(point.at)}</div>
+						<div class="text-ink/50">{fmtClockMinute(point.at)}</div>
 						{#each series as s, i (s.label)}
 							<div class="flex items-center justify-between gap-[14px]">
 								<span class="flex items-center gap-[5px] text-ink/55">

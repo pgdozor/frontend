@@ -13,6 +13,7 @@
 	import { C } from '$lib/theme';
 	import type { MetricSeriesPoint } from '$lib/metricChart';
 	import CallsChart from '$lib/components/CallsChart.svelte';
+	import ChartPanel from '$lib/components/ChartPanel.svelte';
 	import LineChart from '$lib/components/LineChart.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
@@ -141,19 +142,24 @@
 {/if}
 
 <div class="mt-[16px] grid gap-[16px]">
-	<section class="border border-ink/16 bg-card px-[16px] pt-[14px] pb-[12px]">
-		<h2 class="mb-[10px] font-condensed text-[12px] font-bold tracking-[0.8px] text-ink/70 uppercase">Calls / min</h2>
+	<ChartPanel title="Executions over time" description="Timeline of this query's executions">
 		{#if chartRange && callsPoints.length > 0}
-			<CallsChart data={callsPoints} from={chartRange.from} to={chartRange.to} {bucketMs} fill={C.steel} />
+			<CallsChart
+				data={callsPoints}
+				from={chartRange.from}
+				to={chartRange.to}
+				{bucketMs}
+				fill={C.steel}
+				label="calls"
+			/>
 		{:else}
 			<div class="flex h-[240px] items-center justify-center font-mono text-[13px] text-ink/40">
 				{loading ? 'Loading…' : (error ?? 'No data')}
 			</div>
 		{/if}
-	</section>
+	</ChartPanel>
 
-	<section class="border border-ink/16 bg-card px-[16px] pt-[14px] pb-[12px]">
-		<h2 class="mb-[10px] font-condensed text-[12px] font-bold tracking-[0.8px] text-ink/70 uppercase">Time</h2>
+	<ChartPanel title="Latency over time" description="Timeline of this query's average latency">
 		{#if chartRange && timing.some((s) => s.points.length > 0)}
 			<LineChart series={timing} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
 		{:else}
@@ -161,7 +167,7 @@
 				{loading ? 'Loading…' : (error ?? 'No data')}
 			</div>
 		{/if}
-	</section>
+	</ChartPanel>
 </div>
 
 <div class="mt-[16px] border border-ink/16 bg-card">

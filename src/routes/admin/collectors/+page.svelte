@@ -98,7 +98,7 @@
 		'border-b border-ink/14 px-[20px] py-[11px] font-condensed text-[11px] font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
 </script>
 
-<PageBar title="Collectors">
+<PageBar>
 	{#snippet actions()}
 		<button
 			type="button"

@@ -78,7 +78,7 @@
 	const label = 'mb-[6px] block font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/55 uppercase';
 </script>
 
-<PageBar title="Alerts" />
+<PageBar />
 
 <div class="mx-auto w-full max-w-[1100px] min-w-0 px-[28px] pt-[26px] pb-[60px]">
 	{#if error && servers.length > 0}

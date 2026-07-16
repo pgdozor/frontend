@@ -121,7 +121,7 @@
 		'inline-block border border-steel/28 bg-steel/10 px-[7px] py-[2px] font-mono text-[11px] whitespace-nowrap text-steel';
 </script>
 
-<PageBar title="Users">
+<PageBar>
 	{#snippet actions()}
 		<button
 			type="button"

@@ -18,15 +18,39 @@ export const adminItems: NavItem[] = [
 	{ key: 'admin-users', label: 'USERS', href: '/admin/users' }
 ];
 
-export const screenMeta: Record<string, { title: string }> = {
-	'slow-queries': { title: 'QUERIES' },
-	'query-detail': { title: 'Query Detail' },
-	transactions: { title: 'TRANSACTIONS' },
-	blocking: { title: 'BLOCKING' },
-	logs: { title: 'LOGS' },
-	alerts: { title: 'ALERTS' },
-	'admin-collectors': { title: 'COLLECTORS' },
-	'admin-users': { title: 'USERS' }
+export const screenMeta: Record<string, { title: string; description: string }> = {
+	'slow-queries': {
+		title: 'QUERIES',
+		description: 'Queries grouped by shape — how often each runs and how long it takes'
+	},
+	'query-detail': {
+		title: 'Query Detail',
+		description: 'How often this query ran, how long it took, and real examples'
+	},
+	transactions: {
+		title: 'TRANSACTIONS',
+		description: 'Transactions in flight, with the statements and wait events behind each one'
+	},
+	blocking: {
+		title: 'BLOCKING',
+		description: 'Sessions blocked by locks, and the transactions holding them'
+	},
+	logs: {
+		title: 'LOGS',
+		description: 'Log events collected from this server, by level and classification'
+	},
+	alerts: {
+		title: 'ALERTS',
+		description: 'Slack notifications and per-alert toggles for each monitored server'
+	},
+	'admin-collectors': {
+		title: 'COLLECTORS',
+		description: 'Access tokens that let collectors report into pgdozor'
+	},
+	'admin-users': {
+		title: 'USERS',
+		description: 'User accounts and which servers each one can see'
+	}
 };
 
 export function screenKeyForPath(pathname: string): string {
@@ -42,6 +66,10 @@ export function screenKeyForPath(pathname: string): string {
 
 export function screenTitle(pathname: string): string {
 	return screenMeta[screenKeyForPath(pathname)]?.title ?? '';
+}
+
+export function screenDescription(pathname: string): string {
+	return screenMeta[screenKeyForPath(pathname)]?.description ?? '';
 }
 
 export function isNavActive(item: NavItem, pathname: string): boolean {
