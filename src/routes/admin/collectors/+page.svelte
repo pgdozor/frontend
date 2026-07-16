@@ -150,12 +150,12 @@
 		</div>
 
 		{#if loading}
-			<div class="px-[44px] py-[28px] text-center font-mono text-[13px] text-ink/45">Loading…</div>
+			<div class="px-[44px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
 		{:else if error}
-			<div class="px-[44px] py-[28px] text-center font-mono text-[13px] text-danger">{error}</div>
+			<div class="px-[44px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
 		{:else if tokens.length === 0}
-			<div class="px-[44px] py-[44px] text-center font-mono text-[13px] text-ink/45">
-				No collector tokens yet. Create one to connect a collector.
+			<div class="px-[44px] py-[44px] text-center font-mono text-[12px] text-ink/45">
+				No collector tokens yet. Create one to connect a collector
 			</div>
 		{/if}
 	</div>

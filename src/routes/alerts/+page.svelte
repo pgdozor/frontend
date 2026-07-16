@@ -91,12 +91,12 @@
 	{/if}
 
 	{#if loading}
-		<div class="px-[44px] py-[28px] text-center font-mono text-[13px] text-ink/45">Loading…</div>
+		<div class="px-[44px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
 	{:else if error && servers.length === 0}
-		<div class="px-[44px] py-[28px] text-center font-mono text-[13px] text-danger">{error}</div>
+		<div class="px-[44px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
 	{:else if servers.length === 0}
-		<div class="border border-ink/16 bg-card px-[44px] py-[44px] text-center font-mono text-[13px] text-ink/45">
-			No servers to configure yet.
+		<div class="border border-ink/16 bg-card px-[44px] py-[44px] text-center font-mono text-[12px] text-ink/45">
+			No servers to configure yet
 		</div>
 	{:else}
 		<div class="flex flex-col gap-[22px]">

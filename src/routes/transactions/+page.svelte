@@ -134,11 +134,11 @@
 
 <div class="border border-ink/16 bg-card">
 	{#if loading}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[13px] text-ink/45">Loading…</div>
+		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
 	{:else if error}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[13px] text-danger">{error}</div>
+		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
 	{:else if transactions.length === 0}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[13px] text-ink/45">No transactions in this range.</div>
+		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">No transactions in this range</div>
 	{:else}
 		{#each transactions as t (rowKey(t))}
 			{@const open = expanded[rowKey(t)] ?? false}

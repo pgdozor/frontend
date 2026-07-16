@@ -105,6 +105,29 @@ class ContextState {
 
 export const ctx = new ContextState();
 
+// A statement id is permanently bound to one server+database, so the detail
+// view pins them to the record's own scope instead of offering dead pickers.
+class ScopeLock {
+	server = $state<string | null>(null);
+	db = $state<string | null>(null);
+
+	get locked(): boolean {
+		return this.server !== null;
+	}
+
+	lock(server: string, db: string) {
+		this.server = server;
+		this.db = db;
+	}
+
+	unlock() {
+		this.server = null;
+		this.db = null;
+	}
+}
+
+export const scopeLock = new ScopeLock();
+
 // Servers whose last health check is older than 24h are already excluded by the backend.
 class ServersState {
 	list = $state<MonitoredServer[]>([]);

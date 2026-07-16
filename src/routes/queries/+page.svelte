@@ -164,7 +164,7 @@
 </script>
 
 <div class="mb-[22px] grid gap-[16px]">
-	<ChartPanel title="Query volume over time" description="How many queries ran in each time interval">
+	<ChartPanel title="Query volume over time" description="How many times queries ran">
 		{#if chartRange && callsPoints.length > 0}
 			<CallsChart
 				data={callsPoints}
@@ -175,7 +175,7 @@
 				label="calls"
 			/>
 		{:else}
-			<div class="flex h-[240px] items-center justify-center font-mono text-[13px] text-ink/40">
+			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
 				{loading ? 'Loading…' : (error ?? 'No data')}
 			</div>
 		{/if}
@@ -188,7 +188,7 @@
 		{#if chartRange && latency.some((s) => s.points.length > 0)}
 			<LineChart series={latency} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
 		{:else}
-			<div class="flex h-[240px] items-center justify-center font-mono text-[13px] text-ink/40">
+			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
 				{loading ? 'Loading…' : (error ?? 'No data')}
 			</div>
 		{/if}
@@ -288,11 +288,11 @@
 	</div>
 
 	{#if loading}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[13px] text-ink/45">Loading…</div>
+		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
 	{:else if error}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[13px] text-danger">{error}</div>
+		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
 	{:else if rows.length === 0}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[13px] text-ink/45">No statements for this filter.</div>
+		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">No statements for this filter</div>
 	{/if}
 </div>
 

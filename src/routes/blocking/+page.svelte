@@ -89,16 +89,16 @@
 </script>
 
 {#if loading}
-	<div class="border border-ink/16 bg-card px-[16px] py-[28px] text-center font-mono text-[13px] text-ink/45">
+	<div class="border border-ink/16 bg-card px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">
 		Loading…
 	</div>
 {:else if error}
-	<div class="border border-ink/16 bg-card px-[16px] py-[28px] text-center font-mono text-[13px] text-danger">
+	<div class="border border-ink/16 bg-card px-[16px] py-[28px] text-center font-mono text-[12px] text-danger">
 		{error}
 	</div>
 {:else if trees.length === 0}
-	<div class="border border-ink/16 bg-card px-[16px] py-[28px] text-center font-mono text-[13px] text-ink/45">
-		No blocking in this range.
+	<div class="border border-ink/16 bg-card px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">
+		No blocking in this range
 	</div>
 {:else}
 	{#each trees as tree (tree.rootPid)}

@@ -7,7 +7,7 @@
 		StatementMetric
 	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 	import { statementClient } from '$lib/connect';
-	import { ctx } from '$lib/state.svelte';
+	import { ctx, scopeLock } from '$lib/state.svelte';
 	import { format } from 'sql-formatter';
 	import { fmtDuration, sevByDuration, fmtTs, kvTags, truncate, errMsg } from '$lib/format';
 	import { C } from '$lib/theme';
@@ -68,6 +68,15 @@
 		};
 	});
 
+	$effect(() => {
+		if (!detail) return;
+		scopeLock.lock(detail.serverName, detail.databaseName);
+		ctx.server = detail.serverName;
+		ctx.db = detail.databaseName;
+	});
+
+	$effect(() => () => scopeLock.unlock());
+
 	const tags = $derived(kvTags(detail?.tags ?? {}));
 
 	// Raw normalized query by default; the Prettify toggle pretty-prints it.
@@ -119,14 +128,17 @@
 
 <div class="border border-ink/16 bg-ink px-[20px] py-[18px]">
 	{#if detail}
-		<div class="font-mono text-[12.5px] leading-[1.7] break-words whitespace-pre-wrap text-paper">
+		<div class="flex items-start gap-[16px]">
+			<div class="min-w-0 flex-1 font-mono text-[12.5px] leading-[1.7] break-words whitespace-pre-wrap text-paper">
+				{queryText}
+			</div>
 			<button
 				type="button"
 				onclick={() => (prettified = !prettified)}
-				class="float-right ml-[12px] cursor-pointer border px-[10px] py-[3px] font-condensed text-[10.5px] font-semibold tracking-[0.7px] uppercase transition-colors {prettified
+				class="flex-none cursor-pointer border px-[10px] py-[3px] font-condensed text-[10.5px] font-semibold tracking-[0.7px] uppercase transition-colors {prettified
 					? 'border-command bg-command text-paper'
 					: 'border-paper/25 text-paper/70 hover:border-paper/50 hover:text-paper'}">Prettify</button
-			>{queryText}
+			>
 		</div>
 	{:else}
 		<div class="font-mono text-[12.5px] text-paper/50">{loading ? 'Loading…' : (error ?? '')}</div>
@@ -142,7 +154,7 @@
 {/if}
 
 <div class="mt-[16px] grid gap-[16px]">
-	<ChartPanel title="Executions over time" description="Timeline of this query's executions">
+	<ChartPanel title="Query volume over time" description="How many times this query ran">
 		{#if chartRange && callsPoints.length > 0}
 			<CallsChart
 				data={callsPoints}
@@ -153,17 +165,20 @@
 				label="calls"
 			/>
 		{:else}
-			<div class="flex h-[240px] items-center justify-center font-mono text-[13px] text-ink/40">
+			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
 				{loading ? 'Loading…' : (error ?? 'No data')}
 			</div>
 		{/if}
 	</ChartPanel>
 
-	<ChartPanel title="Latency over time" description="Timeline of this query's average latency">
+	<ChartPanel
+		title="Query speed over time"
+		description="How long this query took per run on average, and how much of that was disk I/O"
+	>
 		{#if chartRange && timing.some((s) => s.points.length > 0)}
 			<LineChart series={timing} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
 		{:else}
-			<div class="flex h-[240px] items-center justify-center font-mono text-[13px] text-ink/40">
+			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
 				{loading ? 'Loading…' : (error ?? 'No data')}
 			</div>
 		{/if}
@@ -171,8 +186,13 @@
 </div>
 
 <div class="mt-[16px] border border-ink/16 bg-card">
-	<div class="flex items-center gap-[11px] border-b border-ink/14 px-[18px] py-[13px]">
-		<span class="font-condensed text-[14px] font-bold tracking-[0.8px] text-ink uppercase">Captured Samples</span>
+	<div class="border-b border-ink/14 px-[18px] py-[13px]">
+		<h2 class="font-condensed text-[12px] leading-[1.15] font-bold tracking-[0.8px] text-ink/70 uppercase">
+			Captured samples
+		</h2>
+		<p class="mt-[2px] text-[11.5px] leading-[1.2] text-ink/45">
+			Individual runs of this query — the real values each one used, and a plan when captured
+		</p>
 	</div>
 
 	<div class="overflow-x-auto">
@@ -233,12 +253,12 @@
 	</div>
 
 	{#if loading}
-		<div class="px-[18px] py-[24px] text-center font-mono text-[13px] text-ink/45">Loading…</div>
+		<div class="px-[18px] py-[24px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
 	{:else if error}
-		<div class="px-[18px] py-[24px] text-center font-mono text-[13px] text-danger">{error}</div>
+		<div class="px-[18px] py-[24px] text-center font-mono text-[12px] text-danger">{error}</div>
 	{:else if samples.length === 0}
-		<div class="px-[18px] py-[24px] text-center font-mono text-[13px] text-ink/45">
-			No samples captured in this range.
+		<div class="px-[18px] py-[24px] text-center font-mono text-[12px] text-ink/45">
+			No samples captured in this range
 		</div>
 	{/if}
 </div>

@@ -409,7 +409,7 @@
 									{/if}
 
 									{#if !hasSecondary(r)}
-										<div class="font-mono text-[12px] text-ink/40">No additional fields recorded for this event.</div>
+										<div class="font-mono text-[12px] text-ink/40">No additional fields recorded for this event</div>
 									{/if}
 								</div>
 							</td>
@@ -421,12 +421,12 @@
 	</div>
 
 	{#if loading}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[13px] text-ink/45">Loading…</div>
+		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
 	{:else if error}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[13px] text-danger">{error}</div>
+		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
 	{:else if records.length === 0}
-		<div class="px-[40px] py-[40px] text-center font-mono text-[13px] text-ink/45">
-			No log events match the current filters.
+		<div class="px-[40px] py-[40px] text-center font-mono text-[12px] text-ink/45">
+			No log events match the current filters
 		</div>
 	{/if}
 </div>

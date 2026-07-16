@@ -2,7 +2,7 @@
 	import { DatabaseIcon, ClockIcon, ChevronDownIcon, CheckIcon, ArrowRightIcon } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import { screenDescription, screenTitle } from '$lib/nav';
-	import { ctx, serversState, presets } from '$lib/state.svelte';
+	import { ctx, scopeLock, serversState, presets } from '$lib/state.svelte';
 
 	let { dbSwitch = true }: { dbSwitch?: boolean } = $props();
 
@@ -14,7 +14,8 @@
 
 	const title = $derived(screenTitle(page.url.pathname));
 	const description = $derived(screenDescription(page.url.pathname));
-	const selfHealth = $derived(serversState.health(ctx.server));
+	const activeServer = $derived(scopeLock.server ?? ctx.server);
+	const selfHealth = $derived(serversState.health(activeServer));
 
 	function healthClass(server: string): string {
 		return serversState.health(server) === 'ok' ? 'bg-ok' : 'bg-warn';
@@ -78,33 +79,55 @@
 		{/if}
 
 		<div class="relative z-[2] flex border border-ink/18 bg-card">
-			<button
-				type="button"
-				onclick={() => toggle('server')}
-				class="flex cursor-pointer items-center gap-[8px] border-r border-ink/14 px-[12px] py-[7px] hover:bg-ink/4"
-			>
-				<span
-					class="h-[7px] w-[7px] rounded-full {selfHealth === 'ok' ? 'bg-ok' : 'bg-warn'}"
-					title={selfHealth === 'ok'
-						? 'Collector healthy · reported within 5 minutes'
-						: 'Collector not responding · no health check in over 5 minutes'}
-				></span>
-				<span class="font-mono text-[12px] font-medium text-ink">{ctx.server || '—'}</span>
-				<ChevronDownIcon class="size-[13px] text-ink/45" />
-			</button>
-			<button
-				type="button"
-				onclick={() => dbSwitch && toggle('db')}
-				disabled={!dbSwitch}
-				title={dbSwitch ? 'Select database' : 'Logs are server-wide — the database filter does not apply here'}
-				class="flex items-center gap-[8px] px-[12px] py-[7px] {dbSwitch
-					? 'cursor-pointer hover:bg-ink/4'
-					: 'cursor-not-allowed opacity-40'}"
-			>
-				<DatabaseIcon class="size-[13px] flex-none text-steel" />
-				<span class="font-mono text-[12px] font-medium text-ink">{ctx.db || '—'}</span>
-				<ChevronDownIcon class="size-[13px] text-ink/45" />
-			</button>
+			{#if scopeLock.locked}
+				<div
+					class="flex items-center gap-[8px] border-r border-ink/14 px-[12px] py-[7px]"
+					title="This query lives on {scopeLock.server} — the server is fixed here"
+				>
+					<span
+						class="h-[7px] w-[7px] rounded-full {selfHealth === 'ok' ? 'bg-ok' : 'bg-warn'}"
+						title={selfHealth === 'ok'
+							? 'Collector healthy · reported within 5 minutes'
+							: 'Collector not responding · no health check in over 5 minutes'}
+					></span>
+					<span class="font-mono text-[12px] font-medium text-ink">{scopeLock.server}</span>
+				</div>
+				<div
+					class="flex items-center gap-[8px] px-[12px] py-[7px]"
+					title="This query lives in {scopeLock.db} — the database is fixed here"
+				>
+					<DatabaseIcon class="size-[13px] flex-none text-steel" />
+					<span class="font-mono text-[12px] font-medium text-ink">{scopeLock.db}</span>
+				</div>
+			{:else}
+				<button
+					type="button"
+					onclick={() => toggle('server')}
+					class="flex cursor-pointer items-center gap-[8px] border-r border-ink/14 px-[12px] py-[7px] hover:bg-ink/4"
+				>
+					<span
+						class="h-[7px] w-[7px] rounded-full {selfHealth === 'ok' ? 'bg-ok' : 'bg-warn'}"
+						title={selfHealth === 'ok'
+							? 'Collector healthy · reported within 5 minutes'
+							: 'Collector not responding · no health check in over 5 minutes'}
+					></span>
+					<span class="font-mono text-[12px] font-medium text-ink">{ctx.server || '—'}</span>
+					<ChevronDownIcon class="size-[13px] text-ink/45" />
+				</button>
+				<button
+					type="button"
+					onclick={() => dbSwitch && toggle('db')}
+					disabled={!dbSwitch}
+					title={dbSwitch ? 'Select database' : 'Logs are server-wide — the database filter does not apply here'}
+					class="flex items-center gap-[8px] px-[12px] py-[7px] {dbSwitch
+						? 'cursor-pointer hover:bg-ink/4'
+						: 'cursor-not-allowed opacity-40'}"
+				>
+					<DatabaseIcon class="size-[13px] flex-none text-steel" />
+					<span class="font-mono text-[12px] font-medium text-ink">{ctx.db || '—'}</span>
+					<ChevronDownIcon class="size-[13px] text-ink/45" />
+				</button>
+			{/if}
 
 			{#if open === 'server'}
 				<div

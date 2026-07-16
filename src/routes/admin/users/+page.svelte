@@ -205,11 +205,11 @@
 		</div>
 
 		{#if loading}
-			<div class="px-[44px] py-[28px] text-center font-mono text-[13px] text-ink/45">Loading…</div>
+			<div class="px-[44px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
 		{:else if error}
-			<div class="px-[44px] py-[28px] text-center font-mono text-[13px] text-danger">{error}</div>
+			<div class="px-[44px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
 		{:else if users.length === 0}
-			<div class="px-[44px] py-[44px] text-center font-mono text-[13px] text-ink/45">No users yet.</div>
+			<div class="px-[44px] py-[44px] text-center font-mono text-[12px] text-ink/45">No users yet</div>
 		{/if}
 	</div>
 </div>
@@ -271,7 +271,7 @@
 					Allowed Servers
 				</span>
 				{#if serverOptions.length === 0}
-					<div class="font-mono text-[12px] text-ink/45">No servers yet — create a collector token first.</div>
+					<div class="font-mono text-[12px] text-ink/45">No servers yet — create a collector token first</div>
 				{:else}
 					<div class="flex flex-wrap gap-[8px]">
 						{#each serverOptions as name (name)}
