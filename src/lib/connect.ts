@@ -9,7 +9,7 @@ import { AuthService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/auth_pb
 import { AdminService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/admin_pb';
 import { AlertService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/alert_pb';
 
-const baseUrl = env.PUBLIC_API_URL ?? 'http://localhost:3000';
+const baseUrl = env.PUBLIC_API_URL || '/api';
 
 // fetch override sends the HTTP-only session cookie on every request (cross-origin in dev).
 const transport = createConnectTransport({

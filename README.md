@@ -13,8 +13,6 @@ npm install
 npm run dev   # localhost:3001
 ```
 
-The backend base URL comes from `PUBLIC_API_URL` (defaults to `http://localhost:3000`; see `.env.example`).
-
 ## Check
 
 ```sh
