@@ -4,7 +4,8 @@
 	import { page } from '$app/state';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import ContextBar from '$lib/components/ContextBar.svelte';
-	import { ctx, serversState } from '$lib/state.svelte';
+	import { serversState } from '$lib/state.svelte';
+	import { urlSync } from '$lib/urlState.svelte';
 	import { session } from '$lib/session.svelte';
 
 	type Props = {
@@ -40,13 +41,17 @@
 
 	let urlSynced = $state(false);
 	afterNavigate(() => {
-		if (!urlSynced && contextBar) ctx.applyQuery(new URLSearchParams(page.url.search));
+		if (!urlSynced && contextBar) urlSync.applyQuery(page.url.search);
 		urlSynced = true;
 	});
 
+	// Gating on `allowed` is load-bearing, not just an optimisation: children only
+	// render once the session resolves, and the query string is rebuilt from the
+	// providers they register. Writing any earlier strips a deep link's page-scoped
+	// params before the page that owns them exists.
 	$effect(() => {
-		if (!urlSynced || !contextBar) return;
-		const qs = ctx.queryString();
+		if (!urlSynced || !contextBar || !allowed) return;
+		const qs = urlSync.queryString();
 		if (qs !== page.url.search.replace(/^\?/, '')) replaceState(`?${qs}`, page.state);
 	});
 </script>

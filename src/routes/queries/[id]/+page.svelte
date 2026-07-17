@@ -146,7 +146,7 @@
 </div>
 
 {#if tags.length > 0}
-	<div class="mt-[12px] flex flex-wrap gap-[6px]">
+	<div class="mt-[7px] flex flex-wrap gap-[6px]">
 		{#each tags as t (t)}
 			<Tag text={t} size="md" />
 		{/each}
@@ -220,7 +220,7 @@
 								>{s.short}</code
 							>
 							{#if s.tags.length > 0}
-								<div class="mt-[6px] flex flex-wrap gap-[5px]">
+								<div class="mt-[3px] flex flex-wrap gap-[5px]">
 									{#each s.tags as t (t)}
 										<Tag text={t} />
 									{/each}

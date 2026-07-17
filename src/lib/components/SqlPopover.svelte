@@ -3,6 +3,19 @@
 	import { POPOVER_WIDTH, type SqlPopoverState } from '$lib/sqlPopover.svelte';
 
 	let { state }: { state: SqlPopoverState } = $props();
+
+	// Capture, because scroll does not bubble: the query tables sit in their own
+	// overflow containers, and a listener on window alone would miss those.
+	$effect(() => {
+		const opts = { capture: true, passive: true } as const;
+		document.addEventListener('scroll', state.reflow, opts);
+		window.addEventListener('resize', state.reflow);
+		return () => {
+			document.removeEventListener('scroll', state.reflow, opts);
+			window.removeEventListener('resize', state.reflow);
+			state.destroy();
+		};
+	});
 </script>
 
 {#if state.pop}

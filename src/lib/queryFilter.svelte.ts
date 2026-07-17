@@ -1,0 +1,135 @@
+import { TagFilterOperator } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
+import type { UrlParams } from './urlState.svelte';
+
+export type TagOp = 'eq' | 'ne' | 'exists';
+
+export type TagFilter = {
+	key: string;
+	op: TagOp;
+	values: string[];
+};
+
+// A key can never contain '=', so the first '=' is always the operator and only
+// the value list needs escaping.
+const KEY_RE = /^[a-z][a-z0-9_]*$/;
+
+function encodeValue(value: string): string {
+	return value.replace(/([\\,])/g, '\\$1');
+}
+
+function splitValues(raw: string): string[] {
+	const out: string[] = [];
+	let current = '';
+
+	for (let i = 0; i < raw.length; i++) {
+		if (raw[i] === '\\' && i + 1 < raw.length) {
+			current += raw[++i];
+		} else if (raw[i] === ',') {
+			out.push(current);
+			current = '';
+		} else {
+			current += raw[i];
+		}
+	}
+	out.push(current);
+
+	return out.filter((v) => v !== '');
+}
+
+function encodeTagFilter(filter: TagFilter): string {
+	if (filter.op === 'exists') return filter.key;
+
+	return `${filter.key}${filter.op === 'ne' ? '!=' : '='}${filter.values.map(encodeValue).join(',')}`;
+}
+
+function decodeTagFilter(raw: string): TagFilter | null {
+	const eq = raw.indexOf('=');
+	if (eq < 0) return KEY_RE.test(raw) ? { key: raw, op: 'exists', values: [] } : null;
+
+	const ne = raw[eq - 1] === '!';
+	const key = raw.slice(0, ne ? eq - 1 : eq);
+	if (!KEY_RE.test(key)) return null;
+
+	const values = splitValues(raw.slice(eq + 1));
+	if (values.length === 0) return null;
+
+	return { key, op: ne ? 'ne' : 'eq', values };
+}
+
+// A displayed tag is always a single agreed value: the backend omits any key
+// whose samples disagree, so there is no wildcard to interpret here.
+export function parseDisplayTag(text: string): TagFilter | null {
+	const eq = text.indexOf('=');
+	if (eq < 0) return null;
+
+	const key = text.slice(0, eq);
+	const value = text.slice(eq + 1);
+	if (!KEY_RE.test(key) || value === '') return null;
+
+	return { key, op: 'eq', values: [value] };
+}
+
+export function describeTagFilter(filter: TagFilter): string {
+	if (filter.op === 'exists') return `${filter.key} exists`;
+
+	return `${filter.key} ${filter.op === 'ne' ? '!=' : '='} ${filter.values.join(' or ')}`;
+}
+
+const opToProto: Record<TagOp, TagFilterOperator> = {
+	eq: TagFilterOperator.EQUAL,
+	ne: TagFilterOperator.NOT_EQUAL,
+	exists: TagFilterOperator.EXISTS
+};
+
+// The QUERIES filter as a whole: the SQL text search (?q=) plus the tag chips
+// (one ?tag= each). `text` is the committed value — the page debounces the raw
+// input into it, so typing does not write a URL entry per keystroke.
+export class QueryFilterState implements UrlParams {
+	text = $state('');
+	chips = $state<TagFilter[]>([]);
+
+	applyQuery(params: URLSearchParams): void {
+		this.text = params.get('q') ?? '';
+		this.chips = params
+			.getAll('tag')
+			.map(decodeTagFilter)
+			.filter((f): f is TagFilter => f !== null);
+	}
+
+	writeQuery(params: URLSearchParams): void {
+		if (this.text) params.set('q', this.text);
+		for (const filter of this.chips) params.append('tag', encodeTagFilter(filter));
+	}
+
+	toProto(): { key: string; op: TagFilterOperator; values: string[] }[] {
+		return this.chips.map((f) => ({
+			key: f.key,
+			op: opToProto[f.op],
+			values: f.op === 'exists' ? [] : f.values
+		}));
+	}
+
+	// Re-picking a key you already filtered on edits that chip rather than adding
+	// a second one that would AND against it.
+	add(filter: TagFilter): void {
+		const at = this.chips.findIndex((f) => f.key === filter.key && f.op === filter.op);
+		if (at < 0) {
+			this.chips = [...this.chips, filter];
+			return;
+		}
+
+		this.chips = this.chips.map((f, i) => (i === at ? filter : f));
+	}
+
+	replace(index: number, filter: TagFilter): void {
+		this.chips = this.chips.map((f, i) => (i === index ? filter : f));
+	}
+
+	remove(index: number): void {
+		this.chips = this.chips.filter((_, i) => i !== index);
+	}
+
+	clear(): void {
+		this.chips = [];
+	}
+}

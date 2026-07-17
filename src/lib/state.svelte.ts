@@ -2,6 +2,7 @@ import { fmtClock } from './format';
 import { timestampDate } from '@bufbuild/protobuf/wkt';
 import type { MonitoredServer } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/health_pb';
 import { healthClient } from './connect';
+import { urlSync } from './urlState.svelte';
 
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
@@ -89,21 +90,22 @@ class ContextState {
 		}
 	}
 
-	queryString(): string {
-		const parts: string[] = [];
-		if (this.server) parts.push(`server=${encodeURIComponent(this.server)}`);
-		if (this.db) parts.push(`db=${encodeURIComponent(this.db)}`);
+	writeQuery(params: URLSearchParams): void {
+		if (this.server) params.set('server', this.server);
+		if (this.db) params.set('db', this.db);
 		if (this.range === 'custom') {
 			const { from, to } = this.timeRange();
-			parts.push(`from=${from.getTime()}`, `to=${to.getTime()}`);
+			params.set('from', String(from.getTime()));
+			params.set('to', String(to.getTime()));
 		} else {
-			parts.push(`range=${encodeURIComponent(this.range)}`);
+			params.set('range', this.range);
 		}
-		return parts.join('&');
 	}
 }
 
 export const ctx = new ContextState();
+
+urlSync.register(ctx);
 
 // A statement id is permanently bound to one server+database, so the detail
 // view pins them to the record's own scope instead of offering dead pickers.

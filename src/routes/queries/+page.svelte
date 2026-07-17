@@ -1,10 +1,14 @@
 <script lang="ts">
-	import { SearchIcon, ArrowUpIcon, ArrowDownIcon } from '@lucide/svelte';
+	import { onDestroy } from 'svelte';
+	import { ArrowUpIcon, ArrowDownIcon } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { timestampFromDate, timestampDate } from '@bufbuild/protobuf/wkt';
 	import type { StatementMetrics, StatementMetric } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 	import { statementClient } from '$lib/connect';
 	import { ctx } from '$lib/state.svelte';
+	import { urlSync } from '$lib/urlState.svelte';
+	import { QueryFilterState, parseDisplayTag } from '$lib/queryFilter.svelte';
 	import {
 		fmtDuration,
 		fmtCount,
@@ -23,6 +27,7 @@
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
 	import Tag from '$lib/components/Tag.svelte';
+	import TagFilterBar from '$lib/components/TagFilterBar.svelte';
 
 	type Row = {
 		id: string;
@@ -55,17 +60,23 @@
 	let chartRange = $state<{ from: Date; to: Date } | null>(null);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
-	let search = $state('');
-	let filter = $state('');
 	let sort = $state<{ col: SortCol; dir: 'asc' | 'desc' }>({ col: 'pctTime', dir: 'desc' });
 
 	const sql = new SqlPopoverState();
+	const filters = new QueryFilterState();
 
-	// Debounce the search box into the server-side query-text filter.
+	// Registration must happen during init, not in a $effect: AppShell rebuilds the
+	// whole query string from the registered providers, and its effect would
+	// otherwise run first and strip ?q=/?tag= off a deep link before we appear.
+	filters.applyQuery(new URLSearchParams(page.url.search));
+	onDestroy(urlSync.register(filters));
+
+	let search = $state(filters.text);
+
 	$effect(() => {
 		const term = search;
 		const id = setTimeout(() => {
-			filter = term.trim();
+			filters.text = term.trim();
 		}, 250);
 		return () => clearTimeout(id);
 	});
@@ -78,7 +89,8 @@
 			databaseName: ctx.db,
 			from: timestampFromDate(from),
 			to: timestampFromDate(to),
-			filter
+			queryText: filters.text,
+			tagFilters: filters.toProto()
 		};
 
 		let cancelled = false;
@@ -161,6 +173,13 @@
 			open(id);
 		}
 	}
+
+	// The tag sits inside a row that navigates on click.
+	function filterByTag(e: MouseEvent, text: string) {
+		e.stopPropagation();
+		const filter = parseDisplayTag(text);
+		if (filter) filters.add(filter);
+	}
 </script>
 
 <div class="mb-[22px] grid gap-[16px]">
@@ -196,17 +215,7 @@
 </div>
 
 <div class="border border-ink/16 bg-card">
-	<div class="border-b border-ink/14 p-[14px]">
-		<div class="flex items-center gap-[10px] border border-ink/20 bg-paper px-[14px] py-[10px]">
-			<SearchIcon class="size-[14px] flex-none text-ink/40" />
-			<input
-				type="text"
-				bind:value={search}
-				placeholder="Search SQL text or tags, e.g. service=payments"
-				class="flex-1 border-none bg-transparent font-mono text-[13px] text-ink outline-none"
-			/>
-		</div>
-	</div>
+	<TagFilterBar bind:searchText={search} tags={filters} />
 
 	<div class="overflow-x-auto">
 		<table class="w-full min-w-[740px] table-fixed border-collapse font-sans">
@@ -255,9 +264,9 @@
 										>{q.short}</code
 									>
 									{#if q.tags.length > 0}
-										<div class="mt-[6px] flex flex-wrap gap-[5px]">
+										<div class="mt-[3px] flex flex-wrap gap-[5px]">
 											{#each q.tags as t (t)}
-												<Tag text={t} />
+												<Tag text={t} title="Filter by {t}" onclick={(e) => filterByTag(e, t)} />
 											{/each}
 										</div>
 									{/if}
