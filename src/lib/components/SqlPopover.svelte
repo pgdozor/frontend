@@ -36,19 +36,25 @@
 			<div class="flex flex-none items-center justify-between gap-[12px] border-b border-paper/14 px-[12px] py-[9px]">
 				<span class="font-condensed text-[10.5px] font-semibold tracking-[1px] text-paper/55 uppercase">Full query</span
 				>
-				<button
-					type="button"
-					onclick={state.copy}
-					class="inline-flex cursor-pointer items-center gap-[6px] bg-command px-[11px] py-[5px] font-condensed text-[11px] font-bold tracking-[0.6px] whitespace-nowrap text-paper uppercase hover:bg-danger"
-				>
-					<CopyIcon class="size-[12px] stroke-[2.2]" />
-					<span>{state.copied ? 'Copied' : 'Copy'}</span>
-				</button>
+				{#if !state.pop.loading}
+					<button
+						type="button"
+						onclick={state.copy}
+						class="inline-flex cursor-pointer items-center gap-[6px] bg-command px-[11px] py-[5px] font-condensed text-[11px] font-bold tracking-[0.6px] whitespace-nowrap text-paper uppercase hover:bg-danger"
+					>
+						<CopyIcon class="size-[12px] stroke-[2.2]" />
+						<span>{state.copied ? 'Copied' : 'Copy'}</span>
+					</button>
+				{/if}
 			</div>
-			<code
-				class="block min-h-0 flex-1 overflow-auto px-[14px] py-[13px] font-mono text-[12.5px] leading-[1.7] break-words whitespace-pre-wrap text-paper"
-				>{state.pop.text}</code
-			>
+			{#if state.pop.loading}
+				<div class="flex-1 px-[14px] py-[13px] font-mono text-[12.5px] text-paper/55">Loading…</div>
+			{:else}
+				<code
+					class="block min-h-0 flex-1 overflow-auto px-[14px] py-[13px] font-mono text-[12.5px] leading-[1.7] break-words whitespace-pre-wrap text-paper"
+					>{state.pop.text}</code
+				>
+			{/if}
 		</div>
 	</div>
 {/if}

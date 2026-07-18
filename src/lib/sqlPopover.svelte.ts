@@ -1,3 +1,5 @@
+import { SvelteMap } from 'svelte/reactivity';
+
 // Shared with SqlPopover.svelte so the positioning math and rendered element stay in sync.
 export const POPOVER_WIDTH = 440;
 
@@ -11,11 +13,14 @@ const FLIP_THRESHOLD = 360;
 
 type Placement = {
 	text: string;
+	loading: boolean;
 	left: number;
 	top: number | null;
 	bottom: number | null;
 	maxHeight: number;
 };
+
+type Loader = (id: bigint) => Promise<string>;
 
 export class SqlPopoverState {
 	pop = $state<Placement | null>(null);
@@ -24,6 +29,13 @@ export class SqlPopoverState {
 	#hideTimer: ReturnType<typeof setTimeout> | null = null;
 	#reflowQueued = false;
 	#trigger: HTMLElement | null = null;
+	#loader: Loader | null;
+	#cache = new SvelteMap<string, string>();
+	#activeKey: string | null = null;
+
+	constructor(loader?: Loader) {
+		this.#loader = loader ?? null;
+	}
 
 	#clearShow() {
 		if (this.#showTimer) {
@@ -45,22 +57,66 @@ export class SqlPopoverState {
 	show(text: string, e: MouseEvent) {
 		this.#clearShow();
 		this.#clearHide();
+		this.#activeKey = null;
 
 		// currentTarget is nulled once the event finishes dispatching, so hold the
 		// element and measure it when the timer fires.
 		const trigger = e.currentTarget as HTMLElement;
 		if (this.pop) {
-			this.#place(text, trigger, true);
+			this.#place(text, trigger, true, false);
 			return;
 		}
 
 		this.#showTimer = setTimeout(() => {
 			this.#showTimer = null;
-			this.#place(text, trigger, true);
+			this.#place(text, trigger, true, false);
 		}, SHOW_DELAY_MS);
 	}
 
-	#place(text: string, trigger: HTMLElement, fresh: boolean) {
+	// Like show(), but the full text is fetched on demand by id. The list row
+	// only carries a short preview, so the ~20KB body is pulled the first time a
+	// row is hovered and cached for repeat hovers.
+	showLazy(id: bigint, e: MouseEvent) {
+		this.#clearShow();
+		this.#clearHide();
+
+		const key = String(id);
+		const trigger = e.currentTarget as HTMLElement;
+		this.#activeKey = key;
+		this.#fetch(key, id);
+
+		const open = () => {
+			const text = this.#cache.get(key);
+			this.#place(text ?? '', trigger, true, text === undefined);
+		};
+
+		if (this.pop) {
+			open();
+			return;
+		}
+
+		this.#showTimer = setTimeout(() => {
+			this.#showTimer = null;
+			open();
+		}, SHOW_DELAY_MS);
+	}
+
+	#fetch(key: string, id: bigint) {
+		if (!this.#loader || this.#cache.has(key)) return;
+		this.#loader(id).then(
+			(text) => this.#resolve(key, text),
+			() => this.#resolve(key, 'Failed to load query.', true)
+		);
+	}
+
+	#resolve(key: string, text: string, isError = false) {
+		if (!isError) this.#cache.set(key, text);
+		if (this.#activeKey === key && this.pop && this.#trigger) {
+			this.#place(text, this.#trigger, false, false);
+		}
+	}
+
+	#place(text: string, trigger: HTMLElement, fresh: boolean, loading: boolean) {
 		const r = trigger.getBoundingClientRect();
 
 		// A trigger that was re-rendered away during the hover delay, or scrolled
@@ -84,8 +140,8 @@ export class SqlPopoverState {
 
 		this.#trigger = trigger;
 		this.pop = openUp
-			? { text, left, top: null, bottom: window.innerHeight - r.top + GAP, maxHeight }
-			: { text, left, top: r.bottom + GAP, bottom: null, maxHeight };
+			? { text, loading, left, top: null, bottom: window.innerHeight - r.top + GAP, maxHeight }
+			: { text, loading, left, top: r.bottom + GAP, bottom: null, maxHeight };
 
 		if (fresh) this.copied = false;
 	}
@@ -94,6 +150,7 @@ export class SqlPopoverState {
 		this.pop = null;
 		this.copied = false;
 		this.#trigger = null;
+		this.#activeKey = null;
 	}
 
 	// The popover is position:fixed, so it does not travel with its row. Re-anchor
@@ -106,7 +163,7 @@ export class SqlPopoverState {
 			const trigger = this.#trigger;
 			const current = this.pop;
 			if (!trigger || !current) return;
-			this.#place(current.text, trigger, false);
+			this.#place(current.text, trigger, false, current.loading);
 		});
 	};
 
@@ -128,7 +185,7 @@ export class SqlPopoverState {
 
 	copy = () => {
 		const text = this.pop?.text;
-		if (!text) return;
+		if (!text || this.pop?.loading) return;
 		navigator.clipboard.writeText(text).then(
 			() => (this.copied = true),
 			() => {}

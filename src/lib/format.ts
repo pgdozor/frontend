@@ -110,7 +110,7 @@ export function kvTags(tags: Record<string, string>): string[] {
 }
 
 export function truncate(text: string, max: number): string {
-	return text.length > max ? text.slice(0, max) + '…' : text;
+	return text.length > max ? text.slice(0, max) + '...' : text;
 }
 
 export function fmtDateTime(d: Date): string {

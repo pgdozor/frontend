@@ -1,7 +1,17 @@
-import { TagFilterOperator } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
+import { TagFilterOperator, QueryKind } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 import type { UrlParams } from './urlState.svelte';
 
 export type TagOp = 'eq' | 'ne' | 'exists';
+
+export type KindKey = 'reads' | 'writes' | 'others';
+
+export const KIND_KEYS: KindKey[] = ['reads', 'writes', 'others'];
+
+const kindToProto: Record<KindKey, QueryKind> = {
+	reads: QueryKind.READS,
+	writes: QueryKind.WRITES,
+	others: QueryKind.OTHERS
+};
 
 export type TagFilter = {
 	key: string;
@@ -87,6 +97,9 @@ const opToProto: Record<TagOp, TagFilterOperator> = {
 export class QueryFilterState implements UrlParams {
 	text = $state('');
 	chips = $state<TagFilter[]>([]);
+	// All kinds shown by default. The set is serialized to ?kind= only when it
+	// diverges from that default (absent = all on, empty string = all off).
+	kinds = $state<Record<KindKey, boolean>>({ reads: true, writes: true, others: true });
 
 	applyQuery(params: URLSearchParams): void {
 		this.text = params.get('q') ?? '';
@@ -94,11 +107,26 @@ export class QueryFilterState implements UrlParams {
 			.getAll('tag')
 			.map(decodeTagFilter)
 			.filter((f): f is TagFilter => f !== null);
+
+		const kind = params.get('kind');
+		if (kind === null) {
+			this.kinds = { reads: true, writes: true, others: true };
+		} else {
+			const on = kind.split(',');
+			this.kinds = {
+				reads: on.includes('reads'),
+				writes: on.includes('writes'),
+				others: on.includes('others')
+			};
+		}
 	}
 
 	writeQuery(params: URLSearchParams): void {
 		if (this.text) params.set('q', this.text);
 		for (const filter of this.chips) params.append('tag', encodeTagFilter(filter));
+
+		const on = KIND_KEYS.filter((k) => this.kinds[k]);
+		if (on.length !== KIND_KEYS.length) params.set('kind', on.join(','));
 	}
 
 	toProto(): { key: string; op: TagFilterOperator; values: string[] }[] {
@@ -107,6 +135,10 @@ export class QueryFilterState implements UrlParams {
 			op: opToProto[f.op],
 			values: f.op === 'exists' ? [] : f.values
 		}));
+	}
+
+	kindsProto(): QueryKind[] {
+		return KIND_KEYS.filter((k) => this.kinds[k]).map((k) => kindToProto[k]);
 	}
 
 	// Re-picking a key you already filtered on edits that chip rather than adding

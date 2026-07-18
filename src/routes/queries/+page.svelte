@@ -9,16 +9,7 @@
 	import { ctx } from '$lib/state.svelte';
 	import { urlSync } from '$lib/urlState.svelte';
 	import { QueryFilterState, parseDisplayTag } from '$lib/queryFilter.svelte';
-	import {
-		fmtDuration,
-		fmtCount,
-		fmtDurationFull,
-		fmtCountFull,
-		sevByMean,
-		kvTags,
-		truncate,
-		errMsg
-	} from '$lib/format';
+	import { fmtDuration, fmtCount, fmtDurationFull, fmtCountFull, sevByMean, kvTags, errMsg } from '$lib/format';
 	import { C } from '$lib/theme';
 	import type { MetricSeriesPoint } from '$lib/metricChart';
 	import CallsChart from '$lib/components/CallsChart.svelte';
@@ -32,7 +23,6 @@
 	type Row = {
 		id: string;
 		query: string;
-		short: string;
 		usr: string;
 		meanMs: number;
 		calls: number;
@@ -62,7 +52,7 @@
 	let error = $state<string | null>(null);
 	let sort = $state<{ col: SortCol; dir: 'asc' | 'desc' }>({ col: 'pctTime', dir: 'desc' });
 
-	const sql = new SqlPopoverState();
+	const sql = new SqlPopoverState((id) => statementClient.getStatementText({ id }).then((r) => r.query));
 	const filters = new QueryFilterState();
 
 	// Registration must happen during init, not in a $effect: AppShell rebuilds the
@@ -90,7 +80,8 @@
 			from: timestampFromDate(from),
 			to: timestampFromDate(to),
 			queryText: filters.text,
-			tagFilters: filters.toProto()
+			tagFilters: filters.toProto(),
+			kinds: filters.kindsProto()
 		};
 
 		let cancelled = false;
@@ -104,8 +95,7 @@
 				metrics = res.metrics;
 				statements = res.statements.map((s) => ({
 					id: s.id.toString(),
-					query: s.query,
-					short: truncate(s.query, 96),
+					query: s.preview,
 					usr: s.userName,
 					meanMs: s.avgExecTime,
 					calls: Number(s.calls),
@@ -258,10 +248,10 @@
 								<span class="mt-[7px] h-[7px] w-[7px] flex-none rounded-full" style:background={q.sev}></span>
 								<div class="min-w-0 flex-1">
 									<code
-										onmouseenter={(e) => sql.show(q.query, e)}
+										onmouseenter={(e) => sql.showLazy(BigInt(q.id), e)}
 										onmouseleave={sql.hide}
 										class="inline-block max-w-full cursor-default overflow-hidden align-top font-mono text-[12.5px] leading-[20px] text-ellipsis whitespace-nowrap text-ink transition-colors hover:text-command"
-										>{q.short}</code
+										>{q.query}</code
 									>
 									{#if q.tags.length > 0}
 										<div class="mt-[3px] flex flex-wrap gap-[5px]">
@@ -301,7 +291,7 @@
 	{:else if error}
 		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
 	{:else if rows.length === 0}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">No statements for this filter</div>
+		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">No statements found</div>
 	{/if}
 </div>
 

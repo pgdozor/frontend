@@ -108,21 +108,20 @@
 
 	type EventGroup = {
 		query: string;
-		statementId: bigint;
 		queryTags: Record<string, string>;
 		events: TransactionEvent[];
 	};
 
-	// Consecutive events on the same statement share one query header; idle/aborted
+	// Consecutive events running the same query share one query header; idle/aborted
 	// stretches carry no query and group under a "no query running" header.
 	function groupEvents(events: TransactionEvent[]): EventGroup[] {
 		const groups: EventGroup[] = [];
 		for (const e of events) {
 			const last = groups[groups.length - 1];
-			if (last && last.statementId === e.statementId && last.query === e.query) {
+			if (last && last.query === e.query) {
 				last.events.push(e);
 			} else {
-				groups.push({ query: e.query, statementId: e.statementId, queryTags: e.queryTags, events: [e] });
+				groups.push({ query: e.query, queryTags: e.queryTags, events: [e] });
 			}
 		}
 		return groups;
@@ -175,22 +174,12 @@
 							<div class="mt-[16px] first:mt-0">
 								{#if g.query}
 									<div class="leading-[18px]">
-										{#if g.statementId !== 0n}
-											<a
-												href="/queries/{g.statementId}"
-												onmouseenter={(ev) => sql.show(g.query, ev)}
-												onmouseleave={sql.hide}
-												class="inline-block max-w-full truncate align-top font-mono text-[12px] font-medium text-command hover:underline"
-												>{g.query} ↗</a
-											>
-										{:else}
-											<code
-												onmouseenter={(ev) => sql.show(g.query, ev)}
-												onmouseleave={sql.hide}
-												class="inline-block max-w-full truncate align-top font-mono text-[12px] text-ink/75"
-												>{g.query}</code
-											>
-										{/if}
+										<code
+											onmouseenter={(ev) => sql.show(g.query, ev)}
+											onmouseleave={sql.hide}
+											class="inline-block max-w-full truncate align-top font-mono text-[12px] text-ink/75"
+											>{g.query}</code
+										>
 										{#if Object.keys(g.queryTags).length > 0}
 											<div class="mt-[5px] flex flex-wrap gap-[5px]">
 												{#each kvTags(g.queryTags) as qtag (qtag)}

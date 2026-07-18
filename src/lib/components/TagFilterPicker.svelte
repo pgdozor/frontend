@@ -224,7 +224,7 @@
 				</button>
 			{:else}
 				<div class="px-[10px] py-[10px] font-mono text-[12px] text-ink/45">
-					{loading ? 'Loading…' : (error ?? (keyRows.length > 0 ? 'No matching tag keys' : 'No tags in this window'))}
+					{loading ? 'Loading…' : (error ?? (keyRows.length > 0 ? 'No matching tag keys' : 'No tags found'))}
 				</div>
 			{/each}
 		</div>
