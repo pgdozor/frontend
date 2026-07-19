@@ -4,7 +4,9 @@
 	import { timestampFromDate, timestampDate } from '@bufbuild/protobuf/wkt';
 	import type {
 		QueryStatementDetailResponse,
-		StatementMetric
+		StatementMetrics,
+		StatementMetric,
+		StatementSample
 	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 	import { statementClient } from '$lib/connect';
 	import { ctx, scopeLock } from '$lib/state.svelte';
@@ -19,30 +21,54 @@
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
 	import Tag from '$lib/components/Tag.svelte';
 
+	type SampleRow = {
+		id: string;
+		ts: string;
+		statement: string;
+		short: string;
+		tags: string[];
+		hasPlan: boolean;
+		durFmt: string;
+		sev: string;
+	};
+
+	const PAGE_SIZE = 50;
+
 	let detail = $state<QueryStatementDetailResponse | undefined>(undefined);
+	let metaLoading = $state(true);
+	let metaError = $state<string | null>(null);
+
+	let metrics = $state<StatementMetrics | undefined>(undefined);
 	let chartRange = $state<{ from: Date; to: Date } | null>(null);
-	let loading = $state(true);
-	let error = $state<string | null>(null);
+	let chartLoading = $state(true);
+	let chartError = $state<string | null>(null);
+
+	let samples = $state<SampleRow[]>([]);
+	let hasMore = $state(false);
+	let samplesLoading = $state(true);
+	let loadingMore = $state(false);
+	let samplesError = $state<string | null>(null);
 
 	const sql = new SqlPopoverState();
 
 	const id = $derived(page.params.id ?? '');
+	const validId = $derived(/^\d+$/.test(id));
 
+	let metaGen = 0;
 	$effect(() => {
 		const statementId = id;
 		const { from, to } = ctx.timeRange();
-		chartRange = { from, to };
+		const gen = ++metaGen;
 
-		if (!/^\d+$/.test(statementId)) {
-			error = 'Invalid query id';
+		if (!validId) {
+			metaError = 'Invalid query id';
 			detail = undefined;
-			loading = false;
+			metaLoading = false;
 			return;
 		}
 
-		let cancelled = false;
-		loading = true;
-		error = null;
+		metaLoading = true;
+		metaError = null;
 
 		statementClient
 			.queryStatementDetail({
@@ -51,22 +77,127 @@
 				to: timestampFromDate(to)
 			})
 			.then((res) => {
-				if (cancelled) return;
-				detail = res;
+				if (gen === metaGen) detail = res;
 			})
 			.catch((e: unknown) => {
-				if (cancelled) return;
-				error = errMsg(e);
+				if (gen !== metaGen) return;
+				metaError = errMsg(e);
 				detail = undefined;
 			})
 			.finally(() => {
-				if (!cancelled) loading = false;
+				if (gen === metaGen) metaLoading = false;
 			});
-
-		return () => {
-			cancelled = true;
-		};
 	});
+
+	let chartGen = 0;
+	$effect(() => {
+		const statementId = id;
+		const { from, to } = ctx.timeRange();
+		chartRange = { from, to };
+		const gen = ++chartGen;
+
+		if (!validId) {
+			chartError = 'Invalid query id';
+			metrics = undefined;
+			chartLoading = false;
+			return;
+		}
+
+		chartLoading = true;
+		chartError = null;
+
+		statementClient
+			.queryStatementDetailMetrics({
+				id: BigInt(statementId),
+				from: timestampFromDate(from),
+				to: timestampFromDate(to)
+			})
+			.then((res) => {
+				if (gen === chartGen) metrics = res.metrics;
+			})
+			.catch((e: unknown) => {
+				if (gen !== chartGen) return;
+				chartError = errMsg(e);
+				metrics = undefined;
+			})
+			.finally(() => {
+				if (gen === chartGen) chartLoading = false;
+			});
+	});
+
+	function sampleRequest(offset: number) {
+		const { from, to } = ctx.timeRange();
+		return {
+			id: BigInt(id),
+			from: timestampFromDate(from),
+			to: timestampFromDate(to),
+			limit: PAGE_SIZE,
+			offset
+		};
+	}
+
+	function toSampleRow(s: StatementSample): SampleRow {
+		return {
+			id: s.id.toString(),
+			ts: s.occurredAt ? fmtTs(timestampDate(s.occurredAt)) : '—',
+			statement: s.query,
+			short: truncate(s.query, 120),
+			tags: kvTags(s.tags),
+			hasPlan: s.hasPlan,
+			durFmt: fmtDuration(s.durationMs),
+			sev: sevByDuration(s.durationMs)
+		};
+	}
+
+	let samplesGen = 0;
+	$effect(() => {
+		const request = validId ? sampleRequest(0) : null;
+		const gen = ++samplesGen;
+
+		if (!request) {
+			samplesError = 'Invalid query id';
+			samples = [];
+			hasMore = false;
+			samplesLoading = false;
+			return;
+		}
+
+		samplesLoading = true;
+		samplesError = null;
+
+		statementClient
+			.queryStatementSamples(request)
+			.then((res) => {
+				if (gen !== samplesGen) return;
+				samples = res.samples.map(toSampleRow);
+				hasMore = res.hasMore;
+			})
+			.catch((e: unknown) => {
+				if (gen !== samplesGen) return;
+				samplesError = errMsg(e);
+				samples = [];
+				hasMore = false;
+			})
+			.finally(() => {
+				if (gen === samplesGen) samplesLoading = false;
+			});
+	});
+
+	async function loadMore() {
+		if (loadingMore || samplesLoading || !hasMore) return;
+		const gen = samplesGen;
+		loadingMore = true;
+		try {
+			const res = await statementClient.queryStatementSamples(sampleRequest(samples.length));
+			if (gen !== samplesGen) return;
+			samples = [...samples, ...res.samples.map(toSampleRow)];
+			hasMore = res.hasMore;
+		} catch (e: unknown) {
+			if (gen === samplesGen) samplesError = errMsg(e);
+		} finally {
+			loadingMore = false;
+		}
+	}
 
 	$effect(() => {
 		if (!detail) return;
@@ -95,25 +226,12 @@
 		return (m?.series ?? []).filter((p) => p.at != null).map((p) => ({ at: timestampDate(p.at!), value: p.value }));
 	}
 
-	const bucketMs = $derived(Number(detail?.metrics?.bucketMs ?? 0n));
-	const callsPoints = $derived(toPoints(detail?.metrics?.calls));
+	const bucketMs = $derived(Number(metrics?.bucketMs ?? 0n));
+	const callsPoints = $derived(toPoints(metrics?.calls));
 	const timing = $derived([
-		{ label: 'avg total', color: C.command, points: toPoints(detail?.metrics?.avg) },
-		{ label: 'avg IO', color: C.teal, points: toPoints(detail?.metrics?.avgIo) }
+		{ label: 'avg total', color: C.command, points: toPoints(metrics?.avg) },
+		{ label: 'avg IO', color: C.teal, points: toPoints(metrics?.avgIo) }
 	]);
-
-	const samples = $derived(
-		(detail?.samples ?? []).map((s) => ({
-			id: s.id.toString(),
-			ts: s.occurredAt ? fmtTs(timestampDate(s.occurredAt)) : '—',
-			statement: s.query,
-			short: truncate(s.query, 120),
-			tags: kvTags(s.tags),
-			hasPlan: s.hasPlan,
-			durFmt: fmtDuration(s.durationMs),
-			sev: sevByDuration(s.durationMs)
-		}))
-	);
 
 	const thBase =
 		'border-b border-ink/14 px-[18px] py-[9px] font-condensed text-[11px] font-semibold tracking-[0.7px] text-ink/55 uppercase';
@@ -141,7 +259,7 @@
 			>
 		</div>
 	{:else}
-		<div class="font-mono text-[12.5px] text-paper/50">{loading ? 'Loading…' : (error ?? '')}</div>
+		<div class="font-mono text-[12.5px] text-paper/50">{metaLoading ? 'Loading…' : (metaError ?? '')}</div>
 	{/if}
 </div>
 
@@ -166,7 +284,7 @@
 			/>
 		{:else}
 			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
-				{loading ? 'Loading…' : (error ?? 'No data')}
+				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
 			</div>
 		{/if}
 	</ChartPanel>
@@ -179,7 +297,7 @@
 			<LineChart series={timing} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
 		{:else}
 			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
-				{loading ? 'Loading…' : (error ?? 'No data')}
+				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
 			</div>
 		{/if}
 	</ChartPanel>
@@ -252,13 +370,23 @@
 		</table>
 	</div>
 
-	{#if loading}
+	{#if samplesLoading}
 		<div class="px-[18px] py-[24px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
-	{:else if error}
-		<div class="px-[18px] py-[24px] text-center font-mono text-[12px] text-danger">{error}</div>
+	{:else if samplesError}
+		<div class="px-[18px] py-[24px] text-center font-mono text-[12px] text-danger">{samplesError}</div>
 	{:else if samples.length === 0}
 		<div class="px-[18px] py-[24px] text-center font-mono text-[12px] text-ink/45">
 			No samples captured in this range
+		</div>
+	{:else if hasMore}
+		<div class="border-t border-ink/8 p-[12px] text-center">
+			<button
+				onclick={loadMore}
+				disabled={loadingMore}
+				class="cursor-pointer border border-ink/16 px-[18px] py-[8px] font-condensed text-[11.5px] font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
+			>
+				{loadingMore ? 'Loading…' : 'Load more'}
+			</button>
 		</div>
 	{/if}
 </div>

@@ -269,9 +269,7 @@
 <div class="border border-ink/16 bg-card">
 	<header class="px-[16px] pt-[14px] pb-0">
 		<h2 class="font-condensed text-[12px] leading-[1.15] font-bold tracking-[0.8px] text-ink/70 uppercase">Queries</h2>
-		<p class="mt-[2px] text-[11.5px] leading-[1.2] text-ink/45">
-			Grouped by shape, with the most time-consuming first
-		</p>
+		<p class="mt-[2px] text-[11.5px] leading-[1.2] text-ink/45">Grouped by shape, with the most time-consuming first</p>
 	</header>
 	<TagFilterBar bind:searchText={search} tags={filters} />
 
