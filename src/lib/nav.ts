@@ -21,7 +21,7 @@ export const adminItems: NavItem[] = [
 export const screenMeta: Record<string, { title: string; description: string }> = {
 	'slow-queries': {
 		title: 'QUERIES',
-		description: 'Queries grouped by shape — how often each ran and how long it took'
+		description: 'How often queries ran, how long they took, and how each one compares'
 	},
 	'query-detail': {
 		title: 'QUERY DETAIL',

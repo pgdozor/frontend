@@ -13,7 +13,7 @@
 </script>
 
 <section class="border border-ink/16 bg-card px-[14px] pt-[14px] pb-[12px]">
-	<header class="mb-[20px]">
+	<header class="mb-[14px]">
 		<h2 class="font-condensed text-[12px] leading-[1.15] font-bold tracking-[0.8px] text-ink/70 uppercase">
 			{title}
 		</h2>
