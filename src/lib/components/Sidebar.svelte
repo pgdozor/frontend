@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { clsx } from 'clsx';
 	import { LogOutIcon, XIcon } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import { afterNavigate, goto } from '$app/navigation';
@@ -10,9 +11,10 @@
 	const visibleNav = $derived(session.isSuperAdmin ? navItems : navItems.filter((i) => i.key === 'slow-queries'));
 
 	const navClass = (active: boolean): string =>
-		`flex flex-col gap-[2px] border-l-[3px] py-[9px] pr-[12px] pl-[13px] transition-colors ${
+		clsx(
+			'flex flex-col gap-[2px] border-l-[3px] py-[9px] pr-[12px] pl-[13px] transition-colors',
 			active ? 'border-command bg-command/10 text-ink' : 'border-transparent text-ink/55 hover:bg-ink/4'
-		}`;
+		);
 
 	afterNavigate(() => sidebar.closeDrawer());
 

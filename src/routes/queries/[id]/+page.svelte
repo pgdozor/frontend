@@ -17,6 +17,7 @@
 	import CallsChart from '$lib/components/CallsChart.svelte';
 	import ChartPanel from '$lib/components/ChartPanel.svelte';
 	import LineChart from '$lib/components/LineChart.svelte';
+	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
 	import Tag from '$lib/components/Tag.svelte';
@@ -242,49 +243,46 @@
 	]);
 
 	const thBase =
-		'border-b border-ink/14 px-[18px] py-[9px] font-condensed text-[11px] font-semibold tracking-[0.7px] text-ink/55 uppercase';
+		'border-b border-ink/14 px-5 py-2.5 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/55 uppercase';
 </script>
 
 <a
 	href="/queries"
-	class="mb-[18px] inline-flex items-center gap-[7px] font-mono text-[12px] font-semibold text-command hover:underline"
+	class="mb-5 inline-flex items-center gap-2 font-mono text-sm font-semibold text-command hover:underline"
 >
-	<ArrowLeftIcon class="size-[14px]" /><span>Back</span>
+	<ArrowLeftIcon class="size-3.5" /><span>Back</span>
 </a>
 
-<div class="border border-ink/16 bg-card px-[16px] pt-[14px] pb-[16px]">
-	<header class="flex items-start justify-between gap-[12px]">
+<div class="border border-ink/16 bg-card px-4 pt-3.5 pb-4">
+	<header class="flex items-start justify-between gap-3">
 		<div class="min-w-0">
-			<h2 class="font-condensed text-[12px] leading-[1.15] font-bold tracking-[0.8px] text-ink/70 uppercase">Query</h2>
-			<p class="mt-[2px] text-[11.5px] leading-[1.2] text-ink/45">
-				The normalized query — each captured run below fills in real values
-			</p>
+			<SectionHeader title="Query" description="The normalized query — each captured run below fills in real values" />
 		</div>
 		{#if detail}
 			<button
 				type="button"
 				onclick={() => (prettified = !prettified)}
-				class="inline-flex flex-none cursor-pointer items-center gap-[5px] border px-[10px] py-[4px] font-condensed text-[10.5px] font-semibold tracking-[0.7px] uppercase transition-colors {prettified
+				class="inline-flex flex-none cursor-pointer items-center gap-1.5 border px-2.5 py-1 font-condensed text-2xs font-semibold tracking-[0.7px] uppercase transition-colors {prettified
 					? 'border-command bg-command text-paper'
 					: 'border-ink/20 text-ink/60 hover:border-ink/40 hover:text-ink'}"
 			>
-				<SparklesIcon class="size-[13px]" /><span>Format</span>
+				<SparklesIcon class="size-3.5" /><span>Format</span>
 			</button>
 		{/if}
 	</header>
 
-	<div class="mt-[14px] border border-ink/16 bg-ink px-[16px] py-[14px]">
+	<div class="mt-3.5 border border-ink/16 bg-ink px-4 py-3.5">
 		{#if detail}
-			<div class="font-mono text-[12.5px] leading-[1.7] break-words whitespace-pre-wrap text-paper">
+			<div class="font-mono text-sm leading-[1.7] break-words whitespace-pre-wrap text-paper">
 				{queryText}
 			</div>
 		{:else}
-			<div class="font-mono text-[12.5px] text-paper/50">{metaLoading ? 'Loading…' : (metaError ?? '')}</div>
+			<div class="font-mono text-sm text-paper/50">{metaLoading ? 'Loading…' : (metaError ?? '')}</div>
 		{/if}
 	</div>
 
 	{#if tags.length > 0}
-		<div class="mt-[12px] flex flex-wrap gap-[6px]">
+		<div class="mt-3 flex flex-wrap gap-1.5">
 			{#each tags as t (t)}
 				<Tag text={t} size="md" />
 			{/each}
@@ -292,7 +290,7 @@
 	{/if}
 </div>
 
-<div class="mt-[16px] grid gap-[16px]">
+<div class="mt-4 grid gap-4">
 	<ChartPanel title="Query volume over time" description="How many times this query ran">
 		{#if chartRange && callsPoints.length > 0}
 			<CallsChart
@@ -304,7 +302,7 @@
 				label="calls"
 			/>
 		{:else}
-			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
+			<div class="flex h-[15rem] items-center justify-center font-mono text-sm text-ink/40">
 				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
 			</div>
 		{/if}
@@ -317,31 +315,29 @@
 		{#if chartRange && timing.some((s) => s.points.length > 0)}
 			<LineChart series={timing} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
 		{:else}
-			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
+			<div class="flex h-[15rem] items-center justify-center font-mono text-sm text-ink/40">
 				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
 			</div>
 		{/if}
 	</ChartPanel>
 </div>
 
-<div class="mt-[16px] border border-ink/16 bg-card">
-	<div class="border-b border-ink/14 px-[18px] py-[13px]">
-		<h2 class="font-condensed text-[12px] leading-[1.15] font-bold tracking-[0.8px] text-ink/70 uppercase">
-			Captured samples
-		</h2>
-		<p class="mt-[2px] text-[11.5px] leading-[1.2] text-ink/45">
-			Individual runs of this query — the real values each one used, and a plan when captured
-		</p>
+<div class="mt-4 border border-ink/16 bg-card">
+	<div class="border-b border-ink/14 px-5 py-3.5">
+		<SectionHeader
+			title="Captured samples"
+			description="Individual runs of this query — the real values each one used, and a plan when captured"
+		/>
 	</div>
 
 	<div class="overflow-x-auto">
-		<table class="w-full min-w-[420px] table-fixed border-collapse">
+		<table class="w-full min-w-[26.25rem] table-fixed border-collapse">
 			<thead>
 				<tr class="bg-ink/4">
-					<th class="{thBase} hidden w-[180px] text-left sm:table-cell">At</th>
+					<th class="{thBase} hidden w-[11.25rem] text-left sm:table-cell">At</th>
 					<th class="{thBase} text-left">Query</th>
-					<th class="{thBase} w-[112px] text-left">Plan</th>
-					<th class="{thBase} w-[110px] text-right">Duration</th>
+					<th class="{thBase} w-[7rem] text-left">Plan</th>
+					<th class="{thBase} w-[6.875rem] text-right">Duration</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -349,24 +345,24 @@
 					{@const extra = extraTags(s.tags)}
 					<tr class="hover:bg-ink/3">
 						<td
-							class="hidden border-b border-ink/8 px-[18px] py-[11px] align-top font-mono text-[12px] leading-[20px] whitespace-nowrap text-ink/75 sm:table-cell"
+							class="hidden border-b border-ink/8 px-5 py-3 align-top font-mono text-sm leading-[20px] whitespace-nowrap text-ink/75 sm:table-cell"
 							>{s.ts}</td
 						>
-						<td class="min-w-0 border-b border-ink/8 px-[18px] py-[11px] align-top">
+						<td class="min-w-0 border-b border-ink/8 px-5 py-3 align-top">
 							<code
 								onmouseenter={(e) => sql.showLazy(BigInt(s.id), e)}
 								onmouseleave={sql.hide}
-								class="inline-block max-w-full cursor-default overflow-hidden align-top font-mono text-[12.5px] leading-[20px] text-ellipsis whitespace-nowrap text-ink transition-colors hover:text-command"
+								class="inline-block max-w-full cursor-default overflow-hidden align-top font-mono text-sm leading-[20px] text-ellipsis whitespace-nowrap text-ink transition-colors hover:text-command"
 								>{s.short}</code
 							>
 							{#if hasBaseTags || extra.length > 0}
-								<div class="mt-[3px] flex flex-wrap items-center gap-[5px]">
+								<div class="mt-1 flex flex-wrap items-center gap-1.5">
 									{#if hasBaseTags}
 										<span
 											title="Also carries the base tags shown at the top"
-											class="inline-flex items-center gap-[3px] border border-ink/12 px-[6px] py-[1px] font-mono text-[11px] text-ink/40"
+											class="inline-flex items-center gap-1 border border-ink/12 px-1.5 py-px font-mono text-xs text-ink/40"
 										>
-											<ArrowUpIcon class="size-[10px]" />base tags
+											<ArrowUpIcon class="size-2.5" />base tags
 										</span>
 									{/if}
 									{#each extra as t (t)}
@@ -375,23 +371,23 @@
 								</div>
 							{/if}
 						</td>
-						<td class="border-b border-ink/8 px-[18px] py-[11px] align-top">
+						<td class="border-b border-ink/8 px-5 py-3 align-top">
 							{#if s.hasPlan}
 								<a
 									href="/queries/{id}/plan/{s.id}"
 									target="_blank"
 									rel="noopener"
-									class="inline-flex items-center gap-[5px] align-top font-mono text-[12px] leading-[20px] font-semibold whitespace-nowrap text-command hover:underline"
+									class="inline-flex items-center gap-1.5 align-top font-mono text-sm leading-[20px] font-semibold whitespace-nowrap text-command hover:underline"
 								>
 									<span>view plan</span>
-									<ExternalLinkIcon class="size-[11px] stroke-[2.2]" />
+									<ExternalLinkIcon class="size-3 stroke-[2.2]" />
 								</a>
 							{:else}
-								<span class="font-mono text-[12px] leading-[20px] text-ink/35">—</span>
+								<span class="font-mono text-sm leading-[20px] text-ink/35">—</span>
 							{/if}
 						</td>
 						<td
-							class="border-b border-ink/8 px-[18px] py-[11px] text-right align-top font-mono text-[13px] leading-[20px] font-semibold whitespace-nowrap"
+							class="border-b border-ink/8 px-5 py-3 text-right align-top font-mono text-md leading-[20px] font-semibold whitespace-nowrap"
 							style:color={s.sev}>{s.durFmt}</td
 						>
 					</tr>
@@ -401,19 +397,17 @@
 	</div>
 
 	{#if samplesLoading}
-		<div class="px-[18px] py-[24px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
+		<div class="px-5 py-6 text-center font-mono text-sm text-ink/45">Loading…</div>
 	{:else if samplesError}
-		<div class="px-[18px] py-[24px] text-center font-mono text-[12px] text-danger">{samplesError}</div>
+		<div class="px-5 py-6 text-center font-mono text-sm text-danger">{samplesError}</div>
 	{:else if samples.length === 0}
-		<div class="px-[18px] py-[24px] text-center font-mono text-[12px] text-ink/45">
-			No samples captured in this range
-		</div>
+		<div class="px-5 py-6 text-center font-mono text-sm text-ink/45">No samples captured in this range</div>
 	{:else if hasMore}
-		<div class="border-t border-ink/8 p-[12px] text-center">
+		<div class="border-t border-ink/8 p-3 text-center">
 			<button
 				onclick={loadMore}
 				disabled={loadingMore}
-				class="cursor-pointer border border-ink/16 px-[18px] py-[8px] font-condensed text-[11.5px] font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
+				class="cursor-pointer border border-ink/16 px-5 py-2 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
 			>
 				{loadingMore ? 'Loading…' : 'Load more'}
 			</button>

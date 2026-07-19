@@ -31,7 +31,7 @@
 
 <div>
 	<ChartLegend items={[{ label, color: fill }]} />
-	<div class="h-[240px]">
+	<div class="h-[15rem]">
 		<Chart
 			{data}
 			x={bucketCenter}
@@ -51,14 +51,14 @@
 					rule
 					ticks={4}
 					format={fmtCount}
-					tickLabelProps={{ class: 'fill-ink/45 font-mono text-[10.5px]', stroke: 'none' }}
+					tickLabelProps={{ class: 'fill-ink/45 font-mono text-2xs', stroke: 'none' }}
 				/>
 				<Axis
 					placement="bottom"
 					rule
 					ticks={6}
 					format={fmtAxisTime}
-					tickLabelProps={{ class: 'fill-ink/45 font-mono text-[10.5px]', stroke: 'none' }}
+					tickLabelProps={{ class: 'fill-ink/45 font-mono text-2xs', stroke: 'none' }}
 				/>
 				<MetricBars {data} bucketMs={model.step} {fill} />
 				<Highlight lines motion="none" />
@@ -71,10 +71,10 @@
 				xOffset={18}
 				yOffset={10}
 				variant="none"
-				class="border border-ink/16 bg-card px-[11px] py-[8px] shadow-[0_4px_16px_rgba(0,0,0,0.1)]"
+				class="border border-ink/16 bg-card px-3 py-2 shadow-[0_4px_16px_rgba(0,0,0,0.1)]"
 			>
 				{#snippet children({ data: point }: { data: MetricSeriesPoint })}
-					<div class="flex flex-col gap-[3px] font-mono text-[11.5px] leading-[1.4] whitespace-nowrap">
+					<div class="flex flex-col gap-1 font-mono text-xs leading-[1.4] whitespace-nowrap">
 						<div class="text-ink/50">{fmtBucketRange(point.at, model.step)}</div>
 						{#if point.value == null}
 							<div class="text-ink/40">No data</div>

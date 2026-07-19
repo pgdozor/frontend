@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
+	import { clsx } from 'clsx';
 	import { ArrowUpIcon, ArrowDownIcon } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -20,6 +21,7 @@
 	import CallsChart from '$lib/components/CallsChart.svelte';
 	import ChartPanel from '$lib/components/ChartPanel.svelte';
 	import LineChart from '$lib/components/LineChart.svelte';
+	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
 	import Tag from '$lib/components/Tag.svelte';
@@ -214,7 +216,7 @@
 
 	// Numeric/text cells never truncate — only the query text (the <code>) does.
 	const numCell =
-		'px-[16px] py-[11px] border-b border-ink/8 text-right align-top leading-[20px] font-mono text-[13px] text-ink whitespace-nowrap';
+		'px-4 py-3 border-b border-ink/8 text-right align-top leading-[20px] font-mono text-md text-ink whitespace-nowrap';
 
 	function open(id: string) {
 		goto(`/queries/${id}`);
@@ -234,7 +236,7 @@
 	}
 </script>
 
-<div class="mb-[22px] grid gap-[16px]">
+<div class="mb-6 grid gap-4">
 	<ChartPanel title="Query volume over time" description="How many times queries ran">
 		{#if chartRange && callsPoints.length > 0}
 			<CallsChart
@@ -246,7 +248,7 @@
 				label="calls"
 			/>
 		{:else}
-			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
+			<div class="flex h-[15rem] items-center justify-center font-mono text-sm text-ink/40">
 				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
 			</div>
 		{/if}
@@ -259,7 +261,7 @@
 		{#if chartRange && latency.some((s) => s.points.length > 0)}
 			<LineChart series={latency} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
 		{:else}
-			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
+			<div class="flex h-[15rem] items-center justify-center font-mono text-sm text-ink/40">
 				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
 			</div>
 		{/if}
@@ -267,32 +269,33 @@
 </div>
 
 <div class="border border-ink/16 bg-card">
-	<header class="px-[16px] pt-[14px] pb-0">
-		<h2 class="font-condensed text-[12px] leading-[1.15] font-bold tracking-[0.8px] text-ink/70 uppercase">Queries</h2>
-		<p class="mt-[2px] text-[11.5px] leading-[1.2] text-ink/45">Grouped by shape, with the most time-consuming first</p>
+	<header class="px-4 pt-3.5 pb-0">
+		<SectionHeader title="Queries" description="Grouped by shape, with the most time-consuming first" />
 	</header>
 	<TagFilterBar bind:searchText={search} tags={filters} />
 
 	<div class="overflow-x-auto">
-		<table class="w-full min-w-[480px] table-fixed border-collapse font-sans">
+		<table class="w-full min-w-[30rem] table-fixed border-collapse font-sans">
 			<thead>
 				<tr class="bg-ink/4">
 					{#each headDef as h (h.key)}
 						<th
 							onclick={() => sortBy(h.key)}
 							style:width={h.width}
-							class="cursor-pointer border-b border-ink/14 py-[10px] pr-[16px] font-condensed text-[11.5px] font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase select-none {h.key ===
-							'query'
-								? 'pl-[33px]'
-								: 'pl-[16px]'} {h.align === 'right' ? 'text-right' : 'text-left'} {h.hide ?? ''}"
+							class={clsx(
+								'cursor-pointer border-b border-ink/14 py-2.5 pr-4 font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase select-none',
+								h.key === 'query' ? 'pl-8' : 'pl-4',
+								h.align === 'right' ? 'text-right' : 'text-left',
+								h.hide
+							)}
 						>
-							<span class="inline-flex items-center gap-[4px] align-middle">
+							<span class="inline-flex items-center gap-1 align-middle">
 								<span>{h.label}</span>
 								{#if sort.col === h.key}
 									{#if sort.dir === 'asc'}
-										<ArrowUpIcon class="size-[12px] flex-none text-command" />
+										<ArrowUpIcon class="size-3 flex-none text-command" />
 									{:else}
-										<ArrowDownIcon class="size-[12px] flex-none text-command" />
+										<ArrowDownIcon class="size-3 flex-none text-command" />
 									{/if}
 								{/if}
 							</span>
@@ -309,18 +312,18 @@
 						tabindex="0"
 						class="cursor-pointer transition-colors hover:bg-command/6"
 					>
-						<td class="border-b border-ink/8 px-[16px] py-[11px] align-top">
-							<div class="flex items-start gap-[10px]">
-								<span class="mt-[7px] h-[7px] w-[7px] flex-none rounded-full" style:background={q.sev}></span>
+						<td class="border-b border-ink/8 px-4 py-3 align-top">
+							<div class="flex items-start gap-2.5">
+								<span class="mt-2 h-2 w-2 flex-none rounded-full" style:background={q.sev}></span>
 								<div class="min-w-0 flex-1">
 									<code
 										onmouseenter={(e) => sql.showLazy(BigInt(q.id), e)}
 										onmouseleave={sql.hide}
-										class="inline-block max-w-full cursor-default overflow-hidden align-top font-mono text-[12.5px] leading-[20px] text-ellipsis whitespace-nowrap text-ink transition-colors hover:text-command"
+										class="inline-block max-w-full cursor-default overflow-hidden align-top font-mono text-sm leading-[20px] text-ellipsis whitespace-nowrap text-ink transition-colors hover:text-command"
 										>{q.query}</code
 									>
 									{#if q.tags.length > 0}
-										<div class="mt-[3px] flex flex-wrap gap-[5px]">
+										<div class="mt-1 flex flex-wrap gap-1.5">
 											{#each q.tags as t (t)}
 												<Tag text={t} title="Filter by {t}" onclick={(e) => filterByTag(e, t)} />
 											{/each}
@@ -331,12 +334,12 @@
 						</td>
 						<td
 							title={q.usr}
-							class="hidden border-b border-ink/8 px-[16px] py-[11px] align-top font-mono text-[13px] leading-[20px] text-ink sm:table-cell"
+							class="hidden border-b border-ink/8 px-4 py-3 align-top font-mono text-md leading-[20px] text-ink sm:table-cell"
 						>
 							<span class="block truncate">{q.usr}</span>
 						</td>
 						<td
-							class="border-b border-ink/8 px-[16px] py-[11px] text-right align-top leading-[20px] font-mono text-[13px] font-semibold whitespace-nowrap"
+							class="border-b border-ink/8 px-4 py-3 text-right align-top leading-[20px] font-mono text-md font-semibold whitespace-nowrap"
 							style:color={q.sev}
 						>
 							{fmtDuration(q.meanMs)}
@@ -352,17 +355,17 @@
 	</div>
 
 	{#if tableLoading}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
+		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
 	{:else if tableError}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-danger">{tableError}</div>
+		<div class="px-4 py-7 text-center font-mono text-sm text-danger">{tableError}</div>
 	{:else if rows.length === 0}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">No statements found</div>
+		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">No statements found</div>
 	{:else if hasMore}
-		<div class="border-t border-ink/8 p-[12px] text-center">
+		<div class="border-t border-ink/8 p-3 text-center">
 			<button
 				onclick={loadMore}
 				disabled={loadingMore}
-				class="cursor-pointer border border-ink/16 px-[18px] py-[8px] font-condensed text-[11.5px] font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
+				class="cursor-pointer border border-ink/16 px-5 py-2 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
 			>
 				{loadingMore ? 'Loading…' : 'Load more'}
 			</button>

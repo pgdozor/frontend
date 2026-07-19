@@ -181,7 +181,7 @@
 		}
 	}
 
-	const rowCls = 'flex w-full cursor-pointer items-center gap-[9px] px-[10px] py-[8px] font-mono text-[12px] text-ink';
+	const rowCls = 'flex w-full cursor-pointer items-center gap-2.5 px-2.5 py-2 font-mono text-sm text-ink';
 </script>
 
 <svelte:document
@@ -196,8 +196,8 @@
 	class="absolute top-[calc(100%+6px)] left-0 z-[2] w-[min(320px,calc(100vw-32px))] border border-ink/20 bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
 >
 	{#if step === 'key'}
-		<div class="flex items-center gap-[8px] border-b border-ink/12 px-[10px] py-[8px]">
-			<SearchIcon class="size-[13px] flex-none text-ink/40" />
+		<div class="flex items-center gap-2 border-b border-ink/12 px-2.5 py-2">
+			<SearchIcon class="size-3.5 flex-none text-ink/40" />
 			<input
 				bind:this={searchInput}
 				bind:value={keySearch}
@@ -206,10 +206,10 @@
 				placeholder="Find a tag key…"
 				spellcheck="false"
 				aria-label="Find a tag key"
-				class="w-full border-none bg-transparent font-mono text-[12px] text-ink outline-none"
+				class="w-full border-none bg-transparent font-mono text-sm text-ink outline-none"
 			/>
 		</div>
-		<div class="max-h-[280px] overflow-y-auto p-[5px]" role="listbox" aria-label="Tag keys" tabindex="-1">
+		<div class="max-h-[17.5rem] overflow-y-auto p-1.5" role="listbox" aria-label="Tag keys" tabindex="-1">
 			{#each visibleKeys as k, i (k.key)}
 				<button
 					type="button"
@@ -220,25 +220,25 @@
 					class="{rowCls} {i === highlight ? 'bg-ink/5' : ''}"
 				>
 					<span class="flex-1 text-left">{k.key}</span>
-					<span class="text-[11px] text-ink/45">{k.valueCount}</span>
+					<span class="text-xs text-ink/45">{k.valueCount}</span>
 				</button>
 			{:else}
-				<div class="px-[10px] py-[10px] font-mono text-[12px] text-ink/45">
+				<div class="px-2.5 py-2.5 font-mono text-sm text-ink/45">
 					{loading ? 'Loading…' : (error ?? (keyRows.length > 0 ? 'No matching tag keys' : 'No tags found'))}
 				</div>
 			{/each}
 		</div>
 	{:else}
-		<div class="flex items-center gap-[8px] border-b border-ink/12 px-[8px] py-[7px]">
+		<div class="flex items-center gap-2 border-b border-ink/12 px-2 py-2">
 			<button
 				type="button"
 				onclick={back}
 				aria-label="Back to tag keys"
-				class="cursor-pointer p-[3px] text-ink/45 hover:text-ink"
+				class="cursor-pointer p-1 text-ink/45 hover:text-ink"
 			>
-				<ChevronLeftIcon class="size-[14px]" />
+				<ChevronLeftIcon class="size-3.5" />
 			</button>
-			<span class="flex-1 font-mono text-[12px] font-semibold text-ink">{key}</span>
+			<span class="flex-1 font-mono text-sm font-semibold text-ink">{key}</span>
 			<div class="flex border border-ink/20">
 				{#each [{ v: 'eq', l: '=' }, { v: 'ne', l: '!=' }] as const as o (o.v)}
 					<button
@@ -246,7 +246,7 @@
 						disabled={anyValue}
 						onclick={() => (op = o.v)}
 						title={anyValue ? 'Any value has no negated form' : `Match ${o.l}`}
-						class="px-[9px] py-[3px] font-mono text-[11.5px] {anyValue
+						class="px-2.5 py-1 font-mono text-xs {anyValue
 							? 'cursor-not-allowed text-ink/25'
 							: op === o.v
 								? 'cursor-pointer bg-command text-paper'
@@ -258,8 +258,8 @@
 			</div>
 		</div>
 
-		<div class="flex items-center gap-[8px] border-b border-ink/12 px-[10px] py-[8px]">
-			<SearchIcon class="size-[13px] flex-none text-ink/40" />
+		<div class="flex items-center gap-2 border-b border-ink/12 px-2.5 py-2">
+			<SearchIcon class="size-3.5 flex-none text-ink/40" />
 			<input
 				bind:this={searchInput}
 				bind:value={valueSearch}
@@ -268,11 +268,11 @@
 				placeholder="Find a value…"
 				spellcheck="false"
 				aria-label="Find a tag value"
-				class="w-full border-none bg-transparent font-mono text-[12px] text-ink outline-none"
+				class="w-full border-none bg-transparent font-mono text-sm text-ink outline-none"
 			/>
 		</div>
 
-		<div class="max-h-[240px] overflow-y-auto p-[5px]" role="listbox" aria-label="Tag values" tabindex="-1">
+		<div class="max-h-[15rem] overflow-y-auto p-1.5" role="listbox" aria-label="Tag values" tabindex="-1">
 			<button
 				type="button"
 				role="option"
@@ -284,8 +284,8 @@
 				onmouseenter={() => (highlight = 0)}
 				class="{rowCls} {highlight === 0 ? 'bg-ink/5' : ''}"
 			>
-				<span class="flex size-[13px] flex-none items-center justify-center border border-ink/30">
-					{#if anyValue}<CheckIcon class="size-[11px] text-command" />{/if}
+				<span class="flex size-3.5 flex-none items-center justify-center border border-ink/30">
+					{#if anyValue}<CheckIcon class="size-3 text-command" />{/if}
 				</span>
 				<span class="flex-1 text-left text-ink/70 italic">Any value</span>
 			</button>
@@ -299,25 +299,25 @@
 					onmouseenter={() => (highlight = i + 1)}
 					class="{rowCls} {highlight === i + 1 ? 'bg-ink/5' : ''} {anyValue ? 'opacity-40' : ''}"
 				>
-					<span class="flex size-[13px] flex-none items-center justify-center border border-ink/30">
-						{#if picked.includes(v.value)}<CheckIcon class="size-[11px] text-command" />{/if}
+					<span class="flex size-3.5 flex-none items-center justify-center border border-ink/30">
+						{#if picked.includes(v.value)}<CheckIcon class="size-3 text-command" />{/if}
 					</span>
 					<span class="flex-1 truncate text-left">{v.value}</span>
-					<span class="text-[11px] text-ink/45">{v.statementCount}</span>
+					<span class="text-xs text-ink/45">{v.statementCount}</span>
 				</button>
 			{:else}
-				<div class="px-[10px] py-[10px] font-mono text-[12px] text-ink/45">
+				<div class="px-2.5 py-2.5 font-mono text-sm text-ink/45">
 					{loading ? 'Loading…' : (error ?? (valueRows.length > 0 ? 'No matching values' : 'No values in this window'))}
 				</div>
 			{/each}
 		</div>
 
-		<div class="border-t border-ink/12 p-[8px]">
+		<div class="border-t border-ink/12 p-2">
 			<button
 				type="button"
 				onclick={apply}
 				disabled={!canApply}
-				class="w-full py-[8px] text-center font-condensed text-[13px] font-semibold tracking-[0.6px] uppercase {canApply
+				class="w-full py-2 text-center font-condensed text-md font-semibold tracking-[0.6px] uppercase {canApply
 					? 'cursor-pointer bg-command text-paper hover:bg-danger'
 					: 'cursor-not-allowed bg-ink/10 text-ink/35'}"
 			>

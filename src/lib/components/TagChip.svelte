@@ -22,20 +22,20 @@
 		type="button"
 		onclick={onedit}
 		title={describeTagFilter(filter)}
-		class="flex cursor-pointer items-center gap-[5px] py-[4px] pr-[6px] pl-[8px] font-mono text-[12.5px] whitespace-nowrap"
+		class="flex cursor-pointer items-center gap-1.5 py-1 pr-1.5 pl-2 font-mono text-sm whitespace-nowrap"
 	>
 		<span class="text-ink/60">{filter.key}</span>
 		<span class={filter.op === 'ne' ? 'font-semibold text-danger' : 'font-semibold text-command'}>{opLabel}</span>
 		{#if filter.op !== 'exists'}
-			<span class="max-w-[220px] truncate text-ink">{filter.values.join(' or ')}</span>
+			<span class="max-w-[13.75rem] truncate text-ink">{filter.values.join(' or ')}</span>
 		{/if}
 	</button>
 	<button
 		type="button"
 		onclick={onremove}
 		aria-label="Remove {describeTagFilter(filter)} filter"
-		class="cursor-pointer border-l border-ink/12 px-[5px] py-[5px] text-ink/40 hover:bg-ink/5 hover:text-danger"
+		class="cursor-pointer border-l border-ink/12 px-1.5 py-1.5 text-ink/40 hover:bg-ink/5 hover:text-danger"
 	>
-		<XIcon class="size-[12px]" />
+		<XIcon class="size-3" />
 	</button>
 </span>

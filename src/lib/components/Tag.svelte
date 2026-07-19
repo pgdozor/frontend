@@ -13,7 +13,7 @@
 
 	const cls = $derived(
 		`border border-steel/28 bg-steel/10 font-mono whitespace-nowrap text-steel ${
-			size === 'md' ? 'px-[9px] py-[3px] text-[11.5px]' : 'px-[6px] py-px text-[10px]'
+			size === 'md' ? 'px-2.5 py-1 text-xs' : 'px-1.5 py-px text-2xs'
 		}`
 	);
 </script>

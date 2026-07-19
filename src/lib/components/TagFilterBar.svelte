@@ -31,7 +31,7 @@
 	}
 </script>
 
-<div class="flex flex-wrap items-center gap-[8px] border-b border-ink/14 p-[14px]">
+<div class="flex flex-wrap items-center gap-2 border-b border-ink/14 p-3.5">
 	{#each tags.chips as filter, i (filter.key + filter.op + filter.values.join(','))}
 		<TagChip
 			{filter}
@@ -59,9 +59,9 @@
 			onclick={() => (picker = picker?.mode === 'add' ? null : { mode: 'add' })}
 			aria-haspopup="listbox"
 			aria-expanded={picker !== null}
-			class="relative z-[2] flex cursor-pointer items-center gap-[5px] border border-dashed border-ink/30 px-[9px] py-[4px] font-mono text-[12.5px] text-ink/60 hover:border-command/50 hover:text-command"
+			class="relative z-[2] flex cursor-pointer items-center gap-1.5 border border-dashed border-ink/30 px-2.5 py-1 font-mono text-sm text-ink/60 hover:border-command/50 hover:text-command"
 		>
-			<PlusIcon class="size-[12px]" />
+			<PlusIcon class="size-3" />
 			Tag
 		</button>
 
@@ -79,7 +79,7 @@
 				tags.clear();
 				picker = null;
 			}}
-			class="translate-y-[1px] cursor-pointer px-[6px] py-[4px] font-mono text-[11px] text-ink/45 hover:text-danger"
+			class="translate-y-[1px] cursor-pointer px-1.5 py-1 font-mono text-xs text-ink/45 hover:text-danger"
 		>
 			Clear all
 		</button>
@@ -87,17 +87,17 @@
 
 	<div class="hidden md:block md:flex-1"></div>
 
-	<div class="flex w-full flex-wrap items-center gap-[12px] md:w-auto md:flex-nowrap md:gap-[14px]">
-		<div class="flex items-center gap-[14px]">
+	<div class="flex w-full flex-wrap items-center gap-3 md:w-auto md:flex-nowrap md:gap-3.5">
+		<div class="flex items-center gap-3.5">
 			{#each kindOptions as opt (opt.key)}
 				<label
-					class="flex cursor-pointer items-center gap-[7px] font-condensed text-[11px] leading-none font-semibold tracking-[0.5px] text-ink/70 uppercase select-none hover:text-ink"
+					class="flex cursor-pointer items-center gap-2 font-condensed text-xs leading-none font-semibold tracking-[0.5px] text-ink/70 uppercase select-none hover:text-ink"
 				>
 					<input
 						type="checkbox"
 						checked={tags.kinds[opt.key]}
 						onchange={(e) => (tags.kinds[opt.key] = e.currentTarget.checked)}
-						class="m-0 block size-[13px] shrink-0 cursor-pointer accent-command"
+						class="m-0 block size-3.5 shrink-0 cursor-pointer accent-command"
 					/>
 					<span class="translate-y-[1px] leading-none">{opt.label}</span>
 				</label>
@@ -105,16 +105,16 @@
 		</div>
 
 		<div
-			class="flex w-full min-w-[160px] flex-1 items-center gap-[8px] border border-ink/20 bg-paper px-[9px] py-[4px] md:w-[220px] md:flex-none"
+			class="flex w-full min-w-[10rem] flex-1 items-center gap-2 border border-ink/20 bg-paper px-2.5 py-1 md:w-[13.75rem] md:flex-none"
 		>
-			<SearchIcon class="size-[13px] flex-none text-ink/40" />
+			<SearchIcon class="size-3.5 flex-none text-ink/40" />
 			<input
 				type="text"
 				bind:value={searchText}
 				placeholder="Search…"
 				spellcheck="false"
 				aria-label="Search SQL text"
-				class="min-w-0 flex-1 border-none bg-transparent font-mono text-[12.5px] text-ink outline-none"
+				class="min-w-0 flex-1 border-none bg-transparent font-mono text-sm text-ink outline-none"
 			/>
 		</div>
 	</div>

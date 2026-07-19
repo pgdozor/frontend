@@ -46,7 +46,7 @@
 
 <div>
 	<ChartLegend items={series.map((s) => ({ label: s.label, color: s.color }))} />
-	<div class="h-[240px]">
+	<div class="h-[15rem]">
 		<Chart
 			data={model.rows}
 			x="at"
@@ -66,14 +66,14 @@
 					rule
 					ticks={4}
 					{format}
-					tickLabelProps={{ class: 'fill-ink/45 font-mono text-[10.5px]', stroke: 'none' }}
+					tickLabelProps={{ class: 'fill-ink/45 font-mono text-2xs', stroke: 'none' }}
 				/>
 				<Axis
 					placement="bottom"
 					rule
 					ticks={6}
 					format={fmtAxisTime}
-					tickLabelProps={{ class: 'fill-ink/45 font-mono text-[10.5px]', stroke: 'none' }}
+					tickLabelProps={{ class: 'fill-ink/45 font-mono text-2xs', stroke: 'none' }}
 				/>
 				{#each series as s, i (s.label)}
 					<Spline
@@ -94,15 +94,15 @@
 				xOffset={18}
 				yOffset={10}
 				variant="none"
-				class="border border-ink/16 bg-card px-[11px] py-[8px] shadow-[0_4px_16px_rgba(0,0,0,0.1)]"
+				class="border border-ink/16 bg-card px-3 py-2 shadow-[0_4px_16px_rgba(0,0,0,0.1)]"
 			>
 				{#snippet children({ data: point }: { data: MetricSeriesRow })}
-					<div class="flex flex-col gap-[3px] font-mono text-[11.5px] leading-[1.4] whitespace-nowrap">
+					<div class="flex flex-col gap-1 font-mono text-xs leading-[1.4] whitespace-nowrap">
 						<div class="text-ink/50">{fmtClockMinute(point.at)}</div>
 						{#each series as s, i (s.label)}
-							<div class="flex items-center justify-between gap-[14px]">
-								<span class="flex items-center gap-[5px] text-ink/55">
-									<span class="h-[2px] w-[12px]" style:background={s.color}></span>{s.label}
+							<div class="flex items-center justify-between gap-3.5">
+								<span class="flex items-center gap-1.5 text-ink/55">
+									<span class="h-0.5 w-3" style:background={s.color}></span>{s.label}
 								</span>
 								<span class="font-semibold text-ink"
 									>{point.values[i] == null ? '—' : format(point.values[i] as number)}</span
