@@ -3,13 +3,11 @@
 	import { onMount } from 'svelte';
 	import favicon from '$lib/assets/favicon.svg';
 	import { session } from '$lib/session.svelte';
-	import { uiScale } from '$lib/uiScale.svelte';
 
 	let { children } = $props();
 
 	onMount(() => {
 		session.load();
-		uiScale.apply();
 	});
 </script>
 

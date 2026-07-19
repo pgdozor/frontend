@@ -6,7 +6,6 @@
 	import { navItems, adminItems, isNavActive } from '$lib/nav';
 	import { session } from '$lib/session.svelte';
 	import { sidebar } from '$lib/sidebar.svelte';
-	import { uiScale } from '$lib/uiScale.svelte';
 	import PgdozorMark from '$lib/icons/PgdozorMark.svelte';
 
 	const visibleNav = $derived(session.isSuperAdmin ? navItems : navItems.filter((i) => i.key === 'slow-queries'));
@@ -74,22 +73,6 @@
 	{/if}
 
 	<div class="{session.isSuperAdmin ? '' : 'mt-auto'} border-t border-ink/14 p-3.5">
-		<div class="mb-2 flex items-center gap-2.5 px-2.5">
-			<span class="font-condensed text-2xs font-semibold tracking-[1px] text-ink/40 uppercase">Scale</span>
-			<div class="flex border border-ink/16">
-				{#each uiScale.options as opt (opt)}
-					<button
-						type="button"
-						onclick={() => uiScale.set(opt)}
-						class="cursor-pointer px-2 py-1 font-mono text-2xs {uiScale.value === opt
-							? 'bg-command text-paper'
-							: 'text-ink/60 hover:bg-ink/5'}"
-					>
-						{opt}%
-					</button>
-				{/each}
-			</div>
-		</div>
 		<div class="flex items-center gap-3 px-2.5 py-2 hover:bg-ink/4">
 			<span
 				class="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-command font-condensed text-xl font-bold text-paper"
