@@ -4,12 +4,17 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { timestampFromDate, timestampDate } from '@bufbuild/protobuf/wkt';
-	import type { StatementMetrics, StatementMetric } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
+	import type {
+		StatementMetrics,
+		StatementMetric,
+		StatementStat
+	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
+	import { StatementSortColumn } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 	import { statementClient } from '$lib/connect';
 	import { ctx } from '$lib/state.svelte';
 	import { urlSync } from '$lib/urlState.svelte';
 	import { QueryFilterState, parseDisplayTag } from '$lib/queryFilter.svelte';
-	import { fmtDuration, fmtCount, fmtDurationFull, fmtCountFull, sevByMean, kvTags, errMsg } from '$lib/format';
+	import { fmtDuration, fmtCount, sevByMean, kvTags, errMsg } from '$lib/format';
 	import { C } from '$lib/theme';
 	import type { MetricSeriesPoint } from '$lib/metricChart';
 	import CallsChart from '$lib/components/CallsChart.svelte';
@@ -45,12 +50,29 @@
 		{ key: 'pctTime', label: '% Time', align: 'right', width: '84px' }
 	];
 
-	let statements = $state<Row[]>([]);
+	const PAGE_SIZE = 50;
+
+	const sortColumnProto: Record<SortCol, StatementSortColumn> = {
+		query: StatementSortColumn.QUERY,
+		usr: StatementSortColumn.USER,
+		meanMs: StatementSortColumn.AVG,
+		calls: StatementSortColumn.CALLS,
+		rowsPerCall: StatementSortColumn.ROWS_PER_CALL,
+		pctIo: StatementSortColumn.PCT_IO,
+		pctTime: StatementSortColumn.PCT_TIME
+	};
+
+	let rows = $state<Row[]>([]);
+	let hasMore = $state(false);
+	let tableLoading = $state(true);
+	let loadingMore = $state(false);
+	let tableError = $state<string | null>(null);
+	let sort = $state<{ col: SortCol; dir: 'asc' | 'desc' }>({ col: 'pctTime', dir: 'desc' });
+
 	let metrics = $state<StatementMetrics | undefined>(undefined);
 	let chartRange = $state<{ from: Date; to: Date } | null>(null);
-	let loading = $state(true);
-	let error = $state<string | null>(null);
-	let sort = $state<{ col: SortCol; dir: 'asc' | 'desc' }>({ col: 'pctTime', dir: 'desc' });
+	let chartLoading = $state(true);
+	let chartError = $state<string | null>(null);
 
 	const sql = new SqlPopoverState((id) => statementClient.getStatementText({ id }).then((r) => r.query));
 	const filters = new QueryFilterState();
@@ -71,55 +93,107 @@
 		return () => clearTimeout(id);
 	});
 
+	function toRow(s: StatementStat): Row {
+		const calls = Number(s.calls);
+		return {
+			id: s.id.toString(),
+			query: s.preview,
+			usr: s.userName,
+			meanMs: s.avgExecTime,
+			calls,
+			rowsPerCall: calls > 0 ? Number(s.rows) / calls : 0,
+			pctIo: s.pctIo,
+			pctTime: s.pctOfTotal,
+			sev: sevByMean(s.avgExecTime),
+			tags: kvTags(s.tags)
+		};
+	}
+
+	let chartGen = 0;
 	$effect(() => {
 		const { from, to } = ctx.timeRange();
 		chartRange = { from, to };
-		const request = {
+		const gen = ++chartGen;
+		chartLoading = true;
+		chartError = null;
+
+		statementClient
+			.queryStatementMetrics({
+				serverName: ctx.server,
+				databaseName: ctx.db,
+				from: timestampFromDate(from),
+				to: timestampFromDate(to)
+			})
+			.then((res) => {
+				if (gen === chartGen) metrics = res.metrics;
+			})
+			.catch((e: unknown) => {
+				if (gen !== chartGen) return;
+				chartError = errMsg(e);
+				metrics = undefined;
+			})
+			.finally(() => {
+				if (gen === chartGen) chartLoading = false;
+			});
+	});
+
+	function tableRequest(offset: number) {
+		const { from, to } = ctx.timeRange();
+		return {
 			serverName: ctx.server,
 			databaseName: ctx.db,
 			from: timestampFromDate(from),
 			to: timestampFromDate(to),
 			queryText: filters.text,
 			tagFilters: filters.toProto(),
-			kinds: filters.kindsProto()
+			kinds: filters.kindsProto(),
+			sortColumn: sortColumnProto[sort.col],
+			sortDesc: sort.dir === 'desc',
+			limit: PAGE_SIZE,
+			offset
 		};
+	}
 
-		let cancelled = false;
-		loading = true;
-		error = null;
+	let tableGen = 0;
+	$effect(() => {
+		const request = tableRequest(0);
+		const gen = ++tableGen;
+		tableLoading = true;
+		tableError = null;
 
 		statementClient
 			.queryStatements(request)
 			.then((res) => {
-				if (cancelled) return;
-				metrics = res.metrics;
-				statements = res.statements.map((s) => ({
-					id: s.id.toString(),
-					query: s.preview,
-					usr: s.userName,
-					meanMs: s.avgExecTime,
-					calls: Number(s.calls),
-					rowsPerCall: Number(s.calls) > 0 ? Number(s.rows) / Number(s.calls) : 0,
-					pctIo: s.pctIo,
-					pctTime: s.pctOfTotal,
-					sev: sevByMean(s.avgExecTime),
-					tags: kvTags(s.tags)
-				}));
+				if (gen !== tableGen) return;
+				rows = res.statements.map(toRow);
+				hasMore = res.hasMore;
 			})
 			.catch((e: unknown) => {
-				if (cancelled) return;
-				error = errMsg(e);
-				statements = [];
-				metrics = undefined;
+				if (gen !== tableGen) return;
+				tableError = errMsg(e);
+				rows = [];
+				hasMore = false;
 			})
 			.finally(() => {
-				if (!cancelled) loading = false;
+				if (gen === tableGen) tableLoading = false;
 			});
-
-		return () => {
-			cancelled = true;
-		};
 	});
+
+	async function loadMore() {
+		if (loadingMore || tableLoading || !hasMore) return;
+		const gen = tableGen;
+		loadingMore = true;
+		try {
+			const res = await statementClient.queryStatements(tableRequest(rows.length));
+			if (gen !== tableGen) return;
+			rows = [...rows, ...res.statements.map(toRow)];
+			hasMore = res.hasMore;
+		} catch (e: unknown) {
+			if (gen === tableGen) tableError = errMsg(e);
+		} finally {
+			loadingMore = false;
+		}
+	}
 
 	function toPoints(m?: StatementMetric): MetricSeriesPoint[] {
 		return (m?.series ?? []).filter((p) => p.at != null).map((p) => ({ at: timestampDate(p.at!), value: p.value }));
@@ -137,18 +211,6 @@
 		if (sort.col === key) sort = { col: key, dir: sort.dir === 'asc' ? 'desc' : 'asc' };
 		else sort = { col: key, dir: key === 'query' || key === 'usr' ? 'asc' : 'desc' };
 	}
-
-	const rows = $derived.by(() => {
-		const { col, dir } = sort;
-		return [...statements].sort((a, b) => {
-			const av = a[col];
-			const bv = b[col];
-			if (typeof av === 'string' && typeof bv === 'string') {
-				return dir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
-			}
-			return dir === 'asc' ? (av as number) - (bv as number) : (bv as number) - (av as number);
-		});
-	});
 
 	// Numeric/text cells never truncate — only the query text (the <code>) does.
 	const numCell =
@@ -185,7 +247,7 @@
 			/>
 		{:else}
 			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
-				{loading ? 'Loading…' : (error ?? 'No data')}
+				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
 			</div>
 		{/if}
 	</ChartPanel>
@@ -198,7 +260,7 @@
 			<LineChart series={latency} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
 		{:else}
 			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">
-				{loading ? 'Loading…' : (error ?? 'No data')}
+				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
 			</div>
 		{/if}
 	</ChartPanel>
@@ -270,14 +332,13 @@
 							<span class="block truncate">{q.usr}</span>
 						</td>
 						<td
-							title={fmtDurationFull(q.meanMs)}
 							class="border-b border-ink/8 px-[16px] py-[11px] text-right align-top leading-[20px] font-mono text-[13px] font-semibold whitespace-nowrap"
 							style:color={q.sev}
 						>
 							{fmtDuration(q.meanMs)}
 						</td>
-						<td class={numCell} title={fmtCountFull(q.calls)}>{fmtCount(q.calls)}</td>
-						<td class={numCell} title={fmtCountFull(q.rowsPerCall)}>{fmtCount(q.rowsPerCall)}</td>
+						<td class={numCell}>{fmtCount(q.calls)}</td>
+						<td class={numCell}>{fmtCount(q.rowsPerCall)}</td>
 						<td class={numCell}>{q.pctIo.toFixed(1)}%</td>
 						<td class={numCell}>{q.pctTime.toFixed(1)}%</td>
 					</tr>
@@ -286,12 +347,22 @@
 		</table>
 	</div>
 
-	{#if loading}
+	{#if tableLoading}
 		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
-	{:else if error}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
+	{:else if tableError}
+		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-danger">{tableError}</div>
 	{:else if rows.length === 0}
 		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">No statements found</div>
+	{:else if hasMore}
+		<div class="border-t border-ink/8 p-[12px] text-center">
+			<button
+				onclick={loadMore}
+				disabled={loadingMore}
+				class="cursor-pointer border border-ink/16 px-[18px] py-[8px] font-condensed text-[11.5px] font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
+			>
+				{loadingMore ? 'Loading…' : 'Load more'}
+			</button>
+		</div>
 	{/if}
 </div>
 
