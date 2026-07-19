@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArrowLeftIcon, ExternalLinkIcon } from '@lucide/svelte';
+	import { ArrowLeftIcon, ExternalLinkIcon, SparklesIcon, ArrowUpIcon } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import { timestampFromDate, timestampDate } from '@bufbuild/protobuf/wkt';
 	import type {
@@ -11,7 +11,7 @@
 	import { statementClient } from '$lib/connect';
 	import { ctx, scopeLock } from '$lib/state.svelte';
 	import { format } from 'sql-formatter';
-	import { fmtDuration, sevByDuration, fmtTs, kvTags, truncate, errMsg } from '$lib/format';
+	import { fmtDuration, sevByDuration, fmtTs, kvTags, errMsg } from '$lib/format';
 	import { C } from '$lib/theme';
 	import type { MetricSeriesPoint } from '$lib/metricChart';
 	import CallsChart from '$lib/components/CallsChart.svelte';
@@ -24,9 +24,8 @@
 	type SampleRow = {
 		id: string;
 		ts: string;
-		statement: string;
 		short: string;
-		tags: string[];
+		tags: Record<string, string>;
 		hasPlan: boolean;
 		durFmt: string;
 		sev: string;
@@ -49,7 +48,9 @@
 	let loadingMore = $state(false);
 	let samplesError = $state<string | null>(null);
 
-	const sql = new SqlPopoverState();
+	const sql = new SqlPopoverState((sampleId) =>
+		statementClient.getStatementSampleText({ sampleId }).then((r) => r.query)
+	);
 
 	const id = $derived(page.params.id ?? '');
 	const validId = $derived(/^\d+$/.test(id));
@@ -140,9 +141,8 @@
 		return {
 			id: s.id.toString(),
 			ts: s.occurredAt ? fmtTs(timestampDate(s.occurredAt)) : '—',
-			statement: s.query,
-			short: truncate(s.query, 120),
-			tags: kvTags(s.tags),
+			short: s.query,
+			tags: s.tags,
 			hasPlan: s.hasPlan,
 			durFmt: fmtDuration(s.durationMs),
 			sev: sevByDuration(s.durationMs)
@@ -208,7 +208,15 @@
 
 	$effect(() => () => scopeLock.unlock());
 
-	const tags = $derived(kvTags(detail?.tags ?? {}));
+	const baseTags = $derived(detail?.tags ?? {});
+	const tags = $derived(kvTags(baseTags));
+	const hasBaseTags = $derived(Object.keys(baseTags).length > 0);
+
+	// Samples carry the base tags too; show only the ones that differ from the
+	// base so each row isn't a repeat of the tag list shown at the top.
+	function extraTags(tagMap: Record<string, string>): string[] {
+		return kvTags(Object.fromEntries(Object.entries(tagMap).filter(([k, v]) => baseTags[k] !== v)));
+	}
 
 	// Raw normalized query by default; the Prettify toggle pretty-prints it.
 	let prettified = $state(false);
@@ -244,32 +252,45 @@
 	<ArrowLeftIcon class="size-[14px]" /><span>Back</span>
 </a>
 
-<div class="border border-ink/16 bg-ink px-[20px] py-[18px]">
-	{#if detail}
-		<div class="flex items-start gap-[16px]">
-			<div class="min-w-0 flex-1 font-mono text-[12.5px] leading-[1.7] break-words whitespace-pre-wrap text-paper">
-				{queryText}
-			</div>
+<div class="border border-ink/16 bg-card px-[16px] pt-[14px] pb-[16px]">
+	<header class="flex items-start justify-between gap-[12px]">
+		<div class="min-w-0">
+			<h2 class="font-condensed text-[12px] leading-[1.15] font-bold tracking-[0.8px] text-ink/70 uppercase">Query</h2>
+			<p class="mt-[2px] text-[11.5px] leading-[1.2] text-ink/45">
+				The normalized query — each captured run below fills in real values
+			</p>
+		</div>
+		{#if detail}
 			<button
 				type="button"
 				onclick={() => (prettified = !prettified)}
-				class="flex-none cursor-pointer border px-[10px] py-[3px] font-condensed text-[10.5px] font-semibold tracking-[0.7px] uppercase transition-colors {prettified
+				class="inline-flex flex-none cursor-pointer items-center gap-[5px] border px-[10px] py-[4px] font-condensed text-[10.5px] font-semibold tracking-[0.7px] uppercase transition-colors {prettified
 					? 'border-command bg-command text-paper'
-					: 'border-paper/25 text-paper/70 hover:border-paper/50 hover:text-paper'}">Prettify</button
+					: 'border-ink/20 text-ink/60 hover:border-ink/40 hover:text-ink'}"
 			>
+				<SparklesIcon class="size-[13px]" /><span>Format</span>
+			</button>
+		{/if}
+	</header>
+
+	<div class="mt-[14px] border border-ink/16 bg-ink px-[16px] py-[14px]">
+		{#if detail}
+			<div class="font-mono text-[12.5px] leading-[1.7] break-words whitespace-pre-wrap text-paper">
+				{queryText}
+			</div>
+		{:else}
+			<div class="font-mono text-[12.5px] text-paper/50">{metaLoading ? 'Loading…' : (metaError ?? '')}</div>
+		{/if}
+	</div>
+
+	{#if tags.length > 0}
+		<div class="mt-[12px] flex flex-wrap gap-[6px]">
+			{#each tags as t (t)}
+				<Tag text={t} size="md" />
+			{/each}
 		</div>
-	{:else}
-		<div class="font-mono text-[12.5px] text-paper/50">{metaLoading ? 'Loading…' : (metaError ?? '')}</div>
 	{/if}
 </div>
-
-{#if tags.length > 0}
-	<div class="mt-[7px] flex flex-wrap gap-[6px]">
-		{#each tags as t (t)}
-			<Tag text={t} size="md" />
-		{/each}
-	</div>
-{/if}
 
 <div class="mt-[16px] grid gap-[16px]">
 	<ChartPanel title="Query volume over time" description="How many times this query ran">
@@ -325,6 +346,7 @@
 			</thead>
 			<tbody>
 				{#each samples as s (s.id)}
+					{@const extra = extraTags(s.tags)}
 					<tr class="hover:bg-ink/3">
 						<td
 							class="border-b border-ink/8 px-[18px] py-[11px] align-top font-mono text-[12px] leading-[20px] whitespace-nowrap text-ink/75"
@@ -332,14 +354,22 @@
 						>
 						<td class="min-w-0 border-b border-ink/8 px-[18px] py-[11px] align-top">
 							<code
-								onmouseenter={(e) => sql.show(s.statement, e)}
+								onmouseenter={(e) => sql.showLazy(BigInt(s.id), e)}
 								onmouseleave={sql.hide}
 								class="inline-block max-w-full cursor-default overflow-hidden align-top font-mono text-[12.5px] leading-[20px] text-ellipsis whitespace-nowrap text-ink transition-colors hover:text-command"
 								>{s.short}</code
 							>
-							{#if s.tags.length > 0}
-								<div class="mt-[3px] flex flex-wrap gap-[5px]">
-									{#each s.tags as t (t)}
+							{#if hasBaseTags || extra.length > 0}
+								<div class="mt-[3px] flex flex-wrap items-center gap-[5px]">
+									{#if hasBaseTags}
+										<span
+											title="Also carries the base tags shown at the top"
+											class="inline-flex items-center gap-[3px] border border-ink/12 px-[6px] py-[1px] font-mono text-[11px] text-ink/40"
+										>
+											<ArrowUpIcon class="size-[10px]" />base tags
+										</span>
+									{/if}
+									{#each extra as t (t)}
 										<Tag text={t} />
 									{/each}
 								</div>
