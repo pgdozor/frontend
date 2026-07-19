@@ -128,16 +128,16 @@
 	}
 
 	const timelineGrid =
-		'grid grid-cols-[9px_minmax(64px,auto)_minmax(40px,auto)_minmax(64px,auto)_minmax(0,1fr)] items-start gap-x-[12px] py-[5px]';
+		'grid grid-cols-[9px_minmax(64px,auto)_minmax(40px,auto)_minmax(64px,auto)_minmax(0,1fr)] items-start gap-x-3 py-1.5';
 </script>
 
 <div class="border border-ink/16 bg-card">
 	{#if loading}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
+		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
 	{:else if error}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
+		<div class="px-4 py-7 text-center font-mono text-sm text-danger">{error}</div>
 	{:else if transactions.length === 0}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">No transactions in this range</div>
+		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">No transactions in this range</div>
 	{:else}
 		{#each transactions as t (rowKey(t))}
 			{@const open = expanded[rowKey(t)] ?? false}
@@ -147,41 +147,40 @@
 					onkeydown={(e) => onRowKey(e, t)}
 					role="button"
 					tabindex="0"
-					class="flex cursor-pointer items-center gap-[12px] px-[18px] py-[13px] transition-colors hover:bg-command/5"
+					class="flex cursor-pointer items-center gap-3 px-5 py-3.5 transition-colors hover:bg-command/5"
 				>
-					{#if open}<ChevronDownIcon class="size-[14px] flex-none text-command" />{:else}<ChevronRightIcon
-							class="size-[14px] flex-none text-command"
+					{#if open}<ChevronDownIcon class="size-3.5 flex-none text-command" />{:else}<ChevronRightIcon
+							class="size-3.5 flex-none text-command"
 						/>{/if}
 					<div class="min-w-0 flex-1">
-						<div class="flex flex-wrap items-center gap-[10px]">
-							<span class="font-mono text-[13.5px] font-semibold text-ink">pid {t.pid}</span>
-							<span class="font-sans text-[12.5px] text-ink/60">{t.applicationName}</span>
+						<div class="flex flex-wrap items-center gap-2.5">
+							<span class="font-mono text-md font-semibold text-ink">pid {t.pid}</span>
+							<span class="font-sans text-sm text-ink/60">{t.applicationName}</span>
 						</div>
 					</div>
 					<div class="flex-none text-right">
-						<div class="font-mono text-[18px] leading-none font-semibold whitespace-nowrap text-ink">
+						<div class="font-mono text-2xl leading-none font-semibold whitespace-nowrap text-ink">
 							{fmtDurMs(durationMs(t.start, t.end))}
 						</div>
-						<div class="mt-[4px] font-mono text-[11px] whitespace-nowrap text-ink/50">
+						<div class="mt-1 font-mono text-xs whitespace-nowrap text-ink/50">
 							{t.start ? `started ${fmtClockDate(timestampDate(t.start))}` : '—'}
 						</div>
 					</div>
 				</div>
 
 				{#if open}
-					<div class="border-t border-ink/8 bg-paper px-[18px] py-[12px] md:pl-[46px]">
+					<div class="border-t border-ink/8 bg-paper px-5 py-3 md:pl-12">
 						{#each groupEvents(t.events) as g, gi (gi)}
-							<div class="mt-[16px] first:mt-0">
+							<div class="mt-4 first:mt-0">
 								{#if g.query}
 									<div class="leading-[18px]">
 										<code
 											onmouseenter={(ev) => sql.show(g.query, ev)}
 											onmouseleave={sql.hide}
-											class="inline-block max-w-full truncate align-top font-mono text-[12px] text-ink/75"
-											>{g.query}</code
+											class="inline-block max-w-full truncate align-top font-mono text-sm text-ink/75">{g.query}</code
 										>
 										{#if Object.keys(g.queryTags).length > 0}
-											<div class="mt-[5px] flex flex-wrap gap-[5px]">
+											<div class="mt-1.5 flex flex-wrap gap-1.5">
 												{#each kvTags(g.queryTags) as qtag (qtag)}
 													<Tag text={qtag} />
 												{/each}
@@ -189,25 +188,24 @@
 										{/if}
 									</div>
 								{:else}
-									<div class="font-mono text-[12px] leading-[18px] text-ink/35">no query running</div>
+									<div class="font-mono text-sm leading-[18px] text-ink/35">no query running</div>
 								{/if}
 
-								<div class="mt-[7px] border-l border-ink/12 pl-[14px]">
+								<div class="mt-2 border-l border-ink/12 pl-3.5">
 									{#each g.events as e, i (i)}
 										<div class={timelineGrid}>
-											<span class="mt-[5px] h-[9px] w-[9px] rounded-full" style:background={statusColor(e.status)}
-											></span>
-											<span class="font-mono text-[12px] leading-[18px] whitespace-nowrap text-ink/60">
+											<span class="mt-1.5 h-2.5 w-2.5 rounded-full" style:background={statusColor(e.status)}></span>
+											<span class="font-mono text-sm leading-[18px] whitespace-nowrap text-ink/60">
 												{#if t.start && e.from && e.to}{relFrom(t.start, e.from)}–{relFrom(t.start, e.to)}{/if}
 											</span>
-											<span class="text-right font-mono text-[12px] leading-[18px] whitespace-nowrap text-ink/50">
+											<span class="text-right font-mono text-sm leading-[18px] whitespace-nowrap text-ink/50">
 												{fmtDurMs(durationMs(e.from, e.to))}
 											</span>
 											<span
-												class="font-condensed text-[11px] leading-[18px] font-bold tracking-[0.5px] whitespace-nowrap uppercase"
+												class="font-condensed text-xs leading-[18px] font-bold tracking-[0.5px] whitespace-nowrap uppercase"
 												style:color={statusColor(e.status)}>{statusLabel(e.status)}</span
 											>
-											<span class="font-mono text-[12px] leading-[18px] text-ink/55">{waitText(e)}</span>
+											<span class="font-mono text-sm leading-[18px] text-ink/55">{waitText(e)}</span>
 										</div>
 									{/each}
 								</div>

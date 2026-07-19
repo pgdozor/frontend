@@ -29,7 +29,7 @@
 	};
 </script>
 
-<div class="flex items-end gap-[2px] border-b border-ink/20" style:height="{CHART_H}px">
+<div class="flex items-end gap-0.5 border-b border-ink/20" style:height="{CHART_H}px">
 	{#each data as b, i (i)}
 		<div class="flex min-w-0 flex-1 cursor-default flex-col-reverse" style:height="{CHART_H}px" title={title(b)}>
 			{#each b.segments as seg, j (j)}
@@ -39,8 +39,8 @@
 	{/each}
 </div>
 
-<div class="mt-[6px] flex justify-between">
+<div class="mt-1.5 flex justify-between">
 	{#each ticks as t, i (i)}
-		<span class="font-mono text-[10.5px] text-ink/50">{t}</span>
+		<span class="font-mono text-2xs text-ink/50">{t}</span>
 	{/each}
 </div>

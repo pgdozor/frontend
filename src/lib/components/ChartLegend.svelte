@@ -2,10 +2,10 @@
 	let { items }: { items: { label: string; color: string }[] } = $props();
 </script>
 
-<div class="mb-[10px] flex flex-wrap justify-center gap-[16px]">
+<div class="mb-2.5 flex flex-wrap justify-center gap-4">
 	{#each items as item (item.label)}
-		<div class="flex items-center gap-[6px] font-mono text-[11px] text-ink/60">
-			<span class="h-[2px] w-[16px]" style:background={item.color}></span>{item.label}
+		<div class="flex items-center gap-1.5 font-mono text-xs text-ink/60">
+			<span class="h-0.5 w-4" style:background={item.color}></span>{item.label}
 		</div>
 	{/each}
 </div>

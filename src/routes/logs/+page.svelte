@@ -156,26 +156,26 @@
 	const hasSecondary = (r: LogRecord): boolean => !!(r.stateCode || r.detail || r.hint || r.context || r.statement);
 
 	const th =
-		'py-[10px] px-[14px] text-left font-condensed text-[11px] font-semibold tracking-[0.7px] uppercase text-ink/55 border-b border-ink/14 whitespace-nowrap';
-	const td = 'px-[14px] py-[10px] border-b border-ink/8 align-top';
+		'py-2.5 px-3.5 text-left font-condensed text-xs font-semibold tracking-[0.7px] uppercase text-ink/55 border-b border-ink/14 whitespace-nowrap';
+	const td = 'px-3.5 py-2.5 border-b border-ink/8 align-top';
 </script>
 
-<div class="mb-[16px] border border-ink/16 bg-card px-[20px] pt-[18px] pb-[14px]">
-	<div class="mb-[16px] flex flex-wrap items-start justify-between gap-[18px]">
-		<div class="flex items-baseline gap-[10px]">
+<div class="mb-4 border border-ink/16 bg-card px-5 pt-5 pb-3.5">
+	<div class="mb-4 flex flex-wrap items-start justify-between gap-5">
+		<div class="flex items-baseline gap-2.5">
 			<span class="font-mono text-[30px] leading-none font-semibold tracking-[-0.5px] text-ink">
 				{fmtCount(totalEvents)}
 			</span>
-			<span class="font-condensed text-[12px] font-semibold tracking-[0.8px] text-ink/55 uppercase">log events</span>
+			<span class="font-condensed text-sm font-semibold tracking-[0.8px] text-ink/55 uppercase">log events</span>
 		</div>
 
-		<div class="flex flex-nowrap items-center justify-end gap-[7px]">
+		<div class="flex flex-nowrap items-center justify-end gap-2">
 			{#each chips as chip (chip.level)}
 				{@const cs = levelChip(chip.level, chip.active)}
 				<button
 					type="button"
 					onclick={() => toggleLevel(chip.level)}
-					class="flex shrink-0 cursor-pointer items-center gap-[6px] px-[10px] py-[4px] font-condensed text-[11px] font-semibold tracking-[0.6px] uppercase transition-colors"
+					class="flex shrink-0 cursor-pointer items-center gap-1.5 px-2.5 py-1 font-condensed text-xs font-semibold tracking-[0.6px] uppercase transition-colors"
 					style:color={cs.color}
 					style:background={cs.background}
 					style:border={cs.border}
@@ -188,7 +188,7 @@
 				<button
 					type="button"
 					onclick={reset}
-					class="shrink-0 cursor-pointer font-condensed text-[11px] font-bold tracking-[0.6px] text-command uppercase hover:text-danger"
+					class="shrink-0 cursor-pointer font-condensed text-xs font-bold tracking-[0.6px] text-command uppercase hover:text-danger"
 				>
 					Reset
 				</button>
@@ -211,22 +211,22 @@
 {/if}
 
 <div class="border border-ink/16 bg-card">
-	<div class="flex flex-wrap items-center gap-[10px] border-b border-ink/14 p-[12px] px-[14px]">
-		<div class="flex h-[38px] min-w-[240px] flex-1 items-center gap-[10px] border border-ink/20 bg-paper px-[12px]">
-			<SearchIcon class="size-[14px] flex-none text-ink/40" />
+	<div class="flex flex-wrap items-center gap-2.5 border-b border-ink/14 p-3 px-3.5">
+		<div class="flex h-10 min-w-[15rem] flex-1 items-center gap-2.5 border border-ink/20 bg-paper px-3">
+			<SearchIcon class="size-3.5 flex-none text-ink/40" />
 			<input
 				type="text"
 				bind:value={search}
 				placeholder="Search log text or PID, e.g. deadlock"
 				spellcheck="false"
-				class="min-w-0 flex-1 border-none bg-transparent font-mono text-[13px] text-ink outline-none"
+				class="min-w-0 flex-1 border-none bg-transparent font-mono text-md text-ink outline-none"
 			/>
 			{#if search}
 				<button
 					type="button"
 					title="Clear"
 					onclick={() => (search = '')}
-					class="cursor-pointer text-ink/45 hover:text-danger"><XIcon class="size-[13px]" /></button
+					class="cursor-pointer text-ink/45 hover:text-danger"><XIcon class="size-3.5" /></button
 				>
 			{/if}
 		</div>
@@ -235,24 +235,24 @@
 			<button
 				type="button"
 				onclick={() => (menu = menu === 'class' ? null : 'class')}
-				class="flex h-[38px] cursor-pointer items-center gap-[9px] border border-ink/20 bg-paper px-[12px] hover:bg-ink/4"
+				class="flex h-10 cursor-pointer items-center gap-2.5 border border-ink/20 bg-paper px-3 hover:bg-ink/4"
 			>
-				<span class="font-condensed text-[10px] font-semibold tracking-[0.8px] text-ink/50 uppercase">Class</span>
-				<span class="font-mono text-[12px] font-medium whitespace-nowrap text-ink">{classLabel}</span>
-				<ChevronDownIcon class="size-[13px] text-ink/45" />
+				<span class="font-condensed text-2xs font-semibold tracking-[0.8px] text-ink/50 uppercase">Class</span>
+				<span class="font-mono text-sm font-medium whitespace-nowrap text-ink">{classLabel}</span>
+				<ChevronDownIcon class="size-3.5 text-ink/45" />
 			</button>
 			{#if menu === 'class'}
 				<div
-					class="absolute top-[calc(100%+6px)] right-0 z-[22] max-h-[340px] min-w-[300px] overflow-auto border border-ink/20 bg-card p-[5px] shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
+					class="absolute top-[calc(100%+6px)] right-0 z-[22] max-h-[21.25rem] min-w-[18.75rem] overflow-auto border border-ink/20 bg-card p-1.5 shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
 				>
 					{#each ALL_CLASSIFICATIONS as c (c)}
 						<button
 							type="button"
 							onclick={() => toggleClass(c)}
-							class="flex w-full cursor-pointer items-center justify-between gap-[10px] px-[10px] py-[7px] text-left font-sans text-[12.5px] text-ink hover:bg-ink/5"
+							class="flex w-full cursor-pointer items-center justify-between gap-2.5 px-2.5 py-2 text-left font-sans text-sm text-ink hover:bg-ink/5"
 						>
 							<span>{classificationLabel(c)}</span>
-							{#if selectedClasses.includes(c)}<CheckIcon class="size-[14px] flex-none text-command" />{/if}
+							{#if selectedClasses.includes(c)}<CheckIcon class="size-3.5 flex-none text-command" />{/if}
 						</button>
 					{/each}
 				</div>
@@ -261,10 +261,10 @@
 	</div>
 
 	<div class="overflow-x-auto">
-		<table class="w-full min-w-[1072px] table-fixed border-collapse font-sans">
+		<table class="w-full min-w-[67rem] table-fixed border-collapse font-sans">
 			<thead>
 				<tr class="bg-ink/4">
-					<th class="{th} pl-[32px]" style="width:188px">At</th>
+					<th class="{th} pl-8" style="width:188px">At</th>
 					<th class={th} style="width:84px">Level</th>
 					<th class={th}>Classification</th>
 					<th class={th} style="width:68px">PID</th>
@@ -286,17 +286,17 @@
 						class="cursor-pointer transition-colors hover:bg-command/6"
 					>
 						<td class={td}>
-							<div class="flex items-start gap-[8px]">
-								{#if open}<ChevronDownIcon
-										class="mt-[1px] size-[13px] flex-none text-command"
-									/>{:else}<ChevronRightIcon class="mt-[1px] size-[13px] flex-none text-command" />{/if}
-								<span class="font-mono text-[12px] leading-[18px] whitespace-nowrap text-ink/80">{tsFmt(r)}</span>
+							<div class="flex items-start gap-2">
+								{#if open}<ChevronDownIcon class="mt-px size-3.5 flex-none text-command" />{:else}<ChevronRightIcon
+										class="mt-px size-3.5 flex-none text-command"
+									/>{/if}
+								<span class="font-mono text-sm leading-[18px] whitespace-nowrap text-ink/80">{tsFmt(r)}</span>
 							</div>
 						</td>
 						<td class={td}>
-							<div class="flex h-[18px] items-center">
+							<div class="flex h-5 items-center">
 								<span
-									class="px-[8px] py-[1px] font-condensed text-[10.5px] font-bold tracking-[0.7px] whitespace-nowrap uppercase"
+									class="px-2 py-px font-condensed text-2xs font-bold tracking-[0.7px] whitespace-nowrap uppercase"
 									style:color={lb.color}
 									style:background={lb.background}
 									style:border={lb.border}>{levelLabel(r.logLevel)}</span
@@ -306,91 +306,78 @@
 						<td class="{td} overflow-hidden">
 							<span
 								title={classificationCode(r.classification)}
-								class="block overflow-hidden font-sans text-[12.5px] leading-[18px] text-ellipsis whitespace-nowrap text-ink"
+								class="block overflow-hidden font-sans text-sm leading-[18px] text-ellipsis whitespace-nowrap text-ink"
 								>{classificationLabel(r.classification)}</span
 							>
 						</td>
-						<td class="{td} font-mono text-[12px] leading-[18px] text-ink/80">{r.pid || '—'}</td>
+						<td class="{td} font-mono text-sm leading-[18px] text-ink/80">{r.pid || '—'}</td>
 						<td class="{td} overflow-hidden">
-							<span
-								class="block overflow-hidden text-[12.5px] leading-[18px] text-ellipsis whitespace-nowrap text-ink/78"
+							<span class="block overflow-hidden text-sm leading-[18px] text-ellipsis whitespace-nowrap text-ink/78"
 								>{r.databaseName || '—'}</span
 							>
 						</td>
 						<td class="{td} overflow-hidden">
-							<span
-								class="block overflow-hidden text-[12.5px] leading-[18px] text-ellipsis whitespace-nowrap text-ink/78"
+							<span class="block overflow-hidden text-sm leading-[18px] text-ellipsis whitespace-nowrap text-ink/78"
 								>{r.username || '—'}</span
 							>
 						</td>
 						<td class="{td} overflow-hidden">
-							<span
-								class="block overflow-hidden text-[12.5px] leading-[18px] text-ellipsis whitespace-nowrap text-ink/78"
+							<span class="block overflow-hidden text-sm leading-[18px] text-ellipsis whitespace-nowrap text-ink/78"
 								>{r.applicationName || '—'}</span
 							>
 						</td>
 						<td class={td}>
-							<span class="block font-mono text-[11.5px] leading-[18px] break-words text-ink/70"
-								>{r.backendType || '—'}</span
-							>
+							<span class="block font-mono text-xs leading-[18px] break-words text-ink/70">{r.backendType || '—'}</span>
 						</td>
 					</tr>
 					{#if open}
 						<tr>
 							<td colspan="8" class="border-b border-ink/14 p-0">
-								<div class="bg-paper px-[18px] py-[16px] pl-[32px]">
-									<div class="mb-[14px]">
-										<div
-											class="mb-[4px] font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/50 uppercase"
-										>
+								<div class="bg-paper px-5 py-4 pl-8">
+									<div class="mb-3.5">
+										<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
 											Message
 										</div>
-										<div class="font-mono text-[13px] leading-[1.6] break-words whitespace-pre-wrap text-ink">
+										<div class="font-mono text-md leading-[1.6] break-words whitespace-pre-wrap text-ink">
 											{r.message}
 										</div>
 									</div>
 
 									{#if r.stateCode}
-										<div class="mb-[14px]">
+										<div class="mb-3.5">
 											<span
-												class="border border-danger/30 bg-danger/10 px-[9px] py-[3px] font-mono text-[11px] font-semibold text-danger"
+												class="border border-danger/30 bg-danger/10 px-2.5 py-1 font-mono text-xs font-semibold text-danger"
 												>SQLSTATE {r.stateCode}</span
 											>
 										</div>
 									{/if}
 
 									{#if r.detail}
-										<div class="mb-[13px]">
-											<div
-												class="mb-[4px] font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/50 uppercase"
-											>
+										<div class="mb-3.5">
+											<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
 												Detail
 											</div>
-											<div class="font-mono text-[12.5px] leading-[1.6] break-words whitespace-pre-wrap text-ink">
+											<div class="font-mono text-sm leading-[1.6] break-words whitespace-pre-wrap text-ink">
 												{r.detail}
 											</div>
 										</div>
 									{/if}
 
 									{#if r.hint}
-										<div class="mb-[13px]">
-											<div
-												class="mb-[4px] font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/50 uppercase"
-											>
+										<div class="mb-3.5">
+											<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
 												Hint
 											</div>
-											<div class="font-sans text-[13px] leading-[1.55] text-ink/82">{r.hint}</div>
+											<div class="font-sans text-md leading-[1.55] text-ink/82">{r.hint}</div>
 										</div>
 									{/if}
 
 									{#if r.context}
-										<div class="mb-[13px]">
-											<div
-												class="mb-[4px] font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/50 uppercase"
-											>
+										<div class="mb-3.5">
+											<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
 												Context
 											</div>
-											<div class="font-mono text-[12.5px] leading-[1.55] break-words whitespace-pre-wrap text-ink/80">
+											<div class="font-mono text-sm leading-[1.55] break-words whitespace-pre-wrap text-ink/80">
 												{r.context}
 											</div>
 										</div>
@@ -398,18 +385,16 @@
 
 									{#if r.statement}
 										<div>
-											<div
-												class="mb-[5px] font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/50 uppercase"
-											>
+											<div class="mb-1.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
 												Statement
 											</div>
 											<pre
-												class="m-0 bg-ink px-[14px] py-[12px] font-mono text-[12.5px] leading-[1.7] break-words whitespace-pre-wrap text-paper">{r.statement}</pre>
+												class="m-0 bg-ink px-3.5 py-3 font-mono text-sm leading-[1.7] break-words whitespace-pre-wrap text-paper">{r.statement}</pre>
 										</div>
 									{/if}
 
 									{#if !hasSecondary(r)}
-										<div class="font-mono text-[12px] text-ink/40">No additional fields recorded for this event</div>
+										<div class="font-mono text-sm text-ink/40">No additional fields recorded for this event</div>
 									{/if}
 								</div>
 							</td>
@@ -421,12 +406,10 @@
 	</div>
 
 	{#if loading}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
+		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
 	{:else if error}
-		<div class="px-[16px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
+		<div class="px-4 py-7 text-center font-mono text-sm text-danger">{error}</div>
 	{:else if records.length === 0}
-		<div class="px-[40px] py-[40px] text-center font-mono text-[12px] text-ink/45">
-			No log events match the current filters
-		</div>
+		<div class="px-10 py-10 text-center font-mono text-sm text-ink/45">No log events match the current filters</div>
 	{/if}
 </div>

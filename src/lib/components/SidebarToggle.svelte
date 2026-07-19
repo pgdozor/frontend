@@ -3,16 +3,11 @@
 	import { sidebar } from '$lib/sidebar.svelte';
 
 	const btn =
-		'flex size-[32px] flex-none cursor-pointer items-center justify-center text-ink/55 transition-colors hover:bg-ink/6 hover:text-command';
+		'flex size-8 flex-none cursor-pointer items-center justify-center text-ink/55 transition-colors hover:bg-ink/6 hover:text-command';
 </script>
 
-<button
-	type="button"
-	onclick={() => sidebar.openDrawer()}
-	aria-label="Open navigation"
-	class="{btn} -ml-[6px] md:hidden"
->
-	<MenuIcon class="size-[20px]" />
+<button type="button" onclick={() => sidebar.openDrawer()} aria-label="Open navigation" class="{btn} -ml-1.5 md:hidden">
+	<MenuIcon class="size-5" />
 </button>
 
 <button
@@ -20,11 +15,11 @@
 	onclick={() => sidebar.toggleCollapsed()}
 	aria-label={sidebar.collapsed ? 'Show sidebar' : 'Hide sidebar'}
 	title={sidebar.collapsed ? 'Show sidebar' : 'Hide sidebar'}
-	class="{btn} -ml-[6px] hidden md:inline-flex"
+	class="{btn} -ml-1.5 hidden md:inline-flex"
 >
 	{#if sidebar.collapsed}
-		<PanelLeftIcon class="size-[18px]" />
+		<PanelLeftIcon class="size-5" />
 	{:else}
-		<PanelLeftCloseIcon class="size-[18px]" />
+		<PanelLeftCloseIcon class="size-5" />
 	{/if}
 </button>

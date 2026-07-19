@@ -35,13 +35,12 @@
 		timeOpen = false;
 	}
 
-	const triggerCls = 'flex cursor-pointer items-center gap-[8px] px-[12px] py-[7px] hover:bg-ink/4';
+	const triggerCls = 'flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-ink/4';
 	const panelCls =
-		'z-50 max-w-[calc(100vw-24px)] border border-ink/20 bg-card p-[5px] shadow-[0_8px_24px_rgba(58,42,31,0.18)]';
+		'z-50 max-w-[calc(100vw-24px)] border border-ink/20 bg-card p-1.5 shadow-[0_8px_24px_rgba(58,42,31,0.18)]';
 	const itemCls =
-		'flex w-full cursor-pointer items-center gap-[9px] px-[10px] py-[8px] font-mono text-[12px] text-ink hover:bg-ink/5 data-[highlighted]:bg-ink/5';
-	const labelCls =
-		'px-[9px] pt-[6px] pb-[4px] font-condensed text-[10px] font-semibold tracking-[1px] text-ink/50 uppercase';
+		'flex w-full cursor-pointer items-center gap-2.5 px-2.5 py-2 font-mono text-sm text-ink hover:bg-ink/5 data-[highlighted]:bg-ink/5';
+	const labelCls = 'px-2.5 pt-1.5 pb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase';
 	const dotTitle = (ok: boolean) =>
 		ok
 			? 'Collector healthy · reported within 5 minutes'
@@ -49,38 +48,38 @@
 </script>
 
 <div
-	class="sticky top-0 z-30 flex flex-wrap items-center gap-[10px] border-b border-ink/14 bg-paper/70 px-[16px] py-[14px] backdrop-blur-[3px] backdrop-saturate-[1.1] sm:px-[20px] md:gap-[18px] md:px-[28px]"
+	class="sticky top-0 z-30 flex flex-wrap items-center gap-2.5 border-b border-ink/14 bg-paper/70 px-4 py-3.5 backdrop-blur-[3px] backdrop-saturate-[1.1] sm:px-5 md:gap-5 md:px-7"
 >
 	<SidebarToggle />
 
-	<div class="flex min-w-0 flex-1 flex-col gap-[2px]">
-		<div class="flex items-baseline gap-[9px]">
-			<span class="truncate font-condensed text-[16px] leading-[1.15] font-bold tracking-[0.6px] text-ink uppercase"
+	<div class="flex min-w-0 flex-1 flex-col gap-0.5">
+		<div class="flex items-baseline gap-2.5">
+			<span class="truncate font-condensed text-xl leading-[1.15] font-bold tracking-[0.6px] text-ink uppercase"
 				>{title}</span
 			>
 		</div>
-		<p class="truncate text-[11px] leading-[1.2] text-ink/45">{description}</p>
+		<p class="truncate text-xs leading-[1.2] text-ink/45">{description}</p>
 	</div>
 
-	<div class="flex flex-wrap items-center gap-[10px]">
+	<div class="flex flex-wrap items-center gap-2.5">
 		<div class="flex border border-ink/18 bg-card">
 			{#if scopeLock.locked}
 				<div
-					class="flex items-center gap-[8px] border-r border-ink/14 px-[12px] py-[7px]"
+					class="flex items-center gap-2 border-r border-ink/14 px-3 py-2"
 					title="This query lives on {scopeLock.server} — the server is fixed here"
 				>
 					<span
-						class="h-[7px] w-[7px] rounded-full {selfHealth === 'ok' ? 'bg-ok' : 'bg-warn'}"
+						class="h-2 w-2 rounded-full {selfHealth === 'ok' ? 'bg-ok' : 'bg-warn'}"
 						title={dotTitle(selfHealth === 'ok')}
 					></span>
-					<span class="font-mono text-[12px] font-medium text-ink">{scopeLock.server}</span>
+					<span class="font-mono text-sm font-medium text-ink">{scopeLock.server}</span>
 				</div>
 				<div
-					class="flex items-center gap-[8px] px-[12px] py-[7px]"
+					class="flex items-center gap-2 px-3 py-2"
 					title="This query lives in {scopeLock.db} — the database is fixed here"
 				>
-					<DatabaseIcon class="size-[13px] flex-none text-steel" />
-					<span class="font-mono text-[12px] font-medium text-ink">{scopeLock.db}</span>
+					<DatabaseIcon class="size-3.5 flex-none text-steel" />
+					<span class="font-mono text-sm font-medium text-ink">{scopeLock.db}</span>
 				</div>
 			{:else}
 				<Select.Root type="single" value={ctx.server} onValueChange={selectServer}>
@@ -88,29 +87,29 @@
 						{#snippet child({ props })}
 							<button {...props} class="{triggerCls} border-r border-ink/14" aria-label="Select Postgres server">
 								<span
-									class="h-[7px] w-[7px] rounded-full {selfHealth === 'ok' ? 'bg-ok' : 'bg-warn'}"
+									class="h-2 w-2 rounded-full {selfHealth === 'ok' ? 'bg-ok' : 'bg-warn'}"
 									title={dotTitle(selfHealth === 'ok')}
 								></span>
-								<span class="font-mono text-[12px] font-medium text-ink">{ctx.server || '—'}</span>
-								<ChevronDownIcon class="size-[13px] text-ink/45" />
+								<span class="font-mono text-sm font-medium text-ink">{ctx.server || '—'}</span>
+								<ChevronDownIcon class="size-3.5 text-ink/45" />
 							</button>
 						{/snippet}
 					</Select.Trigger>
 					<Select.Portal>
-						<Select.Content sideOffset={6} align="start" class="{panelCls} min-w-[210px]">
+						<Select.Content sideOffset={6} align="start" class="{panelCls} min-w-[13.125rem]">
 							<div class={labelCls}>Postgres server</div>
 							{#each serversState.names as s (s)}
 								<Select.Item value={s} label={s}>
 									{#snippet child({ props, selected })}
 										<div {...props} class="{itemCls} {selected ? 'font-semibold' : ''}">
-											<span class="h-[7px] w-[7px] rounded-full {healthClass(s)}"></span>
+											<span class="h-2 w-2 rounded-full {healthClass(s)}"></span>
 											<span class="flex-1 text-left">{s}</span>
-											{#if selected}<CheckIcon class="size-[14px] text-command" />{/if}
+											{#if selected}<CheckIcon class="size-3.5 text-command" />{/if}
 										</div>
 									{/snippet}
 								</Select.Item>
 							{:else}
-								<div class="px-[10px] py-[8px] font-mono text-[12px] text-ink/45">No servers</div>
+								<div class="px-2.5 py-2 font-mono text-sm text-ink/45">No servers</div>
 							{/each}
 						</Select.Content>
 					</Select.Portal>
@@ -124,26 +123,26 @@
 								title={dbSwitch ? 'Select database' : 'Logs are server-wide — the database filter does not apply here'}
 								class="{triggerCls} {dbSwitch ? '' : 'cursor-not-allowed opacity-40'}"
 							>
-								<DatabaseIcon class="size-[13px] flex-none text-steel" />
-								<span class="font-mono text-[12px] font-medium text-ink">{ctx.db || '—'}</span>
-								<ChevronDownIcon class="size-[13px] text-ink/45" />
+								<DatabaseIcon class="size-3.5 flex-none text-steel" />
+								<span class="font-mono text-sm font-medium text-ink">{ctx.db || '—'}</span>
+								<ChevronDownIcon class="size-3.5 text-ink/45" />
 							</button>
 						{/snippet}
 					</Select.Trigger>
 					<Select.Portal>
-						<Select.Content sideOffset={6} align="end" class="{panelCls} min-w-[190px]">
+						<Select.Content sideOffset={6} align="end" class="{panelCls} min-w-[11.875rem]">
 							<div class={labelCls}>Database</div>
 							{#each serversState.databasesFor(ctx.server) as d (d)}
 								<Select.Item value={d} label={d}>
 									{#snippet child({ props, selected })}
 										<div {...props} class="{itemCls} {selected ? 'font-semibold' : ''}">
 											<span class="flex-1 text-left">{d}</span>
-											{#if selected}<CheckIcon class="size-[14px] text-command" />{/if}
+											{#if selected}<CheckIcon class="size-3.5 text-command" />{/if}
 										</div>
 									{/snippet}
 								</Select.Item>
 							{:else}
-								<div class="px-[10px] py-[8px] font-mono text-[12px] text-ink/45">No databases</div>
+								<div class="px-2.5 py-2 font-mono text-sm text-ink/45">No databases</div>
 							{/each}
 						</Select.Content>
 					</Select.Portal>
@@ -164,19 +163,19 @@
 				{#snippet child({ props })}
 					<button
 						{...props}
-						class="flex cursor-pointer items-center gap-[8px] border border-ink/18 bg-card px-[12px] py-[7px] hover:bg-ink/4"
+						class="flex cursor-pointer items-center gap-2 border border-ink/18 bg-card px-3 py-2 hover:bg-ink/4"
 					>
-						<ClockIcon class="size-[13px] flex-none text-warn" />
+						<ClockIcon class="size-3.5 flex-none text-warn" />
 						{#if ctx.isCustom}
-							<span class="flex items-center gap-[6px] font-mono text-[12px] font-medium whitespace-nowrap text-ink">
+							<span class="flex items-center gap-1.5 font-mono text-sm font-medium whitespace-nowrap text-ink">
 								{ctx.customFromLabel}
-								<ArrowRightIcon class="size-[12px] flex-none text-ink/40" />
+								<ArrowRightIcon class="size-3 flex-none text-ink/40" />
 								{ctx.customToLabel}
 							</span>
 						{:else}
-							<span class="font-mono text-[12px] font-medium whitespace-nowrap text-ink">{ctx.timeLabel}</span>
+							<span class="font-mono text-sm font-medium whitespace-nowrap text-ink">{ctx.timeLabel}</span>
 						{/if}
-						<ChevronDownIcon class="size-[13px] text-ink/45" />
+						<ChevronDownIcon class="size-3.5 text-ink/45" />
 					</button>
 				{/snippet}
 			</Popover.Trigger>
@@ -186,17 +185,15 @@
 					align="end"
 					class="z-50 flex max-w-[calc(100vw-24px)] flex-col border border-ink/20 bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)] sm:flex-row"
 				>
-					<div class="border-b border-ink/12 px-[8px] py-[14px] sm:min-w-[172px] sm:border-r sm:border-b-0">
-						<div
-							class="mb-[10px] px-[9px] font-condensed text-[10px] font-semibold tracking-[1px] text-ink/50 uppercase"
-						>
+					<div class="border-b border-ink/12 px-2 py-3.5 sm:min-w-[10.75rem] sm:border-r sm:border-b-0">
+						<div class="mb-2.5 px-2.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
 							Quick ranges
 						</div>
 						{#each presets as { key, label } (key)}
 							<button
 								type="button"
 								onclick={() => selectPreset(key)}
-								class="block w-full cursor-pointer px-[11px] py-[8px] text-left font-sans text-[12.5px] whitespace-nowrap hover:bg-ink/5 {ctx.range ===
+								class="block w-full cursor-pointer px-3 py-2 text-left font-sans text-sm whitespace-nowrap hover:bg-ink/5 {ctx.range ===
 								key
 									? 'bg-command/8 font-semibold text-command'
 									: 'text-ink'}"
@@ -205,32 +202,32 @@
 							</button>
 						{/each}
 					</div>
-					<div class="w-[268px] max-w-full px-[16px] py-[14px]">
-						<div class="mb-[10px] font-condensed text-[10px] font-semibold tracking-[1px] text-ink/50 uppercase">
+					<div class="w-[16.75rem] max-w-full px-4 py-3.5">
+						<div class="mb-2.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
 							Absolute time range
 						</div>
-						<label class="mb-[4px] block font-sans text-[11px] text-ink/65" for="ctx-from">From</label>
+						<label class="mb-1 block font-sans text-xs text-ink/65" for="ctx-from">From</label>
 						<input
 							id="ctx-from"
 							type="text"
 							bind:value={draftFrom}
 							placeholder="YYYY-MM-DD HH:MM:SS"
 							spellcheck="false"
-							class="mb-[11px] w-full border border-ink/22 bg-paper px-[9px] py-[7px] font-mono text-[12px] text-ink"
+							class="mb-3 w-full border border-ink/22 bg-paper px-2.5 py-2 font-mono text-sm text-ink"
 						/>
-						<label class="mb-[4px] block font-sans text-[11px] text-ink/65" for="ctx-to">To</label>
+						<label class="mb-1 block font-sans text-xs text-ink/65" for="ctx-to">To</label>
 						<input
 							id="ctx-to"
 							type="text"
 							bind:value={draftTo}
 							placeholder="YYYY-MM-DD HH:MM:SS"
 							spellcheck="false"
-							class="mb-[14px] w-full border border-ink/22 bg-paper px-[9px] py-[7px] font-mono text-[12px] text-ink"
+							class="mb-3.5 w-full border border-ink/22 bg-paper px-2.5 py-2 font-mono text-sm text-ink"
 						/>
 						<button
 							type="button"
 							onclick={applyCustom}
-							class="w-full cursor-pointer bg-command px-[9px] py-[9px] text-center font-condensed text-[13px] font-semibold tracking-[0.6px] text-paper uppercase hover:bg-danger"
+							class="w-full cursor-pointer bg-command px-2.5 py-2.5 text-center font-condensed text-md font-semibold tracking-[0.6px] text-paper uppercase hover:bg-danger"
 						>
 							Apply range
 						</button>

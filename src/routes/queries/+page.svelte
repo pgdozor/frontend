@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { clsx } from 'clsx';
-	import { ArrowUpIcon, ArrowDownIcon } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { timestampFromDate, timestampDate } from '@bufbuild/protobuf/wkt';
@@ -15,7 +13,7 @@
 	import { ctx } from '$lib/state.svelte';
 	import { urlSync } from '$lib/urlState.svelte';
 	import { QueryFilterState, parseDisplayTag } from '$lib/queryFilter.svelte';
-	import { fmtDuration, fmtCount, sevByMean, kvTags, errMsg } from '$lib/format';
+	import { fmtDuration, sevByMean, kvTags, errMsg } from '$lib/format';
 	import { C } from '$lib/theme';
 	import type { MetricSeriesPoint } from '$lib/metricChart';
 	import CallsChart from '$lib/components/CallsChart.svelte';
@@ -24,37 +22,12 @@
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
-	import Tag from '$lib/components/Tag.svelte';
+	import StatementTable, { type StatementRow, type StatementSortCol } from '$lib/components/StatementTable.svelte';
 	import TagFilterBar from '$lib/components/TagFilterBar.svelte';
-
-	type Row = {
-		id: string;
-		query: string;
-		usr: string;
-		meanMs: number;
-		calls: number;
-		rowsPerCall: number;
-		pctIo: number;
-		pctTime: number;
-		sev: string;
-		tags: string[];
-	};
-
-	type SortCol = 'query' | 'usr' | 'meanMs' | 'calls' | 'rowsPerCall' | 'pctIo' | 'pctTime';
-
-	const headDef: { key: SortCol; label: string; align: 'left' | 'right'; width?: string; hide?: string }[] = [
-		{ key: 'query', label: 'Query', align: 'left' },
-		{ key: 'usr', label: 'User', align: 'left', width: '120px', hide: 'hidden sm:table-cell' },
-		{ key: 'meanMs', label: 'Avg', align: 'right', width: '90px' },
-		{ key: 'calls', label: 'Calls', align: 'right', width: '90px' },
-		{ key: 'rowsPerCall', label: 'Rows/Call', align: 'right', width: '98px', hide: 'hidden lg:table-cell' },
-		{ key: 'pctIo', label: '% IO', align: 'right', width: '78px', hide: 'hidden lg:table-cell' },
-		{ key: 'pctTime', label: '% Time', align: 'right', width: '84px', hide: 'hidden lg:table-cell' }
-	];
 
 	const PAGE_SIZE = 50;
 
-	const sortColumnProto: Record<SortCol, StatementSortColumn> = {
+	const sortColumnProto: Record<StatementSortCol, StatementSortColumn> = {
 		query: StatementSortColumn.QUERY,
 		usr: StatementSortColumn.USER,
 		meanMs: StatementSortColumn.AVG,
@@ -64,12 +37,12 @@
 		pctTime: StatementSortColumn.PCT_TIME
 	};
 
-	let rows = $state<Row[]>([]);
+	let rows = $state<StatementRow[]>([]);
 	let hasMore = $state(false);
 	let tableLoading = $state(true);
 	let loadingMore = $state(false);
 	let tableError = $state<string | null>(null);
-	let sort = $state<{ col: SortCol; dir: 'asc' | 'desc' }>({ col: 'pctTime', dir: 'desc' });
+	let sort = $state<{ col: StatementSortCol; dir: 'asc' | 'desc' }>({ col: 'pctTime', dir: 'desc' });
 
 	let metrics = $state<StatementMetrics | undefined>(undefined);
 	let chartRange = $state<{ from: Date; to: Date } | null>(null);
@@ -95,7 +68,7 @@
 		return () => clearTimeout(id);
 	});
 
-	function toRow(s: StatementStat): Row {
+	function toRow(s: StatementStat): StatementRow {
 		const calls = Number(s.calls);
 		return {
 			id: s.id.toString(),
@@ -209,23 +182,8 @@
 		{ label: 'p99', color: C.danger, points: toPoints(metrics?.p99) }
 	]);
 
-	function sortBy(key: SortCol) {
-		if (sort.col === key) sort = { col: key, dir: sort.dir === 'asc' ? 'desc' : 'asc' };
-		else sort = { col: key, dir: key === 'query' || key === 'usr' ? 'asc' : 'desc' };
-	}
-
-	// Numeric/text cells never truncate — only the query text (the <code>) does.
-	const numCell =
-		'px-4 py-3 border-b border-ink/8 text-right align-top leading-[20px] font-mono text-md text-ink whitespace-nowrap';
-
 	function open(id: string) {
 		goto(`/queries/${id}`);
-	}
-	function onRowKey(e: KeyboardEvent, id: string) {
-		if (e.key === 'Enter' || e.key === ' ') {
-			e.preventDefault();
-			open(id);
-		}
 	}
 
 	// The tag sits inside a row that navigates on click.
@@ -274,85 +232,7 @@
 	</header>
 	<TagFilterBar bind:searchText={search} tags={filters} />
 
-	<div class="overflow-x-auto">
-		<table class="w-full min-w-[30rem] table-fixed border-collapse font-sans">
-			<thead>
-				<tr class="bg-ink/4">
-					{#each headDef as h (h.key)}
-						<th
-							onclick={() => sortBy(h.key)}
-							style:width={h.width}
-							class={clsx(
-								'cursor-pointer border-b border-ink/14 py-2.5 pr-4 font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase select-none',
-								h.key === 'query' ? 'pl-8' : 'pl-4',
-								h.align === 'right' ? 'text-right' : 'text-left',
-								h.hide
-							)}
-						>
-							<span class="inline-flex items-center gap-1 align-middle">
-								<span>{h.label}</span>
-								{#if sort.col === h.key}
-									{#if sort.dir === 'asc'}
-										<ArrowUpIcon class="size-3 flex-none text-command" />
-									{:else}
-										<ArrowDownIcon class="size-3 flex-none text-command" />
-									{/if}
-								{/if}
-							</span>
-						</th>
-					{/each}
-				</tr>
-			</thead>
-			<tbody>
-				{#each rows as q (q.id)}
-					<tr
-						onclick={() => open(q.id)}
-						onkeydown={(e) => onRowKey(e, q.id)}
-						role="button"
-						tabindex="0"
-						class="cursor-pointer transition-colors hover:bg-command/6"
-					>
-						<td class="border-b border-ink/8 px-4 py-3 align-top">
-							<div class="flex items-start gap-2.5">
-								<span class="mt-2 h-2 w-2 flex-none rounded-full" style:background={q.sev}></span>
-								<div class="min-w-0 flex-1">
-									<code
-										onmouseenter={(e) => sql.showLazy(BigInt(q.id), e)}
-										onmouseleave={sql.hide}
-										class="inline-block max-w-full cursor-default overflow-hidden align-top font-mono text-sm leading-[20px] text-ellipsis whitespace-nowrap text-ink transition-colors hover:text-command"
-										>{q.query}</code
-									>
-									{#if q.tags.length > 0}
-										<div class="mt-1 flex flex-wrap gap-1.5">
-											{#each q.tags as t (t)}
-												<Tag text={t} title="Filter by {t}" onclick={(e) => filterByTag(e, t)} />
-											{/each}
-										</div>
-									{/if}
-								</div>
-							</div>
-						</td>
-						<td
-							title={q.usr}
-							class="hidden border-b border-ink/8 px-4 py-3 align-top font-mono text-md leading-[20px] text-ink sm:table-cell"
-						>
-							<span class="block truncate">{q.usr}</span>
-						</td>
-						<td
-							class="border-b border-ink/8 px-4 py-3 text-right align-top leading-[20px] font-mono text-md font-semibold whitespace-nowrap"
-							style:color={q.sev}
-						>
-							{fmtDuration(q.meanMs)}
-						</td>
-						<td class={numCell}>{fmtCount(q.calls)}</td>
-						<td class="{numCell} hidden lg:table-cell">{fmtCount(q.rowsPerCall)}</td>
-						<td class="{numCell} hidden lg:table-cell">{q.pctIo.toFixed(1)}%</td>
-						<td class="{numCell} hidden lg:table-cell">{q.pctTime.toFixed(1)}%</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
+	<StatementTable {rows} bind:sort {sql} onOpen={open} onFilterTag={filterByTag} />
 
 	{#if tableLoading}
 		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>

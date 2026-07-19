@@ -95,7 +95,7 @@
 	}
 
 	const th =
-		'border-b border-ink/14 px-[20px] py-[11px] font-condensed text-[11px] font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
+		'border-b border-ink/14 px-5 py-3 font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
 </script>
 
 <PageBar>
@@ -103,43 +103,41 @@
 		<button
 			type="button"
 			onclick={openForm}
-			class="flex cursor-pointer items-center gap-[8px] bg-command px-[14px] py-[8px] font-condensed text-[12px] font-bold tracking-[0.8px] whitespace-nowrap text-paper uppercase hover:bg-danger"
+			class="flex cursor-pointer items-center gap-2 bg-command px-3.5 py-2 font-condensed text-sm font-bold tracking-[0.8px] whitespace-nowrap text-paper uppercase hover:bg-danger"
 		>
-			<PlusIcon class="size-[14px] stroke-[2.4]" />
+			<PlusIcon class="size-3.5 stroke-[2.4]" />
 			<span>New Token</span>
 		</button>
 	{/snippet}
 </PageBar>
 
-<div class="mx-auto w-full max-w-[1320px] min-w-0 px-[28px] pt-[26px] pb-[60px]">
+<div class="mx-auto w-full max-w-[82.5rem] min-w-0 px-7 pt-7 pb-16">
 	<div class="border border-ink/16 bg-card">
 		<div class="overflow-x-auto">
-			<table class="w-full min-w-[560px] border-collapse font-sans">
+			<table class="w-full min-w-[35rem] border-collapse font-sans">
 				<thead>
 					<tr class="bg-ink/4">
 						<th class="{th} text-left">Postgres Server</th>
 						<th class="{th} text-left">Created</th>
-						<th class="{th} w-[120px] text-right">Actions</th>
+						<th class="{th} w-[7.5rem] text-right">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each tokens as token (token.id.toString())}
 						<tr class="hover:bg-ink/3">
-							<td class="border-b border-ink/8 px-[20px] py-[13px]">
-								<span class="font-mono text-[13px] font-medium text-ink">{token.serverName}</span>
+							<td class="border-b border-ink/8 px-5 py-3.5">
+								<span class="font-mono text-md font-medium text-ink">{token.serverName}</span>
 							</td>
-							<td
-								class="border-b border-ink/8 px-[20px] py-[13px] font-mono text-[12.5px] whitespace-nowrap text-ink/60"
-							>
+							<td class="border-b border-ink/8 px-5 py-3.5 font-mono text-sm whitespace-nowrap text-ink/60">
 								{created(token)}
 							</td>
-							<td class="border-b border-ink/8 px-[20px] py-[13px] text-right">
+							<td class="border-b border-ink/8 px-5 py-3.5 text-right">
 								<button
 									type="button"
 									onclick={() => remove(token)}
-									class="inline-flex cursor-pointer items-center gap-[6px] font-condensed text-[11px] font-bold tracking-[0.6px] text-ink/50 uppercase hover:text-danger"
+									class="inline-flex cursor-pointer items-center gap-1.5 font-condensed text-xs font-bold tracking-[0.6px] text-ink/50 uppercase hover:text-danger"
 								>
-									<Trash2Icon class="size-[13px]" />
+									<Trash2Icon class="size-3.5" />
 									<span>Delete</span>
 								</button>
 							</td>
@@ -150,11 +148,11 @@
 		</div>
 
 		{#if loading}
-			<div class="px-[44px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
+			<div class="px-11 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
 		{:else if error}
-			<div class="px-[44px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
+			<div class="px-11 py-7 text-center font-mono text-sm text-danger">{error}</div>
 		{:else if tokens.length === 0}
-			<div class="px-[44px] py-[44px] text-center font-mono text-[12px] text-ink/45">
+			<div class="px-11 py-11 text-center font-mono text-sm text-ink/45">
 				No collector tokens yet. Create one to connect a collector
 			</div>
 		{/if}
@@ -164,9 +162,9 @@
 {#if modal !== null}
 	<Modal title={modal === 'reveal' ? 'Token Created' : 'Create Collector Token'} onclose={close}>
 		{#if modal === 'form'}
-			<div class="p-[20px]">
+			<div class="p-5">
 				<label
-					class="mb-[6px] block font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/55 uppercase"
+					class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase"
 					for="token-server"
 				>
 					Postgres Server
@@ -178,22 +176,22 @@
 					placeholder="e.g. shdp-prod-5"
 					spellcheck="false"
 					onkeydown={(e) => e.key === 'Enter' && create()}
-					class="h-[42px] w-full border border-ink/22 bg-paper px-[13px] font-mono text-[13.5px] text-ink outline-none focus:border-command"
+					class="h-[2.625rem] w-full border border-ink/22 bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
 				/>
 				{#if formError}
 					<div
-						class="mt-[14px] flex items-center gap-[8px] border border-danger/30 bg-danger/8 px-[12px] py-[9px] text-[12.5px] text-danger"
+						class="mt-3.5 flex items-center gap-2 border border-danger/30 bg-danger/8 px-3 py-2.5 text-sm text-danger"
 					>
-						<CircleAlertIcon class="size-[14px] flex-none" />
+						<CircleAlertIcon class="size-3.5 flex-none" />
 						<span>{formError}</span>
 					</div>
 				{/if}
 			</div>
-			<div class="flex justify-end gap-[10px] border-t border-ink/12 px-[20px] py-[14px]">
+			<div class="flex justify-end gap-2.5 border-t border-ink/12 px-5 py-3.5">
 				<button
 					type="button"
 					onclick={close}
-					class="cursor-pointer border border-ink/22 px-[16px] py-[9px] font-condensed text-[12.5px] font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-ink/5"
+					class="cursor-pointer border border-ink/22 px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-ink/5"
 				>
 					Cancel
 				</button>
@@ -201,42 +199,42 @@
 					type="button"
 					onclick={create}
 					disabled={creating}
-					class="cursor-pointer border border-command bg-command px-[16px] py-[9px] font-condensed text-[12.5px] font-bold tracking-[0.8px] text-paper uppercase hover:bg-danger disabled:opacity-70"
+					class="cursor-pointer border border-command bg-command px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-paper uppercase hover:bg-danger disabled:opacity-70"
 				>
 					{creating ? 'Creating…' : 'Create Token'}
 				</button>
 			</div>
 		{:else}
-			<div class="p-[20px]">
-				<div class="mb-[16px] flex items-center gap-[10px] border border-danger/30 bg-danger/8 px-[14px] py-[12px]">
-					<TriangleAlertIcon class="size-[16px] flex-none text-danger" />
-					<div class="font-condensed text-[12px] font-bold tracking-[0.6px] text-danger uppercase">
+			<div class="p-5">
+				<div class="mb-4 flex items-center gap-2.5 border border-danger/30 bg-danger/8 px-3.5 py-3">
+					<TriangleAlertIcon class="size-4 flex-none text-danger" />
+					<div class="font-condensed text-sm font-bold tracking-[0.6px] text-danger uppercase">
 						Copy this token now. It will not be shown again.
 					</div>
 				</div>
-				<span class="mb-[6px] block font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/55 uppercase"
+				<span class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase"
 					>Token</span
 				>
-				<div class="flex items-center gap-[12px] border border-ink/40 bg-ink px-[14px] py-[13px]">
-					<code class="min-w-0 flex-1 font-mono text-[13px] leading-[1.5] break-all text-paper">{newToken}</code>
+				<div class="flex items-center gap-3 border border-ink/40 bg-ink px-3.5 py-3.5">
+					<code class="min-w-0 flex-1 font-mono text-md leading-[1.5] break-all text-paper">{newToken}</code>
 					<button
 						type="button"
 						onclick={copyToken}
-						class="inline-flex flex-none cursor-pointer items-center gap-[6px] bg-command px-[11px] py-[6px] font-condensed text-[11px] font-bold tracking-[0.6px] whitespace-nowrap text-paper uppercase hover:bg-danger"
+						class="inline-flex flex-none cursor-pointer items-center gap-1.5 bg-command px-3 py-1.5 font-condensed text-xs font-bold tracking-[0.6px] whitespace-nowrap text-paper uppercase hover:bg-danger"
 					>
-						<CopyIcon class="size-[12px] stroke-[2.2]" />
+						<CopyIcon class="size-3 stroke-[2.2]" />
 						<span>{copied ? 'Copied' : 'Copy'}</span>
 					</button>
 				</div>
-				<div class="mt-[11px] font-sans text-[12px] text-ink/55">
+				<div class="mt-3 font-sans text-sm text-ink/55">
 					Server <span class="font-mono text-ink">{newTokenServer}</span>
 				</div>
 			</div>
-			<div class="flex justify-end gap-[10px] border-t border-ink/12 px-[20px] py-[14px]">
+			<div class="flex justify-end gap-2.5 border-t border-ink/12 px-5 py-3.5">
 				<button
 					type="button"
 					onclick={close}
-					class="cursor-pointer border border-command bg-command px-[16px] py-[9px] font-condensed text-[12.5px] font-bold tracking-[0.8px] text-paper uppercase hover:bg-danger"
+					class="cursor-pointer border border-command bg-command px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-paper uppercase hover:bg-danger"
 				>
 					Done
 				</button>

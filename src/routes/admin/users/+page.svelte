@@ -114,11 +114,11 @@
 	}
 
 	const th =
-		'border-b border-ink/14 px-[20px] py-[11px] text-left font-condensed text-[11px] font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
+		'border-b border-ink/14 px-5 py-3 text-left font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
 	const allChip =
-		'inline-block border border-command/40 bg-command/10 px-[8px] py-[2px] font-condensed text-[10.5px] font-bold tracking-[0.5px] whitespace-nowrap text-command uppercase';
+		'inline-block border border-command/40 bg-command/10 px-2 py-0.5 font-condensed text-2xs font-bold tracking-[0.5px] whitespace-nowrap text-command uppercase';
 	const serverChip =
-		'inline-block border border-steel/28 bg-steel/10 px-[7px] py-[2px] font-mono text-[11px] whitespace-nowrap text-steel';
+		'inline-block border border-steel/28 bg-steel/10 px-2 py-0.5 font-mono text-xs whitespace-nowrap text-steel';
 </script>
 
 <PageBar>
@@ -126,49 +126,45 @@
 		<button
 			type="button"
 			onclick={openCreate}
-			class="flex cursor-pointer items-center gap-[8px] bg-command px-[14px] py-[8px] font-condensed text-[12px] font-bold tracking-[0.8px] whitespace-nowrap text-paper uppercase hover:bg-danger"
+			class="flex cursor-pointer items-center gap-2 bg-command px-3.5 py-2 font-condensed text-sm font-bold tracking-[0.8px] whitespace-nowrap text-paper uppercase hover:bg-danger"
 		>
-			<PlusIcon class="size-[14px] stroke-[2.4]" />
+			<PlusIcon class="size-3.5 stroke-[2.4]" />
 			<span>New User</span>
 		</button>
 	{/snippet}
 </PageBar>
 
-<div class="mx-auto w-full max-w-[1320px] min-w-0 px-[28px] pt-[26px] pb-[60px]">
+<div class="mx-auto w-full max-w-[82.5rem] min-w-0 px-7 pt-7 pb-16">
 	<div class="border border-ink/16 bg-card">
 		<div class="overflow-x-auto">
-			<table class="w-full min-w-[860px] border-collapse font-sans">
+			<table class="w-full min-w-[53.75rem] border-collapse font-sans">
 				<thead>
 					<tr class="bg-ink/4">
-						<th class="{th} w-[190px]">Name</th>
-						<th class="{th} w-[210px]">Email</th>
-						<th class="{th} w-[150px]">Created</th>
+						<th class="{th} w-[11.875rem]">Name</th>
+						<th class="{th} w-[13.125rem]">Email</th>
+						<th class="{th} w-[9.375rem]">Created</th>
 						<th class={th}>Permissions</th>
-						<th class="{th} w-[150px] text-right">Actions</th>
+						<th class="{th} w-[9.375rem] text-right">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each users as u (u.id.toString())}
 						<tr class="hover:bg-ink/3">
 							<td
-								class="border-b border-ink/8 px-[20px] py-[13px] align-top font-mono text-[13px] font-semibold whitespace-nowrap text-ink"
+								class="border-b border-ink/8 px-5 py-3.5 align-top font-mono text-md font-semibold whitespace-nowrap text-ink"
 							>
 								{u.name}
 							</td>
-							<td class="border-b border-ink/8 px-[20px] py-[13px] align-top font-sans text-[12.5px] text-ink/78"
-								>{u.email}</td
-							>
-							<td
-								class="border-b border-ink/8 px-[20px] py-[13px] align-top font-mono text-[12.5px] whitespace-nowrap text-ink/60"
-							>
+							<td class="border-b border-ink/8 px-5 py-3.5 align-top font-sans text-sm text-ink/78">{u.email}</td>
+							<td class="border-b border-ink/8 px-5 py-3.5 align-top font-mono text-sm whitespace-nowrap text-ink/60">
 								{created(u)}
 							</td>
-							<td class="border-b border-ink/8 px-[20px] py-[13px] align-top">
-								<div class="flex flex-wrap gap-[5px]">
+							<td class="border-b border-ink/8 px-5 py-3.5 align-top">
+								<div class="flex flex-wrap gap-1.5">
 									{#if u.isSuperAdmin}
 										<span class={allChip}>All servers</span>
 									{:else if u.allowedServers.length === 0}
-										<span class="font-mono text-[12px] text-ink/40">—</span>
+										<span class="font-mono text-sm text-ink/40">—</span>
 									{:else}
 										{#each u.allowedServers as s (s)}
 											<span class={serverChip}>{s}</span>
@@ -176,23 +172,23 @@
 									{/if}
 								</div>
 							</td>
-							<td class="border-b border-ink/8 px-[20px] py-[13px] text-right align-top">
-								<div class="inline-flex items-center justify-end gap-[16px]">
+							<td class="border-b border-ink/8 px-5 py-3.5 text-right align-top">
+								<div class="inline-flex items-center justify-end gap-4">
 									<button
 										type="button"
 										onclick={() => openEdit(u)}
-										class="inline-flex cursor-pointer items-center gap-[6px] font-condensed text-[11px] font-bold tracking-[0.6px] text-command uppercase hover:text-danger"
+										class="inline-flex cursor-pointer items-center gap-1.5 font-condensed text-xs font-bold tracking-[0.6px] text-command uppercase hover:text-danger"
 									>
-										<SquarePenIcon class="size-[13px]" />
+										<SquarePenIcon class="size-3.5" />
 										<span>Edit</span>
 									</button>
 									{#if !u.isSuperAdmin}
 										<button
 											type="button"
 											onclick={() => remove(u)}
-											class="inline-flex cursor-pointer items-center gap-[6px] font-condensed text-[11px] font-bold tracking-[0.6px] text-ink/50 uppercase hover:text-danger"
+											class="inline-flex cursor-pointer items-center gap-1.5 font-condensed text-xs font-bold tracking-[0.6px] text-ink/50 uppercase hover:text-danger"
 										>
-											<Trash2Icon class="size-[13px]" />
+											<Trash2Icon class="size-3.5" />
 											<span>Delete</span>
 										</button>
 									{/if}
@@ -205,20 +201,20 @@
 		</div>
 
 		{#if loading}
-			<div class="px-[44px] py-[28px] text-center font-mono text-[12px] text-ink/45">Loading…</div>
+			<div class="px-11 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
 		{:else if error}
-			<div class="px-[44px] py-[28px] text-center font-mono text-[12px] text-danger">{error}</div>
+			<div class="px-11 py-7 text-center font-mono text-sm text-danger">{error}</div>
 		{:else if users.length === 0}
-			<div class="px-[44px] py-[44px] text-center font-mono text-[12px] text-ink/45">No users yet</div>
+			<div class="px-11 py-11 text-center font-mono text-sm text-ink/45">No users yet</div>
 		{/if}
 	</div>
 </div>
 
 {#if modal !== null}
 	<Modal title={modal === 'edit' ? 'Edit User' : 'New User'} onclose={close} maxWidth="520px">
-		<div class="p-[20px]">
+		<div class="p-5">
 			<label
-				class="mb-[6px] block font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/55 uppercase"
+				class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase"
 				for="um-name"
 			>
 				Name
@@ -229,11 +225,11 @@
 				bind:value={umName}
 				placeholder="Jane Doe"
 				spellcheck="false"
-				class="mb-[15px] h-[42px] w-full border border-ink/22 bg-paper px-[13px] font-mono text-[13.5px] text-ink outline-none focus:border-command"
+				class="mb-4 h-[2.625rem] w-full border border-ink/22 bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
 			/>
 
 			<label
-				class="mb-[6px] block font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/55 uppercase"
+				class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase"
 				for="um-email"
 			>
 				Email
@@ -244,11 +240,11 @@
 				bind:value={umEmail}
 				placeholder="jdoe@company.com"
 				spellcheck="false"
-				class="mb-[15px] h-[42px] w-full border border-ink/22 bg-paper px-[13px] font-mono text-[13.5px] text-ink outline-none focus:border-command"
+				class="mb-4 h-[2.625rem] w-full border border-ink/22 bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
 			/>
 
 			<label
-				class="mb-[6px] block font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/55 uppercase"
+				class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase"
 				for="um-password"
 			>
 				Password
@@ -259,31 +255,31 @@
 				bind:value={umPassword}
 				placeholder={modal === 'edit' ? 'Leave blank to keep current' : 'Set a password'}
 				autocomplete="new-password"
-				class="mb-[18px] h-[42px] w-full border border-ink/22 bg-paper px-[13px] font-mono text-[13.5px] text-ink outline-none focus:border-command"
+				class="mb-5 h-[2.625rem] w-full border border-ink/22 bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
 			/>
 
 			{#if editingSuperAdmin}
-				<div class="border border-ink/16 bg-ink/4 px-[13px] py-[11px] font-sans text-[12.5px] text-ink/60">
+				<div class="border border-ink/16 bg-ink/4 px-3.5 py-3 font-sans text-sm text-ink/60">
 					The super admin can view every server.
 				</div>
 			{:else}
-				<span class="mb-[8px] block font-condensed text-[10.5px] font-semibold tracking-[1px] text-ink/55 uppercase">
+				<span class="mb-2 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase">
 					Allowed Servers
 				</span>
 				{#if serverOptions.length === 0}
-					<div class="font-mono text-[12px] text-ink/45">No servers yet — create a collector token first</div>
+					<div class="font-mono text-sm text-ink/45">No servers yet — create a collector token first</div>
 				{:else}
-					<div class="flex flex-wrap gap-[8px]">
+					<div class="flex flex-wrap gap-2">
 						{#each serverOptions as name (name)}
 							{@const on = umServers.includes(name)}
 							<button
 								type="button"
 								onclick={() => toggleServer(name)}
-								class="inline-flex cursor-pointer items-center gap-[7px] border px-[11px] py-[7px] font-mono text-[12px] select-none {on
+								class="inline-flex cursor-pointer items-center gap-2 border px-3 py-2 font-mono text-sm select-none {on
 									? 'border-command bg-command/10 font-semibold text-command'
 									: 'border-ink/22 text-ink/60'}"
 							>
-								{#if on}<CheckIcon class="size-[13px]" />{:else}<PlusIcon class="size-[13px]" />{/if}{name}
+								{#if on}<CheckIcon class="size-3.5" />{:else}<PlusIcon class="size-3.5" />{/if}{name}
 							</button>
 						{/each}
 					</div>
@@ -291,19 +287,17 @@
 			{/if}
 
 			{#if userError}
-				<div
-					class="mt-[16px] flex items-center gap-[8px] border border-danger/30 bg-danger/8 px-[12px] py-[9px] text-[12.5px] text-danger"
-				>
-					<CircleAlertIcon class="size-[14px] flex-none" />
+				<div class="mt-4 flex items-center gap-2 border border-danger/30 bg-danger/8 px-3 py-2.5 text-sm text-danger">
+					<CircleAlertIcon class="size-3.5 flex-none" />
 					<span>{userError}</span>
 				</div>
 			{/if}
 		</div>
-		<div class="flex justify-end gap-[10px] border-t border-ink/12 px-[20px] py-[14px]">
+		<div class="flex justify-end gap-2.5 border-t border-ink/12 px-5 py-3.5">
 			<button
 				type="button"
 				onclick={close}
-				class="cursor-pointer border border-ink/22 px-[16px] py-[9px] font-condensed text-[12.5px] font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-ink/5"
+				class="cursor-pointer border border-ink/22 px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-ink/5"
 			>
 				Cancel
 			</button>
@@ -311,7 +305,7 @@
 				type="button"
 				onclick={save}
 				disabled={saving}
-				class="cursor-pointer border border-command bg-command px-[16px] py-[9px] font-condensed text-[12.5px] font-bold tracking-[0.8px] text-paper uppercase hover:bg-danger disabled:opacity-70"
+				class="cursor-pointer border border-command bg-command px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-paper uppercase hover:bg-danger disabled:opacity-70"
 			>
 				{saving ? 'Saving…' : modal === 'edit' ? 'Save Changes' : 'Create User'}
 			</button>
