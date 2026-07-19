@@ -89,18 +89,18 @@
 </script>
 
 {#if loading}
-	<div class="border border-ink/16 bg-card px-4 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
+	<div class="border border-line-card bg-card px-4 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
 {:else if error}
-	<div class="border border-ink/16 bg-card px-4 py-7 text-center font-mono text-sm text-danger">
+	<div class="border border-line-card bg-card px-4 py-7 text-center font-mono text-sm text-danger">
 		{error}
 	</div>
 {:else if trees.length === 0}
-	<div class="border border-ink/16 bg-card px-4 py-7 text-center font-mono text-sm text-ink/45">
+	<div class="border border-line-card bg-card px-4 py-7 text-center font-mono text-sm text-ink/45">
 		No blocking in this range
 	</div>
 {:else}
 	{#each trees as tree (tree.rootPid)}
-		<div class="mb-4 border border-ink/16 bg-card last:mb-0">
+		<div class="mb-4 border border-line-card bg-card last:mb-0">
 			<div class="flex items-center gap-4 border-l-4 border-warn bg-warn/[0.06] px-5 py-2.5">
 				<div class="min-w-0 flex-1">
 					<div class="flex flex-wrap items-baseline gap-2.5">
@@ -122,7 +122,7 @@
 			</div>
 
 			{#each orderVictims(tree) as { event, level } (event.pid)}
-				<div class="flex items-start border-t border-ink/8 py-3 pr-5" style:padding-left={`${level * 22}px`}>
+				<div class="flex items-start border-t border-line-soft py-3 pr-5" style:padding-left={`${level * 22}px`}>
 					<!-- Arrow column width matches the 22px indent step, so pids align across levels. -->
 					<span class="w-6 flex-none font-mono text-xs leading-[18px] text-ink/40">↳</span>
 					<div class="min-w-0 flex-1">

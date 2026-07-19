@@ -17,7 +17,7 @@
 <!-- min-height matches ContextBar's control-driven height so the title sits at
      the same vertical position across sections. -->
 <div
-	class="sticky top-0 z-30 flex min-h-[3.9375rem] flex-wrap items-center gap-2.5 border-b border-ink/14 bg-paper/70 px-4 py-3.5 backdrop-blur-[3px] backdrop-saturate-[1.1] sm:px-5 md:gap-5 md:px-7"
+	class="sticky top-0 z-30 flex min-h-[3.9375rem] flex-wrap items-center gap-2.5 border-b border-line bg-paper/70 px-4 py-3.5 backdrop-blur-[3px] backdrop-saturate-[1.1] sm:px-5 md:gap-5 md:px-7"
 >
 	<SidebarToggle />
 

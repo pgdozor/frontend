@@ -17,7 +17,9 @@
 	const opLabel = $derived(filter.op === 'ne' ? '!=' : filter.op === 'eq' ? '=' : 'exists');
 </script>
 
-<span class="flex items-center border bg-card {active ? 'border-command/55' : 'border-ink/20'} hover:border-command/45">
+<span
+	class="flex items-center border bg-card {active ? 'border-command/55' : 'border-line-strong'} hover:border-command/45"
+>
 	<button
 		type="button"
 		onclick={onedit}
@@ -34,7 +36,7 @@
 		type="button"
 		onclick={onremove}
 		aria-label="Remove {describeTagFilter(filter)} filter"
-		class="cursor-pointer border-l border-ink/12 px-1.5 py-1.5 text-ink/40 hover:bg-ink/5 hover:text-danger"
+		class="cursor-pointer border-l border-ink/12 px-1.5 py-1.5 text-ink/40 hover:bg-hover hover:text-danger"
 	>
 		<XIcon class="size-3" />
 	</button>

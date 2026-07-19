@@ -35,7 +35,7 @@
 </script>
 
 {#snippet card(tags: QueryFilterState, searchText: string)}
-	<div class="border border-ink/16 bg-card">
+	<div class="border border-line-card bg-card">
 		<TagFilterBar {tags} {searchText} />
 	</div>
 {/snippet}

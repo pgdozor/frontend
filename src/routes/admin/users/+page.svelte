@@ -114,7 +114,7 @@
 	}
 
 	const th =
-		'border-b border-ink/14 px-5 py-3 text-left font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
+		'border-b border-line px-5 py-3 text-left font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
 	const allChip =
 		'inline-block border border-command/40 bg-command/10 px-2 py-0.5 font-condensed text-2xs font-bold tracking-[0.5px] whitespace-nowrap text-command uppercase';
 	const serverChip =
@@ -135,11 +135,11 @@
 </PageBar>
 
 <div class="mx-auto w-full max-w-[82.5rem] min-w-0 px-7 pt-7 pb-16">
-	<div class="border border-ink/16 bg-card">
+	<div class="border border-line-card bg-card">
 		<div class="overflow-x-auto">
 			<table class="w-full min-w-[53.75rem] border-collapse font-sans">
 				<thead>
-					<tr class="bg-ink/4">
+					<tr class="bg-hover-soft">
 						<th class="{th} w-[11.875rem]">Name</th>
 						<th class="{th} w-[13.125rem]">Email</th>
 						<th class="{th} w-[9.375rem]">Created</th>
@@ -151,15 +151,17 @@
 					{#each users as u (u.id.toString())}
 						<tr class="hover:bg-ink/3">
 							<td
-								class="border-b border-ink/8 px-5 py-3.5 align-top font-mono text-md font-semibold whitespace-nowrap text-ink"
+								class="border-b border-line-soft px-5 py-3.5 align-top font-mono text-md font-semibold whitespace-nowrap text-ink"
 							>
 								{u.name}
 							</td>
-							<td class="border-b border-ink/8 px-5 py-3.5 align-top font-sans text-sm text-ink/78">{u.email}</td>
-							<td class="border-b border-ink/8 px-5 py-3.5 align-top font-mono text-sm whitespace-nowrap text-ink/60">
+							<td class="border-b border-line-soft px-5 py-3.5 align-top font-sans text-sm text-ink/78">{u.email}</td>
+							<td
+								class="border-b border-line-soft px-5 py-3.5 align-top font-mono text-sm whitespace-nowrap text-ink/60"
+							>
 								{created(u)}
 							</td>
-							<td class="border-b border-ink/8 px-5 py-3.5 align-top">
+							<td class="border-b border-line-soft px-5 py-3.5 align-top">
 								<div class="flex flex-wrap gap-1.5">
 									{#if u.isSuperAdmin}
 										<span class={allChip}>All servers</span>
@@ -172,7 +174,7 @@
 									{/if}
 								</div>
 							</td>
-							<td class="border-b border-ink/8 px-5 py-3.5 text-right align-top">
+							<td class="border-b border-line-soft px-5 py-3.5 text-right align-top">
 								<div class="inline-flex items-center justify-end gap-4">
 									<button
 										type="button"
@@ -259,7 +261,7 @@
 			/>
 
 			{#if editingSuperAdmin}
-				<div class="border border-ink/16 bg-ink/4 px-3.5 py-3 font-sans text-sm text-ink/60">
+				<div class="border border-line-card bg-hover-soft px-3.5 py-3 font-sans text-sm text-ink/60">
 					The super admin can view every server.
 				</div>
 			{:else}
@@ -297,7 +299,7 @@
 			<button
 				type="button"
 				onclick={close}
-				class="cursor-pointer border border-ink/22 px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-ink/5"
+				class="cursor-pointer border border-ink/22 px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-hover"
 			>
 				Cancel
 			</button>

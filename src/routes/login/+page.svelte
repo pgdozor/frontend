@@ -31,7 +31,7 @@
 	}
 
 	const fieldClass =
-		'flex h-[2.625rem] items-center gap-2.5 border border-ink/20 bg-paper px-3.5 focus-within:border-command';
+		'flex h-[2.625rem] items-center gap-2.5 border border-line-strong bg-paper px-3.5 focus-within:border-command';
 	const inputClass = 'min-w-0 flex-1 border-none bg-transparent font-mono text-md text-ink outline-none';
 	const labelClass = 'mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase';
 </script>
@@ -43,7 +43,7 @@
 			<span class="font-condensed text-[27px] font-bold tracking-[3px] text-ink">PGDOZOR</span>
 		</div>
 
-		<form onsubmit={submit} class="border border-ink/16 bg-card px-8 pt-8 pb-7">
+		<form onsubmit={submit} class="border border-line-card bg-card px-8 pt-8 pb-7">
 			<label class={labelClass} for="login-email">Email</label>
 			<div class="{fieldClass} mb-4">
 				<MailIcon class="size-4 flex-none text-ink/45" />

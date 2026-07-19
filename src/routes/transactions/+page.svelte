@@ -9,7 +9,6 @@
 	import { activityClient } from '$lib/connect';
 	import { ctx } from '$lib/state.svelte';
 	import { fmtDuration, fmtRel, fmtClockDate, errMsg, kvTags } from '$lib/format';
-	import { C } from '$lib/theme';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
 	import Tag from '$lib/components/Tag.svelte';
@@ -95,11 +94,11 @@
 	function statusColor(s: TransactionEventStatus): string {
 		switch (s) {
 			case TransactionEventStatus.ACTIVE:
-				return C.ok;
+				return 'var(--color-ok)';
 			case TransactionEventStatus.ABORTED:
-				return C.danger;
+				return 'var(--color-danger)';
 			default:
-				return C.steel;
+				return 'var(--color-steel)';
 		}
 	}
 
@@ -131,7 +130,7 @@
 		'grid grid-cols-[9px_minmax(64px,auto)_minmax(40px,auto)_minmax(64px,auto)_minmax(0,1fr)] items-start gap-x-3 py-1.5';
 </script>
 
-<div class="border border-ink/16 bg-card">
+<div class="border border-line-card bg-card">
 	{#if loading}
 		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
 	{:else if error}
@@ -141,7 +140,7 @@
 	{:else}
 		{#each transactions as t (rowKey(t))}
 			{@const open = expanded[rowKey(t)] ?? false}
-			<div class="border-b border-ink/14 last:border-b-0">
+			<div class="border-b border-line last:border-b-0">
 				<div
 					onclick={() => toggle(t)}
 					onkeydown={(e) => onRowKey(e, t)}
@@ -169,7 +168,7 @@
 				</div>
 
 				{#if open}
-					<div class="border-t border-ink/8 bg-paper px-5 py-3 md:pl-12">
+					<div class="border-t border-line-soft bg-paper px-5 py-3 md:pl-12">
 						{#each groupEvents(t.events) as g, gi (gi)}
 							<div class="mt-4 first:mt-0">
 								{#if g.query}

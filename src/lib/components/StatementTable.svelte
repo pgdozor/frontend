@@ -48,7 +48,7 @@
 
 	// Numeric/text cells never truncate — only the query text (the <code>) does.
 	const numCell =
-		'px-4 py-3 border-b border-ink/8 text-right align-top leading-[20px] font-mono text-md text-ink whitespace-nowrap';
+		'px-4 py-3 border-b border-line-soft text-right align-top leading-[20px] font-mono text-md text-ink whitespace-nowrap';
 
 	function sortBy(key: StatementSortCol) {
 		if (sort.col === key) sort = { col: key, dir: sort.dir === 'asc' ? 'desc' : 'asc' };
@@ -66,13 +66,13 @@
 <div class="overflow-x-auto">
 	<table class="w-full min-w-[30rem] table-fixed border-collapse font-sans">
 		<thead>
-			<tr class="bg-ink/4">
+			<tr class="bg-hover-soft">
 				{#each headDef as h (h.key)}
 					<th
 						onclick={() => sortBy(h.key)}
 						style:width={h.width}
 						class={clsx(
-							'cursor-pointer border-b border-ink/14 py-2.5 pr-4 font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase select-none',
+							'cursor-pointer border-b border-line py-2.5 pr-4 font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase select-none',
 							h.key === 'query' ? 'pl-8' : 'pl-4',
 							h.align === 'right' ? 'text-right' : 'text-left',
 							h.hide
@@ -101,7 +101,7 @@
 					tabindex="0"
 					class="cursor-pointer transition-colors hover:bg-command/6"
 				>
-					<td class="border-b border-ink/8 px-4 py-3 align-top">
+					<td class="border-b border-line-soft px-4 py-3 align-top">
 						<div class="flex items-start gap-2.5">
 							<span class="mt-2 h-2 w-2 flex-none rounded-full" style:background={q.sev}></span>
 							<div class="min-w-0 flex-1">
@@ -123,12 +123,12 @@
 					</td>
 					<td
 						title={q.usr}
-						class="hidden border-b border-ink/8 px-4 py-3 align-top font-mono text-md leading-[20px] text-ink sm:table-cell"
+						class="hidden border-b border-line-soft px-4 py-3 align-top font-mono text-md leading-[20px] text-ink sm:table-cell"
 					>
 						<span class="block truncate">{q.usr}</span>
 					</td>
 					<td
-						class="border-b border-ink/8 px-4 py-3 text-right align-top leading-[20px] font-mono text-md font-semibold whitespace-nowrap"
+						class="border-b border-line-soft px-4 py-3 text-right align-top leading-[20px] font-mono text-md font-semibold whitespace-nowrap"
 						style:color={q.sev}
 					>
 						{fmtDuration(q.meanMs)}

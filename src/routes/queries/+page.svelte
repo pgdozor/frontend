@@ -14,7 +14,6 @@
 	import { urlSync } from '$lib/urlState.svelte';
 	import { QueryFilterState, parseDisplayTag } from '$lib/queryFilter.svelte';
 	import { fmtDuration, sevByMean, kvTags, errMsg } from '$lib/format';
-	import { C } from '$lib/theme';
 	import type { MetricSeriesPoint } from '$lib/metricChart';
 	import CallsChart from '$lib/components/CallsChart.svelte';
 	import ChartPanel from '$lib/components/ChartPanel.svelte';
@@ -177,9 +176,9 @@
 	const bucketMs = $derived(Number(metrics?.bucketMs ?? 0n));
 	const callsPoints = $derived(toPoints(metrics?.calls));
 	const latency = $derived([
-		{ label: 'p90', color: C.steel, points: toPoints(metrics?.p90) },
-		{ label: 'p95', color: C.warn, points: toPoints(metrics?.p95) },
-		{ label: 'p99', color: C.danger, points: toPoints(metrics?.p99) }
+		{ label: 'p90', color: 'var(--color-steel)', points: toPoints(metrics?.p90) },
+		{ label: 'p95', color: 'var(--color-warn)', points: toPoints(metrics?.p95) },
+		{ label: 'p99', color: 'var(--color-danger)', points: toPoints(metrics?.p99) }
 	]);
 
 	function open(id: string) {
@@ -202,7 +201,7 @@
 				from={chartRange.from}
 				to={chartRange.to}
 				{bucketMs}
-				fill={C.steel}
+				fill={'var(--color-steel)'}
 				label="calls"
 			/>
 		{:else}
@@ -226,7 +225,7 @@
 	</ChartPanel>
 </div>
 
-<div class="border border-ink/16 bg-card">
+<div class="border border-line-card bg-card">
 	<header class="px-4 pt-3.5 pb-0">
 		<SectionHeader title="Queries" description="Grouped by shape, with the most time-consuming first" />
 	</header>
@@ -241,11 +240,11 @@
 	{:else if rows.length === 0}
 		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">No statements found</div>
 	{:else if hasMore}
-		<div class="border-t border-ink/8 p-3 text-center">
+		<div class="border-t border-line-soft p-3 text-center">
 			<button
 				onclick={loadMore}
 				disabled={loadingMore}
-				class="cursor-pointer border border-ink/16 px-5 py-2 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
+				class="cursor-pointer border border-line-card px-5 py-2 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
 			>
 				{loadingMore ? 'Loading…' : 'Load more'}
 			</button>

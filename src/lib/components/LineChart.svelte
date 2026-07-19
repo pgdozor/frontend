@@ -94,7 +94,7 @@
 				xOffset={18}
 				yOffset={10}
 				variant="none"
-				class="border border-ink/16 bg-card px-3 py-2 shadow-[0_4px_16px_rgba(0,0,0,0.1)]"
+				class="border border-line-card bg-card px-3 py-2 shadow-[0_4px_16px_rgba(0,0,0,0.1)]"
 			>
 				{#snippet children({ data: point }: { data: MetricSeriesRow })}
 					<div class="flex flex-col gap-1 font-mono text-xs leading-[1.4] whitespace-nowrap">

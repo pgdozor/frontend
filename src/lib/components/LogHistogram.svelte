@@ -29,7 +29,7 @@
 	};
 </script>
 
-<div class="flex items-end gap-0.5 border-b border-ink/20" style:height="{CHART_H}px">
+<div class="flex items-end gap-0.5 border-b border-line-strong" style:height="{CHART_H}px">
 	{#each data as b, i (i)}
 		<div class="flex min-w-0 flex-1 cursor-default flex-col-reverse" style:height="{CHART_H}px" title={title(b)}>
 			{#each b.segments as seg, j (j)}

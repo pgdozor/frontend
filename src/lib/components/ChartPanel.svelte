@@ -13,7 +13,7 @@
 	} = $props();
 </script>
 
-<section class="border border-ink/16 bg-card px-3.5 pt-3.5 pb-3">
+<section class="border border-line-card bg-card px-3.5 pt-3.5 pb-3">
 	<header class="mb-3.5">
 		<SectionHeader {title} {description} />
 	</header>

@@ -93,13 +93,13 @@
 	{:else if error && servers.length === 0}
 		<div class="px-11 py-7 text-center font-mono text-sm text-danger">{error}</div>
 	{:else if servers.length === 0}
-		<div class="border border-ink/16 bg-card px-11 py-11 text-center font-mono text-sm text-ink/45">
+		<div class="border border-line-card bg-card px-11 py-11 text-center font-mono text-sm text-ink/45">
 			No servers to configure yet
 		</div>
 	{:else}
 		<div class="flex flex-col gap-6">
 			{#each servers as s (s.serverName)}
-				<div class="border border-ink/16 bg-card">
+				<div class="border border-line-card bg-card">
 					<div class="border-b border-ink/12 px-5 py-3.5">
 						<span class="font-mono text-lg font-semibold text-ink">{s.serverName}</span>
 					</div>
@@ -108,7 +108,7 @@
 						<label class={label} for={`wh-${s.serverName}`}>Slack webhook URL</label>
 						<div class="flex items-stretch gap-2.5">
 							<div
-								class="flex min-w-0 flex-1 items-center gap-2.5 border border-ink/20 bg-paper px-3.5 focus-within:border-command"
+								class="flex min-w-0 flex-1 items-center gap-2.5 border border-line-strong bg-paper px-3.5 focus-within:border-command"
 							>
 								<LinkIcon class="size-4 shrink-0 text-ink/45" />
 								<input
@@ -155,7 +155,7 @@
 					{#if s.slackWebhookUrl.trim() !== ''}
 						<div>
 							{#each s.alerts as alert (alert.key)}
-								<div class="flex items-center gap-3.5 border-b border-ink/8 px-5 py-3.5 last:border-b-0">
+								<div class="flex items-center gap-3.5 border-b border-line-soft px-5 py-3.5 last:border-b-0">
 									<span
 										class="inline-flex w-[4.625rem] shrink-0 items-center justify-center border px-1.5 py-1 font-condensed text-2xs font-bold tracking-[0.7px] uppercase {sev[
 											alert.level

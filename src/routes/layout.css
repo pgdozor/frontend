@@ -32,6 +32,15 @@
 	--color-teal: #4e7a86;
 	--color-taupe: #9a8f7e;
 
+	/* Semantic neutral scale — ink at fixed alphas, named by role.
+	   (color-mix in oklab matches Tailwind's own /opacity output.) */
+	--color-line-soft: color-mix(in oklab, var(--color-ink) 8%, transparent);
+	--color-line: color-mix(in oklab, var(--color-ink) 14%, transparent);
+	--color-line-card: color-mix(in oklab, var(--color-ink) 16%, transparent);
+	--color-line-strong: color-mix(in oklab, var(--color-ink) 20%, transparent);
+	--color-hover-soft: color-mix(in oklab, var(--color-ink) 4%, transparent);
+	--color-hover: color-mix(in oklab, var(--color-ink) 5%, transparent);
+
 	/* Text scale — rem, font-size only (line-height stays explicit via leading-*).
 	   Sized to match coda's scale (root 16px): text-xs 13 / text-sm 14 like coda. */
 	--text-2xs: 0.75rem; /* 12px */

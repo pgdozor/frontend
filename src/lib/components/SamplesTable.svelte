@@ -30,13 +30,13 @@
 	} = $props();
 
 	const thBase =
-		'border-b border-ink/14 px-5 py-2.5 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/55 uppercase';
+		'border-b border-line px-5 py-2.5 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/55 uppercase';
 </script>
 
 <div class="overflow-x-auto">
 	<table class="w-full min-w-[26.25rem] table-fixed border-collapse">
 		<thead>
-			<tr class="bg-ink/4">
+			<tr class="bg-hover-soft">
 				<th class="{thBase} hidden w-[11.25rem] text-left sm:table-cell">At</th>
 				<th class="{thBase} text-left">Query</th>
 				<th class="{thBase} w-[7rem] text-left">Plan</th>
@@ -48,10 +48,10 @@
 				{@const extra = extraTags(s.tags)}
 				<tr class="hover:bg-ink/3">
 					<td
-						class="hidden border-b border-ink/8 px-5 py-3 align-top font-mono text-sm leading-[20px] whitespace-nowrap text-ink/75 sm:table-cell"
+						class="hidden border-b border-line-soft px-5 py-3 align-top font-mono text-sm leading-[20px] whitespace-nowrap text-ink/75 sm:table-cell"
 						>{s.ts}</td
 					>
-					<td class="min-w-0 border-b border-ink/8 px-5 py-3 align-top">
+					<td class="min-w-0 border-b border-line-soft px-5 py-3 align-top">
 						<code
 							onmouseenter={(e) => sql.showLazy(BigInt(s.id), e)}
 							onmouseleave={sql.hide}
@@ -74,7 +74,7 @@
 							</div>
 						{/if}
 					</td>
-					<td class="border-b border-ink/8 px-5 py-3 align-top">
+					<td class="border-b border-line-soft px-5 py-3 align-top">
 						{#if s.hasPlan}
 							<a
 								href="/queries/{id}/plan/{s.id}"
@@ -90,7 +90,7 @@
 						{/if}
 					</td>
 					<td
-						class="border-b border-ink/8 px-5 py-3 text-right align-top font-mono text-md leading-[20px] font-semibold whitespace-nowrap"
+						class="border-b border-line-soft px-5 py-3 text-right align-top font-mono text-md leading-[20px] font-semibold whitespace-nowrap"
 						style:color={s.sev}>{s.durFmt}</td
 					>
 				</tr>

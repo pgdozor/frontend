@@ -156,11 +156,11 @@
 	const hasSecondary = (r: LogRecord): boolean => !!(r.stateCode || r.detail || r.hint || r.context || r.statement);
 
 	const th =
-		'py-2.5 px-3.5 text-left font-condensed text-xs font-semibold tracking-[0.7px] uppercase text-ink/55 border-b border-ink/14 whitespace-nowrap';
-	const td = 'px-3.5 py-2.5 border-b border-ink/8 align-top';
+		'py-2.5 px-3.5 text-left font-condensed text-xs font-semibold tracking-[0.7px] uppercase text-ink/55 border-b border-line whitespace-nowrap';
+	const td = 'px-3.5 py-2.5 border-b border-line-soft align-top';
 </script>
 
-<div class="mb-4 border border-ink/16 bg-card px-5 pt-5 pb-3.5">
+<div class="mb-4 border border-line-card bg-card px-5 pt-5 pb-3.5">
 	<div class="mb-4 flex flex-wrap items-start justify-between gap-5">
 		<div class="flex items-baseline gap-2.5">
 			<span class="font-mono text-[30px] leading-none font-semibold tracking-[-0.5px] text-ink">
@@ -210,9 +210,9 @@
 	></button>
 {/if}
 
-<div class="border border-ink/16 bg-card">
-	<div class="flex flex-wrap items-center gap-2.5 border-b border-ink/14 p-3 px-3.5">
-		<div class="flex h-10 min-w-[15rem] flex-1 items-center gap-2.5 border border-ink/20 bg-paper px-3">
+<div class="border border-line-card bg-card">
+	<div class="flex flex-wrap items-center gap-2.5 border-b border-line p-3 px-3.5">
+		<div class="flex h-10 min-w-[15rem] flex-1 items-center gap-2.5 border border-line-strong bg-paper px-3">
 			<SearchIcon class="size-3.5 flex-none text-ink/40" />
 			<input
 				type="text"
@@ -235,7 +235,7 @@
 			<button
 				type="button"
 				onclick={() => (menu = menu === 'class' ? null : 'class')}
-				class="flex h-10 cursor-pointer items-center gap-2.5 border border-ink/20 bg-paper px-3 hover:bg-ink/4"
+				class="flex h-10 cursor-pointer items-center gap-2.5 border border-line-strong bg-paper px-3 hover:bg-hover-soft"
 			>
 				<span class="font-condensed text-2xs font-semibold tracking-[0.8px] text-ink/50 uppercase">Class</span>
 				<span class="font-mono text-sm font-medium whitespace-nowrap text-ink">{classLabel}</span>
@@ -243,13 +243,13 @@
 			</button>
 			{#if menu === 'class'}
 				<div
-					class="absolute top-[calc(100%+6px)] right-0 z-[22] max-h-[21.25rem] min-w-[18.75rem] overflow-auto border border-ink/20 bg-card p-1.5 shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
+					class="absolute top-[calc(100%+6px)] right-0 z-[22] max-h-[21.25rem] min-w-[18.75rem] overflow-auto border border-line-strong bg-card p-1.5 shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
 				>
 					{#each ALL_CLASSIFICATIONS as c (c)}
 						<button
 							type="button"
 							onclick={() => toggleClass(c)}
-							class="flex w-full cursor-pointer items-center justify-between gap-2.5 px-2.5 py-2 text-left font-sans text-sm text-ink hover:bg-ink/5"
+							class="flex w-full cursor-pointer items-center justify-between gap-2.5 px-2.5 py-2 text-left font-sans text-sm text-ink hover:bg-hover"
 						>
 							<span>{classificationLabel(c)}</span>
 							{#if selectedClasses.includes(c)}<CheckIcon class="size-3.5 flex-none text-command" />{/if}
@@ -263,7 +263,7 @@
 	<div class="overflow-x-auto">
 		<table class="w-full min-w-[67rem] table-fixed border-collapse font-sans">
 			<thead>
-				<tr class="bg-ink/4">
+				<tr class="bg-hover-soft">
 					<th class="{th} pl-8" style="width:188px">At</th>
 					<th class={th} style="width:84px">Level</th>
 					<th class={th}>Classification</th>
@@ -332,7 +332,7 @@
 					</tr>
 					{#if open}
 						<tr>
-							<td colspan="8" class="border-b border-ink/14 p-0">
+							<td colspan="8" class="border-b border-line p-0">
 								<div class="bg-paper px-5 py-4 pl-8">
 									<div class="mb-3.5">
 										<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">

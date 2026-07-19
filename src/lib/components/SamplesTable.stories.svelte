@@ -11,7 +11,6 @@
 
 <script lang="ts">
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
-	import { C } from '$lib/theme';
 
 	const sql = new SqlPopoverState(async () => "SELECT u.id FROM users u WHERE u.bio = 'hi there'");
 
@@ -23,7 +22,7 @@
 			tags: { endpoint: '/user/1', request: '1' },
 			hasPlan: true,
 			durFmt: '6.01ms',
-			sev: C.ok
+			sev: 'var(--color-ok)'
 		},
 		{
 			id: '2',
@@ -32,7 +31,7 @@
 			tags: { endpoint: '/user/2', request: '2' },
 			hasPlan: true,
 			durFmt: '7.01ms',
-			sev: C.warn
+			sev: 'var(--color-warn)'
 		},
 		{
 			id: '3',
@@ -41,7 +40,7 @@
 			tags: {},
 			hasPlan: false,
 			durFmt: '8.01ms',
-			sev: C.danger
+			sev: 'var(--color-danger)'
 		}
 	];
 
@@ -50,7 +49,7 @@
 
 <Story name="Default">
 	{#snippet template()}
-		<div class="border border-ink/16 bg-card">
+		<div class="border border-line-card bg-card">
 			<SamplesTable {samples} {sql} id="1" hasBaseTags={true} {extraTags} />
 		</div>
 	{/snippet}
@@ -58,7 +57,7 @@
 
 <Story name="Empty">
 	{#snippet template()}
-		<div class="border border-ink/16 bg-card">
+		<div class="border border-line-card bg-card">
 			<SamplesTable samples={[]} {sql} id="1" hasBaseTags={false} {extraTags} />
 		</div>
 	{/snippet}

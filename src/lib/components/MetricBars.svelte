@@ -26,5 +26,5 @@
 </script>
 
 {#each bars as b (b.at)}
-	<rect x={b.x} y={b.y} width={b.width} height={b.height} {fill} />
+	<rect x={b.x} y={b.y} width={b.width} height={b.height} style:fill />
 {/each}

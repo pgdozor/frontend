@@ -12,7 +12,6 @@
 	import { ctx, scopeLock } from '$lib/state.svelte';
 	import { format } from 'sql-formatter';
 	import { fmtDuration, sevByDuration, fmtTs, kvTags, errMsg } from '$lib/format';
-	import { C } from '$lib/theme';
 	import type { MetricSeriesPoint } from '$lib/metricChart';
 	import CallsChart from '$lib/components/CallsChart.svelte';
 	import ChartPanel from '$lib/components/ChartPanel.svelte';
@@ -229,8 +228,8 @@
 	const bucketMs = $derived(Number(metrics?.bucketMs ?? 0n));
 	const callsPoints = $derived(toPoints(metrics?.calls));
 	const timing = $derived([
-		{ label: 'avg total', color: C.command, points: toPoints(metrics?.avg) },
-		{ label: 'avg IO', color: C.teal, points: toPoints(metrics?.avgIo) }
+		{ label: 'avg total', color: 'var(--color-command)', points: toPoints(metrics?.avg) },
+		{ label: 'avg IO', color: 'var(--color-teal)', points: toPoints(metrics?.avgIo) }
 	]);
 </script>
 
@@ -241,7 +240,7 @@
 	<ArrowLeftIcon class="size-3.5" /><span>Back</span>
 </a>
 
-<div class="border border-ink/16 bg-card px-4 pt-3.5 pb-4">
+<div class="border border-line-card bg-card px-4 pt-3.5 pb-4">
 	<header class="flex items-start justify-between gap-3">
 		<div class="min-w-0">
 			<SectionHeader title="Query" description="The normalized query — each captured run below fills in real values" />
@@ -252,14 +251,14 @@
 				onclick={() => (prettified = !prettified)}
 				class="inline-flex flex-none cursor-pointer items-center gap-1.5 border px-2.5 py-1 font-condensed text-2xs font-semibold tracking-[0.7px] uppercase transition-colors {prettified
 					? 'border-command bg-command text-paper'
-					: 'border-ink/20 text-ink/60 hover:border-ink/40 hover:text-ink'}"
+					: 'border-line-strong text-ink/60 hover:border-ink/40 hover:text-ink'}"
 			>
 				<SparklesIcon class="size-3.5" /><span>Format</span>
 			</button>
 		{/if}
 	</header>
 
-	<div class="mt-3.5 border border-ink/16 bg-ink px-4 py-3.5">
+	<div class="mt-3.5 border border-line-card bg-ink px-4 py-3.5">
 		{#if detail}
 			<div class="font-mono text-sm leading-[1.7] break-words whitespace-pre-wrap text-paper">
 				{queryText}
@@ -286,7 +285,7 @@
 				from={chartRange.from}
 				to={chartRange.to}
 				{bucketMs}
-				fill={C.steel}
+				fill={'var(--color-steel)'}
 				label="calls"
 			/>
 		{:else}
@@ -310,8 +309,8 @@
 	</ChartPanel>
 </div>
 
-<div class="mt-4 border border-ink/16 bg-card">
-	<div class="border-b border-ink/14 px-5 py-3.5">
+<div class="mt-4 border border-line-card bg-card">
+	<div class="border-b border-line px-5 py-3.5">
 		<SectionHeader
 			title="Captured samples"
 			description="Individual runs of this query — the real values each one used, and a plan when captured"
@@ -327,11 +326,11 @@
 	{:else if samples.length === 0}
 		<div class="px-5 py-6 text-center font-mono text-sm text-ink/45">No samples captured in this range</div>
 	{:else if hasMore}
-		<div class="border-t border-ink/8 p-3 text-center">
+		<div class="border-t border-line-soft p-3 text-center">
 			<button
 				onclick={loadMore}
 				disabled={loadingMore}
-				class="cursor-pointer border border-ink/16 px-5 py-2 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
+				class="cursor-pointer border border-line-card px-5 py-2 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
 			>
 				{loadingMore ? 'Loading…' : 'Load more'}
 			</button>

@@ -11,7 +11,6 @@
 
 <script lang="ts">
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
-	import { C } from '$lib/theme';
 
 	const sql = new SqlPopoverState(async () => 'SELECT * FROM orders WHERE id = $1');
 
@@ -26,7 +25,7 @@
 			rowsPerCall: 2.04,
 			pctIo: 10.1,
 			pctTime: 17.4,
-			sev: C.danger,
+			sev: 'var(--color-danger)',
 			tags: ['service=checkout-api', 'env=production']
 		},
 		{
@@ -38,7 +37,7 @@
 			rowsPerCall: 7.11,
 			pctIo: 15.9,
 			pctTime: 10.7,
-			sev: C.warn,
+			sev: 'var(--color-warn)',
 			tags: []
 		},
 		{
@@ -50,7 +49,7 @@
 			rowsPerCall: 2.81,
 			pctIo: 1.5,
 			pctTime: 1.5,
-			sev: C.ok,
+			sev: 'var(--color-ok)',
 			tags: []
 		},
 		{
@@ -62,7 +61,7 @@
 			rowsPerCall: 3.37,
 			pctIo: 1.4,
 			pctTime: 1.4,
-			sev: C.steel,
+			sev: 'var(--color-steel)',
 			tags: []
 		}
 	];
@@ -72,7 +71,7 @@
 
 <Story name="Default">
 	{#snippet template()}
-		<div class="border border-ink/16 bg-card">
+		<div class="border border-line-card bg-card">
 			<StatementTable {rows} bind:sort {sql} onOpen={() => {}} onFilterTag={() => {}} />
 		</div>
 	{/snippet}
@@ -80,7 +79,7 @@
 
 <Story name="Empty">
 	{#snippet template()}
-		<div class="border border-ink/16 bg-card">
+		<div class="border border-line-card bg-card">
 			<StatementTable rows={[]} bind:sort {sql} onOpen={() => {}} onFilterTag={() => {}} />
 		</div>
 	{/snippet}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { XIcon } from '@lucide/svelte';
+	import { Dialog } from 'bits-ui';
 	import type { Snippet } from 'svelte';
 
 	type Props = {
@@ -12,21 +13,26 @@
 	let { title, onclose, children, maxWidth = '480px' }: Props = $props();
 </script>
 
-<div class="fixed inset-0 z-[60] flex items-center justify-center p-6 font-sans">
-	<button type="button" aria-label="Close" onclick={onclose} class="fixed inset-0 cursor-default bg-ink/40"></button>
-	<div
-		class="relative max-h-[calc(100vh-48px)] w-full overflow-auto border border-ink/28 bg-card shadow-[0_24px_60px_rgba(58,42,31,0.32)]"
-		style:max-width={maxWidth}
-	>
-		<div class="flex items-center justify-between gap-3 border-b border-ink/14 px-5 py-4">
-			<span class="font-condensed text-xl font-bold tracking-[0.6px] text-ink uppercase">{title}</span>
-			<button
-				type="button"
-				onclick={onclose}
-				aria-label="Close"
-				class="cursor-pointer leading-none text-ink/45 hover:text-danger"><XIcon class="size-4" /></button
-			>
-		</div>
-		{@render children()}
-	</div>
-</div>
+<Dialog.Root
+	open
+	onOpenChange={(o) => {
+		if (!o) onclose();
+	}}
+>
+	<Dialog.Portal>
+		<Dialog.Overlay class="fixed inset-0 z-[60] bg-ink/40" />
+		<Dialog.Content
+			class="fixed top-1/2 left-1/2 z-[61] max-h-[calc(100vh-48px)] w-[calc(100vw-48px)] -translate-x-1/2 -translate-y-1/2 overflow-auto border border-ink/28 bg-card font-sans shadow-[0_24px_60px_rgba(58,42,31,0.32)]"
+			style="max-width: {maxWidth};"
+		>
+			<div class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
+				<Dialog.Title class="font-condensed text-xl font-bold tracking-[0.6px] text-ink uppercase">{title}</Dialog.Title
+				>
+				<Dialog.Close aria-label="Close" class="cursor-pointer leading-none text-ink/45 hover:text-danger">
+					<XIcon class="size-4" />
+				</Dialog.Close>
+			</div>
+			{@render children()}
+		</Dialog.Content>
+	</Dialog.Portal>
+</Dialog.Root>

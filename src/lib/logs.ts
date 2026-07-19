@@ -1,20 +1,19 @@
 import { LogEvent_LogLevel, LogEvent_LogClassification } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/log_pb';
-import { C } from './theme';
 
 export type LevelTier = 'info' | 'warn' | 'severe';
 
 type LevelMeta = { tier: LevelTier; color: string };
 
 const META: Record<LogEvent_LogLevel, LevelMeta> = {
-	[LogEvent_LogLevel.UNSPECIFIED]: { tier: 'info', color: C.steel },
-	[LogEvent_LogLevel.PANIC]: { tier: 'severe', color: C.panic },
-	[LogEvent_LogLevel.FATAL]: { tier: 'severe', color: C.danger },
-	[LogEvent_LogLevel.ERROR]: { tier: 'severe', color: C.command },
-	[LogEvent_LogLevel.WARNING]: { tier: 'warn', color: C.warn },
-	[LogEvent_LogLevel.NOTICE]: { tier: 'info', color: C.ok },
-	[LogEvent_LogLevel.LOG]: { tier: 'info', color: C.steel },
-	[LogEvent_LogLevel.INFO]: { tier: 'info', color: C.teal },
-	[LogEvent_LogLevel.DEBUG]: { tier: 'info', color: C.taupe }
+	[LogEvent_LogLevel.UNSPECIFIED]: { tier: 'info', color: 'var(--color-steel)' },
+	[LogEvent_LogLevel.PANIC]: { tier: 'severe', color: 'var(--color-panic)' },
+	[LogEvent_LogLevel.FATAL]: { tier: 'severe', color: 'var(--color-danger)' },
+	[LogEvent_LogLevel.ERROR]: { tier: 'severe', color: 'var(--color-command)' },
+	[LogEvent_LogLevel.WARNING]: { tier: 'warn', color: 'var(--color-warn)' },
+	[LogEvent_LogLevel.NOTICE]: { tier: 'info', color: 'var(--color-ok)' },
+	[LogEvent_LogLevel.LOG]: { tier: 'info', color: 'var(--color-steel)' },
+	[LogEvent_LogLevel.INFO]: { tier: 'info', color: 'var(--color-teal)' },
+	[LogEvent_LogLevel.DEBUG]: { tier: 'info', color: 'var(--color-taupe)' }
 };
 
 // Warm brown used for warn-tier text on a tinted background (design value).
@@ -25,7 +24,7 @@ export function levelTier(level: LogEvent_LogLevel): LevelTier {
 }
 
 export function levelColor(level: LogEvent_LogLevel): string {
-	return (META[level] ?? { color: C.steel }).color;
+	return (META[level] ?? { color: 'var(--color-steel)' }).color;
 }
 
 export function levelLabel(level: LogEvent_LogLevel): string {
@@ -53,10 +52,10 @@ function hexA(hex: string, alpha: number): string {
 export type PillStyle = { color: string; background: string; border: string };
 
 export function levelChip(level: LogEvent_LogLevel, active: boolean): PillStyle {
-	const m = META[level] ?? { tier: 'info', color: C.steel };
+	const m = META[level] ?? { tier: 'info', color: 'var(--color-steel)' };
 	if (!active)
 		return { color: 'rgba(58,42,31,0.4)', background: 'transparent', border: '1px solid rgba(58,42,31,0.2)' };
-	if (m.tier === 'severe') return { color: C.paper, background: m.color, border: `1px solid ${m.color}` };
+	if (m.tier === 'severe') return { color: 'var(--color-paper)', background: m.color, border: `1px solid ${m.color}` };
 	if (m.tier === 'warn')
 		return { color: WARN_TEXT, background: hexA(m.color, 0.16), border: `1px solid ${hexA(m.color, 0.5)}` };
 	return { color: m.color, background: hexA(m.color, 0.1), border: `1px solid ${hexA(m.color, 0.45)}` };

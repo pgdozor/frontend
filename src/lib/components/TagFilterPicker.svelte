@@ -193,7 +193,7 @@
 <div
 	role="presentation"
 	{onkeydown}
-	class="absolute top-[calc(100%+6px)] left-0 z-[2] w-[min(320px,calc(100vw-32px))] border border-ink/20 bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
+	class="absolute top-[calc(100%+6px)] left-0 z-[2] w-[min(320px,calc(100vw-32px))] border border-line-strong bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
 >
 	{#if step === 'key'}
 		<div class="flex items-center gap-2 border-b border-ink/12 px-2.5 py-2">
@@ -217,7 +217,7 @@
 					aria-selected={i === highlight}
 					onclick={() => selectKey(k.key)}
 					onmouseenter={() => (highlight = i)}
-					class="{rowCls} {i === highlight ? 'bg-ink/5' : ''}"
+					class="{rowCls} {i === highlight ? 'bg-hover' : ''}"
 				>
 					<span class="flex-1 text-left">{k.key}</span>
 					<span class="text-xs text-ink/45">{k.valueCount}</span>
@@ -239,7 +239,7 @@
 				<ChevronLeftIcon class="size-3.5" />
 			</button>
 			<span class="flex-1 font-mono text-sm font-semibold text-ink">{key}</span>
-			<div class="flex border border-ink/20">
+			<div class="flex border border-line-strong">
 				{#each [{ v: 'eq', l: '=' }, { v: 'ne', l: '!=' }] as const as o (o.v)}
 					<button
 						type="button"
@@ -250,7 +250,7 @@
 							? 'cursor-not-allowed text-ink/25'
 							: op === o.v
 								? 'cursor-pointer bg-command text-paper'
-								: 'cursor-pointer text-ink/60 hover:bg-ink/5'}"
+								: 'cursor-pointer text-ink/60 hover:bg-hover'}"
 					>
 						{o.l}
 					</button>
@@ -282,7 +282,7 @@
 					if (anyValue) picked = [];
 				}}
 				onmouseenter={() => (highlight = 0)}
-				class="{rowCls} {highlight === 0 ? 'bg-ink/5' : ''}"
+				class="{rowCls} {highlight === 0 ? 'bg-hover' : ''}"
 			>
 				<span class="flex size-3.5 flex-none items-center justify-center border border-ink/30">
 					{#if anyValue}<CheckIcon class="size-3 text-command" />{/if}
@@ -297,7 +297,7 @@
 					aria-selected={picked.includes(v.value)}
 					onclick={() => toggleValue(v.value)}
 					onmouseenter={() => (highlight = i + 1)}
-					class="{rowCls} {highlight === i + 1 ? 'bg-ink/5' : ''} {anyValue ? 'opacity-40' : ''}"
+					class="{rowCls} {highlight === i + 1 ? 'bg-hover' : ''} {anyValue ? 'opacity-40' : ''}"
 				>
 					<span class="flex size-3.5 flex-none items-center justify-center border border-ink/30">
 						{#if picked.includes(v.value)}<CheckIcon class="size-3 text-command" />{/if}

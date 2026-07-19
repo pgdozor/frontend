@@ -1,4 +1,3 @@
-import { C } from './theme';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -125,8 +124,10 @@ export function errMsg(e: unknown): string {
 	return e instanceof Error ? e.message : String(e);
 }
 
-export const sevByMean = (ms: number): string => (ms >= 4000 ? C.danger : ms >= 800 ? C.warn : C.ok);
-export const sevByDuration = (ms: number): string => (ms >= 10000 ? C.danger : ms >= 1000 ? C.warn : C.ok);
+export const sevByMean = (ms: number): string =>
+	ms >= 4000 ? 'var(--color-danger)' : ms >= 800 ? 'var(--color-warn)' : 'var(--color-ok)';
+export const sevByDuration = (ms: number): string =>
+	ms >= 10000 ? 'var(--color-danger)' : ms >= 1000 ? 'var(--color-warn)' : 'var(--color-ok)';
 
 export const sevColorByLevel = (level: 'normal' | 'warning' | 'critical'): string =>
-	level === 'critical' ? C.danger : level === 'warning' ? C.warn : C.ok;
+	level === 'critical' ? 'var(--color-danger)' : level === 'warning' ? 'var(--color-warn)' : 'var(--color-ok)';

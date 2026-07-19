@@ -13,7 +13,7 @@
 	{#snippet template()}
 		<ChartPanel title="Query volume over time" description="How many times queries ran">
 			<div
-				class="flex h-[240px] items-center justify-center border border-dashed border-ink/20 font-mono text-[12px] text-ink/40"
+				class="flex h-[240px] items-center justify-center border border-dashed border-line-strong font-mono text-[12px] text-ink/40"
 			>
 				[ chart renders here ]
 			</div>

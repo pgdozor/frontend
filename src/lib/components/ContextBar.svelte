@@ -35,11 +35,11 @@
 		timeOpen = false;
 	}
 
-	const triggerCls = 'flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-ink/4';
+	const triggerCls = 'flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-hover-soft';
 	const panelCls =
-		'z-50 max-w-[calc(100vw-24px)] border border-ink/20 bg-card p-1.5 shadow-[0_8px_24px_rgba(58,42,31,0.18)]';
+		'z-50 max-w-[calc(100vw-24px)] border border-line-strong bg-card p-1.5 shadow-[0_8px_24px_rgba(58,42,31,0.18)]';
 	const itemCls =
-		'flex w-full cursor-pointer items-center gap-2.5 px-2.5 py-2 font-mono text-sm text-ink hover:bg-ink/5 data-[highlighted]:bg-ink/5';
+		'flex w-full cursor-pointer items-center gap-2.5 px-2.5 py-2 font-mono text-sm text-ink hover:bg-hover data-[highlighted]:bg-hover';
 	const labelCls = 'px-2.5 pt-1.5 pb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase';
 	const dotTitle = (ok: boolean) =>
 		ok
@@ -48,7 +48,7 @@
 </script>
 
 <div
-	class="sticky top-0 z-30 flex flex-wrap items-center gap-2.5 border-b border-ink/14 bg-paper/70 px-4 py-3.5 backdrop-blur-[3px] backdrop-saturate-[1.1] sm:px-5 md:gap-5 md:px-7"
+	class="sticky top-0 z-30 flex flex-wrap items-center gap-2.5 border-b border-line bg-paper/70 px-4 py-3.5 backdrop-blur-[3px] backdrop-saturate-[1.1] sm:px-5 md:gap-5 md:px-7"
 >
 	<SidebarToggle />
 
@@ -65,7 +65,7 @@
 		<div class="flex border border-ink/18 bg-card">
 			{#if scopeLock.locked}
 				<div
-					class="flex items-center gap-2 border-r border-ink/14 px-3 py-2"
+					class="flex items-center gap-2 border-r border-line px-3 py-2"
 					title="This query lives on {scopeLock.server} — the server is fixed here"
 				>
 					<span
@@ -85,7 +85,7 @@
 				<Select.Root type="single" value={ctx.server} onValueChange={selectServer}>
 					<Select.Trigger>
 						{#snippet child({ props })}
-							<button {...props} class="{triggerCls} border-r border-ink/14" aria-label="Select Postgres server">
+							<button {...props} class="{triggerCls} border-r border-line" aria-label="Select Postgres server">
 								<span
 									class="h-2 w-2 rounded-full {selfHealth === 'ok' ? 'bg-ok' : 'bg-warn'}"
 									title={dotTitle(selfHealth === 'ok')}
@@ -163,7 +163,7 @@
 				{#snippet child({ props })}
 					<button
 						{...props}
-						class="flex cursor-pointer items-center gap-2 border border-ink/18 bg-card px-3 py-2 hover:bg-ink/4"
+						class="flex cursor-pointer items-center gap-2 border border-ink/18 bg-card px-3 py-2 hover:bg-hover-soft"
 					>
 						<ClockIcon class="size-3.5 flex-none text-warn" />
 						{#if ctx.isCustom}
@@ -183,7 +183,7 @@
 				<Popover.Content
 					sideOffset={6}
 					align="end"
-					class="z-50 flex max-w-[calc(100vw-24px)] flex-col border border-ink/20 bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)] sm:flex-row"
+					class="z-50 flex max-w-[calc(100vw-24px)] flex-col border border-line-strong bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)] sm:flex-row"
 				>
 					<div class="border-b border-ink/12 px-2 py-3.5 sm:min-w-[10.75rem] sm:border-r sm:border-b-0">
 						<div class="mb-2.5 px-2.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
@@ -193,7 +193,7 @@
 							<button
 								type="button"
 								onclick={() => selectPreset(key)}
-								class="block w-full cursor-pointer px-3 py-2 text-left font-sans text-sm whitespace-nowrap hover:bg-ink/5 {ctx.range ===
+								class="block w-full cursor-pointer px-3 py-2 text-left font-sans text-sm whitespace-nowrap hover:bg-hover {ctx.range ===
 								key
 									? 'bg-command/8 font-semibold text-command'
 									: 'text-ink'}"

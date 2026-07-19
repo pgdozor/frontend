@@ -31,7 +31,7 @@
 	}
 </script>
 
-<div class="flex flex-wrap items-center gap-2 border-b border-ink/14 p-3.5">
+<div class="flex flex-wrap items-center gap-2 border-b border-line p-3.5">
 	{#each tags.chips as filter, i (filter.key + filter.op + filter.values.join(','))}
 		<TagChip
 			{filter}
@@ -105,7 +105,7 @@
 		</div>
 
 		<div
-			class="flex w-full min-w-[10rem] flex-1 items-center gap-2 border border-ink/20 bg-paper px-2.5 py-1 md:w-[13.75rem] md:flex-none"
+			class="flex w-full min-w-[10rem] flex-1 items-center gap-2 border border-line-strong bg-paper px-2.5 py-1 md:w-[13.75rem] md:flex-none"
 		>
 			<SearchIcon class="size-3.5 flex-none text-ink/40" />
 			<input

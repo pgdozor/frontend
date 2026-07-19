@@ -15,5 +15,5 @@
 </script>
 
 {#each points as p (p.key)}
-	<circle cx={p.cx} cy={p.cy} r={3.5} fill={p.fill} class="stroke-card" stroke-width={1.5} />
+	<circle cx={p.cx} cy={p.cy} r={3.5} style:fill={p.fill} class="stroke-card" stroke-width={1.5} />
 {/each}

@@ -95,7 +95,7 @@
 	}
 
 	const th =
-		'border-b border-ink/14 px-5 py-3 font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
+		'border-b border-line px-5 py-3 font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
 </script>
 
 <PageBar>
@@ -112,11 +112,11 @@
 </PageBar>
 
 <div class="mx-auto w-full max-w-[82.5rem] min-w-0 px-7 pt-7 pb-16">
-	<div class="border border-ink/16 bg-card">
+	<div class="border border-line-card bg-card">
 		<div class="overflow-x-auto">
 			<table class="w-full min-w-[35rem] border-collapse font-sans">
 				<thead>
-					<tr class="bg-ink/4">
+					<tr class="bg-hover-soft">
 						<th class="{th} text-left">Postgres Server</th>
 						<th class="{th} text-left">Created</th>
 						<th class="{th} w-[7.5rem] text-right">Actions</th>
@@ -125,13 +125,13 @@
 				<tbody>
 					{#each tokens as token (token.id.toString())}
 						<tr class="hover:bg-ink/3">
-							<td class="border-b border-ink/8 px-5 py-3.5">
+							<td class="border-b border-line-soft px-5 py-3.5">
 								<span class="font-mono text-md font-medium text-ink">{token.serverName}</span>
 							</td>
-							<td class="border-b border-ink/8 px-5 py-3.5 font-mono text-sm whitespace-nowrap text-ink/60">
+							<td class="border-b border-line-soft px-5 py-3.5 font-mono text-sm whitespace-nowrap text-ink/60">
 								{created(token)}
 							</td>
-							<td class="border-b border-ink/8 px-5 py-3.5 text-right">
+							<td class="border-b border-line-soft px-5 py-3.5 text-right">
 								<button
 									type="button"
 									onclick={() => remove(token)}
@@ -191,7 +191,7 @@
 				<button
 					type="button"
 					onclick={close}
-					class="cursor-pointer border border-ink/22 px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-ink/5"
+					class="cursor-pointer border border-ink/22 px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-hover"
 				>
 					Cancel
 				</button>
