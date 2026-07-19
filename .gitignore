@@ -30,3 +30,6 @@ CLAUDE.md
 .vscode
 .zed
 .serena
+
+*storybook.log
+storybook-static
