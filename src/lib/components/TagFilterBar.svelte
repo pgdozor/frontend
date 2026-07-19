@@ -79,13 +79,15 @@
 				tags.clear();
 				picker = null;
 			}}
-			class="cursor-pointer px-[6px] py-[4px] font-mono text-[11px] text-ink/45 hover:text-danger"
+			class="translate-y-[1px] cursor-pointer px-[6px] py-[4px] font-mono text-[11px] text-ink/45 hover:text-danger"
 		>
 			Clear all
 		</button>
 	{/if}
 
-	<div class="ml-auto flex items-center gap-[14px]">
+	<div class="hidden md:block md:flex-1"></div>
+
+	<div class="flex w-full flex-wrap items-center gap-[12px] md:w-auto md:flex-nowrap md:gap-[14px]">
 		<div class="flex items-center gap-[14px]">
 			{#each kindOptions as opt (opt.key)}
 				<label
@@ -97,12 +99,14 @@
 						onchange={(e) => (tags.kinds[opt.key] = e.currentTarget.checked)}
 						class="m-0 block size-[13px] shrink-0 cursor-pointer accent-command"
 					/>
-					<span class="leading-none">{opt.label}</span>
+					<span class="translate-y-[1px] leading-none">{opt.label}</span>
 				</label>
 			{/each}
 		</div>
 
-		<div class="flex w-[220px] items-center gap-[8px] border border-ink/20 bg-paper px-[9px] py-[4px]">
+		<div
+			class="flex w-full min-w-[160px] flex-1 items-center gap-[8px] border border-ink/20 bg-paper px-[9px] py-[4px] md:w-[220px] md:flex-none"
+		>
 			<SearchIcon class="size-[13px] flex-none text-ink/40" />
 			<input
 				type="text"

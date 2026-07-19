@@ -62,7 +62,9 @@
 		<div class="flex min-w-0 flex-1 flex-col">
 			{#if contextBar}
 				<ContextBar {dbSwitch} />
-				<div class="mx-auto w-full max-w-[1320px] min-w-0 flex-1 px-[28px] pt-[26px] pb-[60px]">
+				<div
+					class="mx-auto w-full max-w-[1320px] min-w-0 flex-1 px-[16px] pt-[26px] pb-[60px] sm:px-[20px] md:px-[28px]"
+				>
 					{@render children()}
 				</div>
 			{:else}

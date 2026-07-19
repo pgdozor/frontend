@@ -40,14 +40,14 @@
 
 	type SortCol = 'query' | 'usr' | 'meanMs' | 'calls' | 'rowsPerCall' | 'pctIo' | 'pctTime';
 
-	const headDef: { key: SortCol; label: string; align: 'left' | 'right'; width?: string }[] = [
+	const headDef: { key: SortCol; label: string; align: 'left' | 'right'; width?: string; hide?: string }[] = [
 		{ key: 'query', label: 'Query', align: 'left' },
-		{ key: 'usr', label: 'User', align: 'left', width: '120px' },
+		{ key: 'usr', label: 'User', align: 'left', width: '120px', hide: 'hidden sm:table-cell' },
 		{ key: 'meanMs', label: 'Avg', align: 'right', width: '90px' },
 		{ key: 'calls', label: 'Calls', align: 'right', width: '90px' },
-		{ key: 'rowsPerCall', label: 'Rows/Call', align: 'right', width: '98px' },
-		{ key: 'pctIo', label: '% IO', align: 'right', width: '78px' },
-		{ key: 'pctTime', label: '% Time', align: 'right', width: '84px' }
+		{ key: 'rowsPerCall', label: 'Rows/Call', align: 'right', width: '98px', hide: 'hidden lg:table-cell' },
+		{ key: 'pctIo', label: '% IO', align: 'right', width: '78px', hide: 'hidden lg:table-cell' },
+		{ key: 'pctTime', label: '% Time', align: 'right', width: '84px', hide: 'hidden lg:table-cell' }
 	];
 
 	const PAGE_SIZE = 50;
@@ -274,7 +274,7 @@
 	<TagFilterBar bind:searchText={search} tags={filters} />
 
 	<div class="overflow-x-auto">
-		<table class="w-full min-w-[740px] table-fixed border-collapse font-sans">
+		<table class="w-full min-w-[480px] table-fixed border-collapse font-sans">
 			<thead>
 				<tr class="bg-ink/4">
 					{#each headDef as h (h.key)}
@@ -284,7 +284,7 @@
 							class="cursor-pointer border-b border-ink/14 py-[10px] pr-[16px] font-condensed text-[11.5px] font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase select-none {h.key ===
 							'query'
 								? 'pl-[33px]'
-								: 'pl-[16px]'} {h.align === 'right' ? 'text-right' : 'text-left'}"
+								: 'pl-[16px]'} {h.align === 'right' ? 'text-right' : 'text-left'} {h.hide ?? ''}"
 						>
 							<span class="inline-flex items-center gap-[4px] align-middle">
 								<span>{h.label}</span>
@@ -331,7 +331,7 @@
 						</td>
 						<td
 							title={q.usr}
-							class="border-b border-ink/8 px-[16px] py-[11px] align-top font-mono text-[13px] leading-[20px] text-ink"
+							class="hidden border-b border-ink/8 px-[16px] py-[11px] align-top font-mono text-[13px] leading-[20px] text-ink sm:table-cell"
 						>
 							<span class="block truncate">{q.usr}</span>
 						</td>
@@ -342,9 +342,9 @@
 							{fmtDuration(q.meanMs)}
 						</td>
 						<td class={numCell}>{fmtCount(q.calls)}</td>
-						<td class={numCell}>{fmtCount(q.rowsPerCall)}</td>
-						<td class={numCell}>{q.pctIo.toFixed(1)}%</td>
-						<td class={numCell}>{q.pctTime.toFixed(1)}%</td>
+						<td class="{numCell} hidden lg:table-cell">{fmtCount(q.rowsPerCall)}</td>
+						<td class="{numCell} hidden lg:table-cell">{q.pctIo.toFixed(1)}%</td>
+						<td class="{numCell} hidden lg:table-cell">{q.pctTime.toFixed(1)}%</td>
 					</tr>
 				{/each}
 			</tbody>

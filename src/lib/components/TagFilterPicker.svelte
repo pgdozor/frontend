@@ -193,7 +193,7 @@
 <div
 	role="presentation"
 	{onkeydown}
-	class="absolute top-[calc(100%+6px)] left-0 z-[2] w-[320px] border border-ink/20 bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
+	class="absolute top-[calc(100%+6px)] left-0 z-[2] w-[min(320px,calc(100vw-32px))] border border-ink/20 bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
 >
 	{#if step === 'key'}
 		<div class="flex items-center gap-[8px] border-b border-ink/12 px-[10px] py-[8px]">

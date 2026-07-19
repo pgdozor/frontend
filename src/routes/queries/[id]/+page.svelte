@@ -335,10 +335,10 @@
 	</div>
 
 	<div class="overflow-x-auto">
-		<table class="w-full min-w-[640px] table-fixed border-collapse">
+		<table class="w-full min-w-[420px] table-fixed border-collapse">
 			<thead>
 				<tr class="bg-ink/4">
-					<th class="{thBase} w-[180px] text-left">At</th>
+					<th class="{thBase} hidden w-[180px] text-left sm:table-cell">At</th>
 					<th class="{thBase} text-left">Query</th>
 					<th class="{thBase} w-[112px] text-left">Plan</th>
 					<th class="{thBase} w-[110px] text-right">Duration</th>
@@ -349,7 +349,7 @@
 					{@const extra = extraTags(s.tags)}
 					<tr class="hover:bg-ink/3">
 						<td
-							class="border-b border-ink/8 px-[18px] py-[11px] align-top font-mono text-[12px] leading-[20px] whitespace-nowrap text-ink/75"
+							class="hidden border-b border-ink/8 px-[18px] py-[11px] align-top font-mono text-[12px] leading-[20px] whitespace-nowrap text-ink/75 sm:table-cell"
 							>{s.ts}</td
 						>
 						<td class="min-w-0 border-b border-ink/8 px-[18px] py-[11px] align-top">

@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { screenDescription, screenTitle } from '$lib/nav';
 	import { ctx, scopeLock, serversState, presets } from '$lib/state.svelte';
+	import SidebarToggle from '$lib/components/SidebarToggle.svelte';
 
 	let { dbSwitch = true }: { dbSwitch?: boolean } = $props();
 
@@ -57,18 +58,20 @@
 </script>
 
 <div
-	class="sticky top-0 z-30 flex items-center gap-[18px] border-b border-ink/14 bg-paper/70 px-[28px] py-[14px] backdrop-blur-[3px] backdrop-saturate-[1.1]"
+	class="sticky top-0 z-30 flex flex-wrap items-center gap-[10px] border-b border-ink/14 bg-paper/70 px-[16px] py-[14px] backdrop-blur-[3px] backdrop-saturate-[1.1] sm:px-[20px] md:gap-[18px] md:px-[28px]"
 >
-	<div class="flex max-w-[46%] flex-none flex-col gap-[2px]">
-		<div class="flex items-baseline gap-[9px] whitespace-nowrap">
-			<span class="font-condensed text-[16px] leading-[1.15] font-bold tracking-[0.6px] text-ink uppercase"
+	<SidebarToggle />
+
+	<div class="flex min-w-0 flex-1 flex-col gap-[2px]">
+		<div class="flex items-baseline gap-[9px]">
+			<span class="truncate font-condensed text-[16px] leading-[1.15] font-bold tracking-[0.6px] text-ink uppercase"
 				>{title}</span
 			>
 		</div>
 		<p class="truncate text-[11px] leading-[1.2] text-ink/45">{description}</p>
 	</div>
 
-	<div class="relative z-[3] ml-auto flex items-center gap-[10px]">
+	<div class="relative z-[3] flex flex-wrap items-center gap-[10px]">
 		{#if open !== null}
 			<button
 				type="button"
@@ -131,7 +134,7 @@
 
 			{#if open === 'server'}
 				<div
-					class="absolute top-[calc(100%+6px)] left-0 z-[2] min-w-[210px] border border-ink/20 bg-card p-[5px] shadow-[0_8px_24px_rgba(58,42,31,0.18)]"
+					class="absolute top-[calc(100%+6px)] right-0 z-[2] max-w-[calc(100vw-24px)] min-w-[210px] border border-ink/20 bg-card p-[5px] shadow-[0_8px_24px_rgba(58,42,31,0.18)] sm:right-auto sm:left-0"
 				>
 					<div
 						class="px-[9px] pt-[6px] pb-[4px] font-condensed text-[10px] font-semibold tracking-[1px] text-ink/50 uppercase"
@@ -159,7 +162,7 @@
 
 			{#if open === 'db'}
 				<div
-					class="absolute top-[calc(100%+6px)] right-0 z-[2] min-w-[190px] border border-ink/20 bg-card p-[5px] shadow-[0_8px_24px_rgba(58,42,31,0.18)]"
+					class="absolute top-[calc(100%+6px)] right-0 z-[2] max-w-[calc(100vw-24px)] min-w-[190px] border border-ink/20 bg-card p-[5px] shadow-[0_8px_24px_rgba(58,42,31,0.18)]"
 				>
 					<div
 						class="px-[9px] pt-[6px] pb-[4px] font-condensed text-[10px] font-semibold tracking-[1px] text-ink/50 uppercase"
@@ -206,9 +209,9 @@
 
 			{#if open === 'time'}
 				<div
-					class="absolute top-[calc(100%+6px)] right-0 z-[2] flex border border-ink/20 bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
+					class="absolute top-[calc(100%+6px)] right-0 z-[2] flex max-w-[calc(100vw-24px)] flex-col border border-ink/20 bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)] sm:flex-row"
 				>
-					<div class="min-w-[172px] border-r border-ink/12 px-[8px] py-[14px]">
+					<div class="border-b border-ink/12 px-[8px] py-[14px] sm:min-w-[172px] sm:border-r sm:border-b-0">
 						<div
 							class="mb-[10px] px-[9px] font-condensed text-[10px] font-semibold tracking-[1px] text-ink/50 uppercase"
 						>
@@ -227,7 +230,7 @@
 							</button>
 						{/each}
 					</div>
-					<div class="w-[268px] px-[16px] py-[14px]">
+					<div class="w-[268px] max-w-full px-[16px] py-[14px]">
 						<div class="mb-[10px] font-condensed text-[10px] font-semibold tracking-[1px] text-ink/50 uppercase">
 							Absolute time range
 						</div>
