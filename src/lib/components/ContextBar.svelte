@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { DatabaseIcon, ClockIcon, ChevronDownIcon, CheckIcon, ArrowRightIcon } from '@lucide/svelte';
+	import { Select, Popover } from 'bits-ui';
 	import { page } from '$app/state';
 	import { screenDescription, screenTitle } from '$lib/nav';
 	import { ctx, scopeLock, serversState, presets } from '$lib/state.svelte';
@@ -7,9 +8,7 @@
 
 	let { dbSwitch = true }: { dbSwitch?: boolean } = $props();
 
-	type Menu = 'server' | 'db' | 'time' | null;
-	let open = $state<Menu>(null);
-
+	let timeOpen = $state(false);
 	let draftFrom = $state(ctx.customFrom);
 	let draftTo = $state(ctx.customTo);
 
@@ -21,40 +20,32 @@
 	function healthClass(server: string): string {
 		return serversState.health(server) === 'ok' ? 'bg-ok' : 'bg-warn';
 	}
-
-	function toggle(m: Exclude<Menu, null>) {
-		if (open === m) {
-			open = null;
-			return;
-		}
-		if (m === 'time') {
-			draftFrom = ctx.customFrom;
-			draftTo = ctx.customTo;
-		}
-		open = m;
-	}
-	function close() {
-		open = null;
-	}
 	function selectServer(name: string) {
 		ctx.server = name;
 		serversState.reconcile();
-		open = null;
-	}
-	function selectDb(name: string) {
-		ctx.db = name;
-		open = null;
 	}
 	function selectPreset(key: string) {
 		ctx.range = key;
-		open = null;
+		timeOpen = false;
 	}
 	function applyCustom() {
 		ctx.customFrom = draftFrom;
 		ctx.customTo = draftTo;
 		ctx.range = 'custom';
-		open = null;
+		timeOpen = false;
 	}
+
+	const triggerCls = 'flex cursor-pointer items-center gap-[8px] px-[12px] py-[7px] hover:bg-ink/4';
+	const panelCls =
+		'z-50 max-w-[calc(100vw-24px)] border border-ink/20 bg-card p-[5px] shadow-[0_8px_24px_rgba(58,42,31,0.18)]';
+	const itemCls =
+		'flex w-full cursor-pointer items-center gap-[9px] px-[10px] py-[8px] font-mono text-[12px] text-ink hover:bg-ink/5 data-[highlighted]:bg-ink/5';
+	const labelCls =
+		'px-[9px] pt-[6px] pb-[4px] font-condensed text-[10px] font-semibold tracking-[1px] text-ink/50 uppercase';
+	const dotTitle = (ok: boolean) =>
+		ok
+			? 'Collector healthy · reported within 5 minutes'
+			: 'Collector not responding · no health check in over 5 minutes';
 </script>
 
 <div
@@ -71,17 +62,8 @@
 		<p class="truncate text-[11px] leading-[1.2] text-ink/45">{description}</p>
 	</div>
 
-	<div class="relative z-[3] flex flex-wrap items-center gap-[10px]">
-		{#if open !== null}
-			<button
-				type="button"
-				aria-label="Close menu"
-				onclick={close}
-				class="fixed inset-0 z-[1] cursor-default bg-transparent"
-			></button>
-		{/if}
-
-		<div class="relative z-[2] flex border border-ink/18 bg-card">
+	<div class="flex flex-wrap items-center gap-[10px]">
+		<div class="flex border border-ink/18 bg-card">
 			{#if scopeLock.locked}
 				<div
 					class="flex items-center gap-[8px] border-r border-ink/14 px-[12px] py-[7px]"
@@ -89,9 +71,7 @@
 				>
 					<span
 						class="h-[7px] w-[7px] rounded-full {selfHealth === 'ok' ? 'bg-ok' : 'bg-warn'}"
-						title={selfHealth === 'ok'
-							? 'Collector healthy · reported within 5 minutes'
-							: 'Collector not responding · no health check in over 5 minutes'}
+						title={dotTitle(selfHealth === 'ok')}
 					></span>
 					<span class="font-mono text-[12px] font-medium text-ink">{scopeLock.server}</span>
 				</div>
@@ -103,113 +83,108 @@
 					<span class="font-mono text-[12px] font-medium text-ink">{scopeLock.db}</span>
 				</div>
 			{:else}
-				<button
-					type="button"
-					onclick={() => toggle('server')}
-					class="flex cursor-pointer items-center gap-[8px] border-r border-ink/14 px-[12px] py-[7px] hover:bg-ink/4"
-				>
-					<span
-						class="h-[7px] w-[7px] rounded-full {selfHealth === 'ok' ? 'bg-ok' : 'bg-warn'}"
-						title={selfHealth === 'ok'
-							? 'Collector healthy · reported within 5 minutes'
-							: 'Collector not responding · no health check in over 5 minutes'}
-					></span>
-					<span class="font-mono text-[12px] font-medium text-ink">{ctx.server || '—'}</span>
-					<ChevronDownIcon class="size-[13px] text-ink/45" />
-				</button>
-				<button
-					type="button"
-					onclick={() => dbSwitch && toggle('db')}
-					disabled={!dbSwitch}
-					title={dbSwitch ? 'Select database' : 'Logs are server-wide — the database filter does not apply here'}
-					class="flex items-center gap-[8px] px-[12px] py-[7px] {dbSwitch
-						? 'cursor-pointer hover:bg-ink/4'
-						: 'cursor-not-allowed opacity-40'}"
-				>
-					<DatabaseIcon class="size-[13px] flex-none text-steel" />
-					<span class="font-mono text-[12px] font-medium text-ink">{ctx.db || '—'}</span>
-					<ChevronDownIcon class="size-[13px] text-ink/45" />
-				</button>
-			{/if}
+				<Select.Root type="single" value={ctx.server} onValueChange={selectServer}>
+					<Select.Trigger>
+						{#snippet child({ props })}
+							<button {...props} class="{triggerCls} border-r border-ink/14" aria-label="Select Postgres server">
+								<span
+									class="h-[7px] w-[7px] rounded-full {selfHealth === 'ok' ? 'bg-ok' : 'bg-warn'}"
+									title={dotTitle(selfHealth === 'ok')}
+								></span>
+								<span class="font-mono text-[12px] font-medium text-ink">{ctx.server || '—'}</span>
+								<ChevronDownIcon class="size-[13px] text-ink/45" />
+							</button>
+						{/snippet}
+					</Select.Trigger>
+					<Select.Portal>
+						<Select.Content sideOffset={6} align="start" class="{panelCls} min-w-[210px]">
+							<div class={labelCls}>Postgres server</div>
+							{#each serversState.names as s (s)}
+								<Select.Item value={s} label={s}>
+									{#snippet child({ props, selected })}
+										<div {...props} class="{itemCls} {selected ? 'font-semibold' : ''}">
+											<span class="h-[7px] w-[7px] rounded-full {healthClass(s)}"></span>
+											<span class="flex-1 text-left">{s}</span>
+											{#if selected}<CheckIcon class="size-[14px] text-command" />{/if}
+										</div>
+									{/snippet}
+								</Select.Item>
+							{:else}
+								<div class="px-[10px] py-[8px] font-mono text-[12px] text-ink/45">No servers</div>
+							{/each}
+						</Select.Content>
+					</Select.Portal>
+				</Select.Root>
 
-			{#if open === 'server'}
-				<div
-					class="absolute top-[calc(100%+6px)] right-0 z-[2] max-w-[calc(100vw-24px)] min-w-[210px] border border-ink/20 bg-card p-[5px] shadow-[0_8px_24px_rgba(58,42,31,0.18)] sm:right-auto sm:left-0"
-				>
-					<div
-						class="px-[9px] pt-[6px] pb-[4px] font-condensed text-[10px] font-semibold tracking-[1px] text-ink/50 uppercase"
-					>
-						Postgres server
-					</div>
-					{#each serversState.names as s (s)}
-						<button
-							type="button"
-							onclick={() => selectServer(s)}
-							class="flex w-full cursor-pointer items-center gap-[9px] px-[10px] py-[8px] font-mono text-[12px] text-ink hover:bg-ink/5 {ctx.server ===
-							s
-								? 'font-semibold'
-								: ''}"
-						>
-							<span class="h-[7px] w-[7px] rounded-full {healthClass(s)}"></span>
-							<span class="flex-1 text-left">{s}</span>
-							{#if ctx.server === s}<CheckIcon class="size-[14px] text-command" />{/if}
-						</button>
-					{:else}
-						<div class="px-[10px] py-[8px] font-mono text-[12px] text-ink/45">No servers</div>
-					{/each}
-				</div>
-			{/if}
-
-			{#if open === 'db'}
-				<div
-					class="absolute top-[calc(100%+6px)] right-0 z-[2] max-w-[calc(100vw-24px)] min-w-[190px] border border-ink/20 bg-card p-[5px] shadow-[0_8px_24px_rgba(58,42,31,0.18)]"
-				>
-					<div
-						class="px-[9px] pt-[6px] pb-[4px] font-condensed text-[10px] font-semibold tracking-[1px] text-ink/50 uppercase"
-					>
-						Database
-					</div>
-					{#each serversState.databasesFor(ctx.server) as d (d)}
-						<button
-							type="button"
-							onclick={() => selectDb(d)}
-							class="flex w-full cursor-pointer items-center gap-[9px] px-[10px] py-[8px] font-mono text-[12px] text-ink hover:bg-ink/5 {ctx.db ===
-							d
-								? 'font-semibold'
-								: ''}"
-						>
-							<span class="flex-1 text-left">{d}</span>
-							{#if ctx.db === d}<CheckIcon class="size-[14px] text-command" />{/if}
-						</button>
-					{:else}
-						<div class="px-[10px] py-[8px] font-mono text-[12px] text-ink/45">No databases</div>
-					{/each}
-				</div>
+				<Select.Root type="single" value={ctx.db} onValueChange={(v) => (ctx.db = v)} disabled={!dbSwitch}>
+					<Select.Trigger>
+						{#snippet child({ props })}
+							<button
+								{...props}
+								title={dbSwitch ? 'Select database' : 'Logs are server-wide — the database filter does not apply here'}
+								class="{triggerCls} {dbSwitch ? '' : 'cursor-not-allowed opacity-40'}"
+							>
+								<DatabaseIcon class="size-[13px] flex-none text-steel" />
+								<span class="font-mono text-[12px] font-medium text-ink">{ctx.db || '—'}</span>
+								<ChevronDownIcon class="size-[13px] text-ink/45" />
+							</button>
+						{/snippet}
+					</Select.Trigger>
+					<Select.Portal>
+						<Select.Content sideOffset={6} align="end" class="{panelCls} min-w-[190px]">
+							<div class={labelCls}>Database</div>
+							{#each serversState.databasesFor(ctx.server) as d (d)}
+								<Select.Item value={d} label={d}>
+									{#snippet child({ props, selected })}
+										<div {...props} class="{itemCls} {selected ? 'font-semibold' : ''}">
+											<span class="flex-1 text-left">{d}</span>
+											{#if selected}<CheckIcon class="size-[14px] text-command" />{/if}
+										</div>
+									{/snippet}
+								</Select.Item>
+							{:else}
+								<div class="px-[10px] py-[8px] font-mono text-[12px] text-ink/45">No databases</div>
+							{/each}
+						</Select.Content>
+					</Select.Portal>
+				</Select.Root>
 			{/if}
 		</div>
 
-		<div class="relative z-[2]">
-			<button
-				type="button"
-				onclick={() => toggle('time')}
-				class="flex cursor-pointer items-center gap-[8px] border border-ink/18 bg-card px-[12px] py-[7px] hover:bg-ink/4"
-			>
-				<ClockIcon class="size-[13px] flex-none text-warn" />
-				{#if ctx.isCustom}
-					<span class="flex items-center gap-[6px] font-mono text-[12px] font-medium whitespace-nowrap text-ink">
-						{ctx.customFromLabel}
-						<ArrowRightIcon class="size-[12px] flex-none text-ink/40" />
-						{ctx.customToLabel}
-					</span>
-				{:else}
-					<span class="font-mono text-[12px] font-medium whitespace-nowrap text-ink">{ctx.timeLabel}</span>
-				{/if}
-				<ChevronDownIcon class="size-[13px] text-ink/45" />
-			</button>
-
-			{#if open === 'time'}
-				<div
-					class="absolute top-[calc(100%+6px)] right-0 z-[2] flex max-w-[calc(100vw-24px)] flex-col border border-ink/20 bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)] sm:flex-row"
+		<Popover.Root
+			bind:open={timeOpen}
+			onOpenChange={(o) => {
+				if (o) {
+					draftFrom = ctx.customFrom;
+					draftTo = ctx.customTo;
+				}
+			}}
+		>
+			<Popover.Trigger>
+				{#snippet child({ props })}
+					<button
+						{...props}
+						class="flex cursor-pointer items-center gap-[8px] border border-ink/18 bg-card px-[12px] py-[7px] hover:bg-ink/4"
+					>
+						<ClockIcon class="size-[13px] flex-none text-warn" />
+						{#if ctx.isCustom}
+							<span class="flex items-center gap-[6px] font-mono text-[12px] font-medium whitespace-nowrap text-ink">
+								{ctx.customFromLabel}
+								<ArrowRightIcon class="size-[12px] flex-none text-ink/40" />
+								{ctx.customToLabel}
+							</span>
+						{:else}
+							<span class="font-mono text-[12px] font-medium whitespace-nowrap text-ink">{ctx.timeLabel}</span>
+						{/if}
+						<ChevronDownIcon class="size-[13px] text-ink/45" />
+					</button>
+				{/snippet}
+			</Popover.Trigger>
+			<Popover.Portal>
+				<Popover.Content
+					sideOffset={6}
+					align="end"
+					class="z-50 flex max-w-[calc(100vw-24px)] flex-col border border-ink/20 bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)] sm:flex-row"
 				>
 					<div class="border-b border-ink/12 px-[8px] py-[14px] sm:min-w-[172px] sm:border-r sm:border-b-0">
 						<div
@@ -260,8 +235,8 @@
 							Apply range
 						</button>
 					</div>
-				</div>
-			{/if}
-		</div>
+				</Popover.Content>
+			</Popover.Portal>
+		</Popover.Root>
 	</div>
 </div>
