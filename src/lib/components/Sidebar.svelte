@@ -15,7 +15,7 @@
 	const navClass = (active: boolean): string =>
 		clsx(
 			'flex flex-col gap-0.5 border-l-[3px] py-2.5 pr-3 pl-3.5 transition-colors',
-			active ? 'border-command bg-command/10 text-ink' : 'border-transparent text-ink/55 hover:bg-hover-soft'
+			active ? 'border-command bg-accent text-ink' : 'border-transparent text-ink/55 hover:bg-hover-soft'
 		);
 
 	afterNavigate(() => sidebar.closeDrawer());
@@ -101,7 +101,7 @@
 <!-- Mobile: off-canvas drawer (bits-ui Dialog — focus trap, escape, scrim, return-focus) -->
 <Dialog.Root bind:open={sidebar.drawerOpen}>
 	<Dialog.Portal>
-		<Dialog.Overlay class="fixed inset-0 z-40 bg-ink/40 md:hidden" />
+		<Dialog.Overlay class="fixed inset-0 z-40 bg-scrim md:hidden" />
 		<Dialog.Content
 			class="fixed inset-y-0 left-0 z-50 flex h-screen w-[15.625rem] flex-none flex-col border-r border-line bg-shell shadow-[0_0_40px_rgba(58,42,31,0.28)] md:hidden"
 		>

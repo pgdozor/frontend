@@ -100,11 +100,11 @@
 		<div class="flex flex-col gap-6">
 			{#each servers as s (s.serverName)}
 				<div class="border border-line-card bg-card">
-					<div class="border-b border-ink/12 px-5 py-3.5">
+					<div class="border-b border-line px-5 py-3.5">
 						<span class="font-mono text-lg font-semibold text-ink">{s.serverName}</span>
 					</div>
 
-					<div class="border-b border-ink/10 px-5 py-4">
+					<div class="border-b border-line-soft px-5 py-4">
 						<label class={label} for={`wh-${s.serverName}`}>Slack webhook URL</label>
 						<div class="flex items-stretch gap-2.5">
 							<div
@@ -139,7 +139,7 @@
 									s
 								)
 									? 'cursor-pointer border-command bg-command text-paper hover:bg-danger'
-									: 'cursor-default border-ink/10 bg-ink/10 text-ink/38'}"
+									: 'cursor-default border-line-soft bg-hover-strong text-ink/38'}"
 							>
 								Save
 							</button>

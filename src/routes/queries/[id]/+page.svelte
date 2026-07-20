@@ -13,9 +13,11 @@
 	import { format } from 'sql-formatter';
 	import { fmtDuration, sevByDuration, fmtTs, kvTags, errMsg } from '$lib/format';
 	import type { MetricSeriesPoint } from '$lib/metricChart';
+	import Button from '$lib/components/Button.svelte';
 	import CallsChart from '$lib/components/CallsChart.svelte';
 	import ChartPanel from '$lib/components/ChartPanel.svelte';
 	import LineChart from '$lib/components/LineChart.svelte';
+	import QueryTextBlock from '$lib/components/QueryTextBlock.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
@@ -251,21 +253,15 @@
 				onclick={() => (prettified = !prettified)}
 				class="inline-flex flex-none cursor-pointer items-center gap-1.5 border px-2.5 py-1 font-condensed text-2xs font-semibold tracking-[0.7px] uppercase transition-colors {prettified
 					? 'border-command bg-command text-paper'
-					: 'border-line-strong text-ink/60 hover:border-ink/40 hover:text-ink'}"
+					: 'border-line-strong text-ink/60 hover:border-line-boldest hover:text-ink'}"
 			>
 				<SparklesIcon class="size-3.5" /><span>Format</span>
 			</button>
 		{/if}
 	</header>
 
-	<div class="mt-3.5 border border-line-card bg-ink px-4 py-3.5">
-		{#if detail}
-			<div class="font-mono text-sm leading-[1.7] break-words whitespace-pre-wrap text-paper">
-				{queryText}
-			</div>
-		{:else}
-			<div class="font-mono text-sm text-paper/50">{metaLoading ? 'Loading…' : (metaError ?? '')}</div>
-		{/if}
+	<div class="mt-3.5">
+		<QueryTextBlock text={detail ? queryText : undefined} placeholder={metaLoading ? 'Loading…' : (metaError ?? '')} />
 	</div>
 
 	{#if tags.length > 0}
@@ -285,7 +281,7 @@
 				from={chartRange.from}
 				to={chartRange.to}
 				{bucketMs}
-				fill={'var(--color-steel)'}
+				fill="var(--color-steel)"
 				label="calls"
 			/>
 		{:else}
@@ -327,13 +323,9 @@
 		<div class="px-5 py-6 text-center font-mono text-sm text-ink/45">No samples captured in this range</div>
 	{:else if hasMore}
 		<div class="border-t border-line-soft p-3 text-center">
-			<button
-				onclick={loadMore}
-				disabled={loadingMore}
-				class="cursor-pointer border border-line-card px-5 py-2 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
-			>
+			<Button variant="ghost" onclick={loadMore} disabled={loadingMore}>
 				{loadingMore ? 'Loading…' : 'Load more'}
-			</button>
+			</Button>
 		</div>
 	{/if}
 </div>

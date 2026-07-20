@@ -5,6 +5,7 @@
 	import type { CollectorToken } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/admin_pb';
 	import { adminClient } from '$lib/connect';
 	import { errMsg, fmtDateTime } from '$lib/format';
+	import Button from '$lib/components/Button.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import PageBar from '$lib/components/PageBar.svelte';
 
@@ -100,14 +101,10 @@
 
 <PageBar>
 	{#snippet actions()}
-		<button
-			type="button"
-			onclick={openForm}
-			class="flex cursor-pointer items-center gap-2 bg-command px-3.5 py-2 font-condensed text-sm font-bold tracking-[0.8px] whitespace-nowrap text-paper uppercase hover:bg-danger"
-		>
+		<Button onclick={openForm}>
 			<PlusIcon class="size-3.5 stroke-[2.4]" />
 			<span>New Token</span>
-		</button>
+		</Button>
 	{/snippet}
 </PageBar>
 
@@ -124,7 +121,7 @@
 				</thead>
 				<tbody>
 					{#each tokens as token (token.id.toString())}
-						<tr class="hover:bg-ink/3">
+						<tr class="hover:bg-hover-soft">
 							<td class="border-b border-line-soft px-5 py-3.5">
 								<span class="font-mono text-md font-medium text-ink">{token.serverName}</span>
 							</td>
@@ -176,7 +173,7 @@
 					placeholder="e.g. shdp-prod-5"
 					spellcheck="false"
 					onkeydown={(e) => e.key === 'Enter' && create()}
-					class="h-[2.625rem] w-full border border-ink/22 bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
+					class="h-[2.625rem] w-full border border-line-strong bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
 				/>
 				{#if formError}
 					<div
@@ -187,22 +184,11 @@
 					</div>
 				{/if}
 			</div>
-			<div class="flex justify-end gap-2.5 border-t border-ink/12 px-5 py-3.5">
-				<button
-					type="button"
-					onclick={close}
-					class="cursor-pointer border border-ink/22 px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-hover"
-				>
-					Cancel
-				</button>
-				<button
-					type="button"
-					onclick={create}
-					disabled={creating}
-					class="cursor-pointer border border-command bg-command px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-paper uppercase hover:bg-danger disabled:opacity-70"
-				>
+			<div class="flex justify-end gap-2.5 border-t border-line px-5 py-3.5">
+				<Button variant="secondary" onclick={close}>Cancel</Button>
+				<Button onclick={create} disabled={creating}>
 					{creating ? 'Creating…' : 'Create Token'}
-				</button>
+				</Button>
 			</div>
 		{:else}
 			<div class="p-5">
@@ -215,7 +201,7 @@
 				<span class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase"
 					>Token</span
 				>
-				<div class="flex items-center gap-3 border border-ink/40 bg-ink px-3.5 py-3.5">
+				<div class="flex items-center gap-3 border border-line-boldest bg-ink px-3.5 py-3.5">
 					<code class="min-w-0 flex-1 font-mono text-md leading-[1.5] break-all text-paper">{newToken}</code>
 					<button
 						type="button"
@@ -230,7 +216,7 @@
 					Server <span class="font-mono text-ink">{newTokenServer}</span>
 				</div>
 			</div>
-			<div class="flex justify-end gap-2.5 border-t border-ink/12 px-5 py-3.5">
+			<div class="flex justify-end gap-2.5 border-t border-line px-5 py-3.5">
 				<button
 					type="button"
 					onclick={close}

@@ -20,9 +20,9 @@
 	}}
 >
 	<Dialog.Portal>
-		<Dialog.Overlay class="fixed inset-0 z-[60] bg-ink/40" />
+		<Dialog.Overlay class="fixed inset-0 z-[60] bg-scrim" />
 		<Dialog.Content
-			class="fixed top-1/2 left-1/2 z-[61] max-h-[calc(100vh-48px)] w-[calc(100vw-48px)] -translate-x-1/2 -translate-y-1/2 overflow-auto border border-ink/28 bg-card font-sans shadow-[0_24px_60px_rgba(58,42,31,0.32)]"
+			class="fixed top-1/2 left-1/2 z-[61] max-h-[calc(100vh-48px)] w-[calc(100vw-48px)] -translate-x-1/2 -translate-y-1/2 overflow-auto border border-line-bold bg-card font-sans shadow-[0_24px_60px_rgba(58,42,31,0.32)]"
 			style="max-width: {maxWidth};"
 		>
 			<div class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">

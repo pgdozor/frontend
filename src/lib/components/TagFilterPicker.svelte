@@ -196,7 +196,7 @@
 	class="absolute top-[calc(100%+6px)] left-0 z-[2] w-[min(320px,calc(100vw-32px))] border border-line-strong bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
 >
 	{#if step === 'key'}
-		<div class="flex items-center gap-2 border-b border-ink/12 px-2.5 py-2">
+		<div class="flex items-center gap-2 border-b border-line px-2.5 py-2">
 			<SearchIcon class="size-3.5 flex-none text-ink/40" />
 			<input
 				bind:this={searchInput}
@@ -229,7 +229,7 @@
 			{/each}
 		</div>
 	{:else}
-		<div class="flex items-center gap-2 border-b border-ink/12 px-2 py-2">
+		<div class="flex items-center gap-2 border-b border-line px-2 py-2">
 			<button
 				type="button"
 				onclick={back}
@@ -258,7 +258,7 @@
 			</div>
 		</div>
 
-		<div class="flex items-center gap-2 border-b border-ink/12 px-2.5 py-2">
+		<div class="flex items-center gap-2 border-b border-line px-2.5 py-2">
 			<SearchIcon class="size-3.5 flex-none text-ink/40" />
 			<input
 				bind:this={searchInput}
@@ -284,7 +284,7 @@
 				onmouseenter={() => (highlight = 0)}
 				class="{rowCls} {highlight === 0 ? 'bg-hover' : ''}"
 			>
-				<span class="flex size-3.5 flex-none items-center justify-center border border-ink/30">
+				<span class="flex size-3.5 flex-none items-center justify-center border border-line-bold">
 					{#if anyValue}<CheckIcon class="size-3 text-command" />{/if}
 				</span>
 				<span class="flex-1 text-left text-ink/70 italic">Any value</span>
@@ -299,7 +299,7 @@
 					onmouseenter={() => (highlight = i + 1)}
 					class="{rowCls} {highlight === i + 1 ? 'bg-hover' : ''} {anyValue ? 'opacity-40' : ''}"
 				>
-					<span class="flex size-3.5 flex-none items-center justify-center border border-ink/30">
+					<span class="flex size-3.5 flex-none items-center justify-center border border-line-bold">
 						{#if picked.includes(v.value)}<CheckIcon class="size-3 text-command" />{/if}
 					</span>
 					<span class="flex-1 truncate text-left">{v.value}</span>
@@ -312,14 +312,14 @@
 			{/each}
 		</div>
 
-		<div class="border-t border-ink/12 p-2">
+		<div class="border-t border-line p-2">
 			<button
 				type="button"
 				onclick={apply}
 				disabled={!canApply}
 				class="w-full py-2 text-center font-condensed text-md font-semibold tracking-[0.6px] uppercase {canApply
 					? 'cursor-pointer bg-command text-paper hover:bg-danger'
-					: 'cursor-not-allowed bg-ink/10 text-ink/35'}"
+					: 'cursor-not-allowed bg-hover-strong text-ink/35'}"
 			>
 				Apply filter
 			</button>

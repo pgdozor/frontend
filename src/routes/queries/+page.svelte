@@ -15,6 +15,7 @@
 	import { QueryFilterState, parseDisplayTag } from '$lib/queryFilter.svelte';
 	import { fmtDuration, sevByMean, kvTags, errMsg } from '$lib/format';
 	import type { MetricSeriesPoint } from '$lib/metricChart';
+	import Button from '$lib/components/Button.svelte';
 	import CallsChart from '$lib/components/CallsChart.svelte';
 	import ChartPanel from '$lib/components/ChartPanel.svelte';
 	import LineChart from '$lib/components/LineChart.svelte';
@@ -201,7 +202,7 @@
 				from={chartRange.from}
 				to={chartRange.to}
 				{bucketMs}
-				fill={'var(--color-steel)'}
+				fill="var(--color-steel)"
 				label="calls"
 			/>
 		{:else}
@@ -241,13 +242,9 @@
 		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">No statements found</div>
 	{:else if hasMore}
 		<div class="border-t border-line-soft p-3 text-center">
-			<button
-				onclick={loadMore}
-				disabled={loadingMore}
-				class="cursor-pointer border border-line-card px-5 py-2 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/70 uppercase transition-colors hover:bg-command/6 hover:text-command disabled:cursor-default disabled:opacity-50"
-			>
+			<Button variant="ghost" onclick={loadMore} disabled={loadingMore}>
 				{loadingMore ? 'Loading…' : 'Load more'}
-			</button>
+			</Button>
 		</div>
 	{/if}
 </div>

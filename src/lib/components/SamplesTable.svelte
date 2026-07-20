@@ -46,7 +46,7 @@
 		<tbody>
 			{#each samples as s (s.id)}
 				{@const extra = extraTags(s.tags)}
-				<tr class="hover:bg-ink/3">
+				<tr class="hover:bg-hover-soft">
 					<td
 						class="hidden border-b border-line-soft px-5 py-3 align-top font-mono text-sm leading-[20px] whitespace-nowrap text-ink/75 sm:table-cell"
 						>{s.ts}</td
@@ -63,7 +63,7 @@
 								{#if hasBaseTags}
 									<span
 										title="Also carries the base tags shown at the top"
-										class="inline-flex items-center gap-1 border border-ink/12 px-1.5 py-px font-mono text-xs text-ink/40"
+										class="inline-flex items-center gap-1 border border-line px-1.5 py-px font-mono text-xs text-ink/40"
 									>
 										<ArrowUpIcon class="size-2.5" />base tags
 									</span>

@@ -62,7 +62,7 @@
 	</div>
 
 	<div class="flex flex-wrap items-center gap-2.5">
-		<div class="flex border border-ink/18 bg-card">
+		<div class="flex border border-line-card bg-card">
 			{#if scopeLock.locked}
 				<div
 					class="flex items-center gap-2 border-r border-line px-3 py-2"
@@ -163,7 +163,7 @@
 				{#snippet child({ props })}
 					<button
 						{...props}
-						class="flex cursor-pointer items-center gap-2 border border-ink/18 bg-card px-3 py-2 hover:bg-hover-soft"
+						class="flex cursor-pointer items-center gap-2 border border-line-card bg-card px-3 py-2 hover:bg-hover-soft"
 					>
 						<ClockIcon class="size-3.5 flex-none text-warn" />
 						{#if ctx.isCustom}
@@ -185,7 +185,7 @@
 					align="end"
 					class="z-50 flex max-w-[calc(100vw-24px)] flex-col border border-line-strong bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)] sm:flex-row"
 				>
-					<div class="border-b border-ink/12 px-2 py-3.5 sm:min-w-[10.75rem] sm:border-r sm:border-b-0">
+					<div class="border-b border-line px-2 py-3.5 sm:min-w-[10.75rem] sm:border-r sm:border-b-0">
 						<div class="mb-2.5 px-2.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
 							Quick ranges
 						</div>
@@ -195,7 +195,7 @@
 								onclick={() => selectPreset(key)}
 								class="block w-full cursor-pointer px-3 py-2 text-left font-sans text-sm whitespace-nowrap hover:bg-hover {ctx.range ===
 								key
-									? 'bg-command/8 font-semibold text-command'
+									? 'bg-accent font-semibold text-command'
 									: 'text-ink'}"
 							>
 								{label}
@@ -213,7 +213,7 @@
 							bind:value={draftFrom}
 							placeholder="YYYY-MM-DD HH:MM:SS"
 							spellcheck="false"
-							class="mb-3 w-full border border-ink/22 bg-paper px-2.5 py-2 font-mono text-sm text-ink"
+							class="mb-3 w-full border border-line-strong bg-paper px-2.5 py-2 font-mono text-sm text-ink"
 						/>
 						<label class="mb-1 block font-sans text-xs text-ink/65" for="ctx-to">To</label>
 						<input
@@ -222,7 +222,7 @@
 							bind:value={draftTo}
 							placeholder="YYYY-MM-DD HH:MM:SS"
 							spellcheck="false"
-							class="mb-3.5 w-full border border-ink/22 bg-paper px-2.5 py-2 font-mono text-sm text-ink"
+							class="mb-3.5 w-full border border-line-strong bg-paper px-2.5 py-2 font-mono text-sm text-ink"
 						/>
 						<button
 							type="button"

@@ -59,7 +59,7 @@
 			onclick={() => (picker = picker?.mode === 'add' ? null : { mode: 'add' })}
 			aria-haspopup="listbox"
 			aria-expanded={picker !== null}
-			class="relative z-[2] flex cursor-pointer items-center gap-1.5 border border-dashed border-ink/30 px-2.5 py-1 font-mono text-sm text-ink/60 hover:border-command/50 hover:text-command"
+			class="relative z-[2] flex cursor-pointer items-center gap-1.5 border border-dashed border-line-bold px-2.5 py-1 font-mono text-sm text-ink/60 hover:border-accent-line hover:text-command"
 		>
 			<PlusIcon class="size-3" />
 			Tag

@@ -99,7 +99,7 @@
 					onkeydown={(e) => onRowKey(e, q.id)}
 					role="button"
 					tabindex="0"
-					class="cursor-pointer transition-colors hover:bg-command/6"
+					class="cursor-pointer transition-colors hover:bg-accent-soft"
 				>
 					<td class="border-b border-line-soft px-4 py-3 align-top">
 						<div class="flex items-start gap-2.5">

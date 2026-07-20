@@ -19,7 +19,7 @@
 </script>
 
 {#if onclick}
-	<button type="button" {onclick} {title} class="{cls} cursor-pointer hover:border-command/45 hover:text-command">
+	<button type="button" {onclick} {title} class="{cls} cursor-pointer hover:border-accent-line hover:text-command">
 		{text}
 	</button>
 {:else}

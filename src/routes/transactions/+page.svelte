@@ -146,7 +146,7 @@
 					onkeydown={(e) => onRowKey(e, t)}
 					role="button"
 					tabindex="0"
-					class="flex cursor-pointer items-center gap-3 px-5 py-3.5 transition-colors hover:bg-command/5"
+					class="flex cursor-pointer items-center gap-3 px-5 py-3.5 transition-colors hover:bg-accent-soft"
 				>
 					{#if open}<ChevronDownIcon class="size-3.5 flex-none text-command" />{:else}<ChevronRightIcon
 							class="size-3.5 flex-none text-command"
@@ -190,7 +190,7 @@
 									<div class="font-mono text-sm leading-[18px] text-ink/35">no query running</div>
 								{/if}
 
-								<div class="mt-2 border-l border-ink/12 pl-3.5">
+								<div class="mt-2 border-l border-line pl-3.5">
 									{#each g.events as e, i (i)}
 										<div class={timelineGrid}>
 											<span class="mt-1.5 h-2.5 w-2.5 rounded-full" style:background={statusColor(e.status)}></span>

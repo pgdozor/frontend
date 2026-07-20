@@ -283,7 +283,7 @@
 						onkeydown={(e) => onRowKey(e, r)}
 						role="button"
 						tabindex="0"
-						class="cursor-pointer transition-colors hover:bg-command/6"
+						class="cursor-pointer transition-colors hover:bg-accent-soft"
 					>
 						<td class={td}>
 							<div class="flex items-start gap-2">

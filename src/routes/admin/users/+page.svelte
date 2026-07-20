@@ -116,7 +116,7 @@
 	const th =
 		'border-b border-line px-5 py-3 text-left font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
 	const allChip =
-		'inline-block border border-command/40 bg-command/10 px-2 py-0.5 font-condensed text-2xs font-bold tracking-[0.5px] whitespace-nowrap text-command uppercase';
+		'inline-block border border-accent-line bg-accent px-2 py-0.5 font-condensed text-2xs font-bold tracking-[0.5px] whitespace-nowrap text-command uppercase';
 	const serverChip =
 		'inline-block border border-steel/28 bg-steel/10 px-2 py-0.5 font-mono text-xs whitespace-nowrap text-steel';
 </script>
@@ -149,7 +149,7 @@
 				</thead>
 				<tbody>
 					{#each users as u (u.id.toString())}
-						<tr class="hover:bg-ink/3">
+						<tr class="hover:bg-hover-soft">
 							<td
 								class="border-b border-line-soft px-5 py-3.5 align-top font-mono text-md font-semibold whitespace-nowrap text-ink"
 							>
@@ -227,7 +227,7 @@
 				bind:value={umName}
 				placeholder="Jane Doe"
 				spellcheck="false"
-				class="mb-4 h-[2.625rem] w-full border border-ink/22 bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
+				class="mb-4 h-[2.625rem] w-full border border-line-strong bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
 			/>
 
 			<label
@@ -242,7 +242,7 @@
 				bind:value={umEmail}
 				placeholder="jdoe@company.com"
 				spellcheck="false"
-				class="mb-4 h-[2.625rem] w-full border border-ink/22 bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
+				class="mb-4 h-[2.625rem] w-full border border-line-strong bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
 			/>
 
 			<label
@@ -257,7 +257,7 @@
 				bind:value={umPassword}
 				placeholder={modal === 'edit' ? 'Leave blank to keep current' : 'Set a password'}
 				autocomplete="new-password"
-				class="mb-5 h-[2.625rem] w-full border border-ink/22 bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
+				class="mb-5 h-[2.625rem] w-full border border-line-strong bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
 			/>
 
 			{#if editingSuperAdmin}
@@ -278,8 +278,8 @@
 								type="button"
 								onclick={() => toggleServer(name)}
 								class="inline-flex cursor-pointer items-center gap-2 border px-3 py-2 font-mono text-sm select-none {on
-									? 'border-command bg-command/10 font-semibold text-command'
-									: 'border-ink/22 text-ink/60'}"
+									? 'border-command bg-accent font-semibold text-command'
+									: 'border-line-strong text-ink/60'}"
 							>
 								{#if on}<CheckIcon class="size-3.5" />{:else}<PlusIcon class="size-3.5" />{/if}{name}
 							</button>
@@ -295,11 +295,11 @@
 				</div>
 			{/if}
 		</div>
-		<div class="flex justify-end gap-2.5 border-t border-ink/12 px-5 py-3.5">
+		<div class="flex justify-end gap-2.5 border-t border-line px-5 py-3.5">
 			<button
 				type="button"
 				onclick={close}
-				class="cursor-pointer border border-ink/22 px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-hover"
+				class="cursor-pointer border border-line-strong px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-hover"
 			>
 				Cancel
 			</button>
