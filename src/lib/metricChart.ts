@@ -3,62 +3,40 @@ export type MetricSeriesPoint = { at: Date; value: number | null };
 export type MetricSeriesRow = { at: Date; values: (number | null)[] };
 
 export type MetricChartModel = {
-	gapData: MetricSeriesPoint[];
 	gaps: { from: Date; to: Date }[];
 	xFrom: Date;
 	xTo: Date;
 	step: number;
 };
 
-export type MetricMultiChartModel = {
-	rows: MetricSeriesRow[];
-	gaps: { from: Date; to: Date }[];
-	xFrom: Date;
-	xTo: Date;
-	step: number;
-};
+export type MetricMultiChartModel = MetricChartModel & { rows: MetricSeriesRow[] };
 
 function resolveStep(fromMs: number, toMs: number, bucketMs: number): number {
 	return bucketMs > 0 ? bucketMs : Math.max(60_000, (toMs - fromMs) / 60);
 }
 
-function buildSpan(
-	times: number[],
-	fromMs: number,
-	toMs: number,
-	step: number
-): { gaps: { from: Date; to: Date }[]; xFrom: Date; xTo: Date } {
-	const threshold = step * 1.5;
+function buildSpan(times: number[], fromMs: number, toMs: number, step: number): MetricChartModel {
+	if (!times.length) return { gaps: [], xFrom: new Date(fromMs), xTo: new Date(toMs), step };
 
-	const covered: { s: number; e: number }[] = [];
-	let runStart: number | null = null;
-	let prev: number | null = null;
-	for (const cur of times) {
-		if (prev === null) {
-			runStart = cur - step;
-		} else if (cur - prev > threshold) {
-			covered.push({ s: runStart as number, e: prev });
-			runStart = cur - step;
-		}
-		prev = cur;
-	}
-	if (prev !== null) covered.push({ s: runStart as number, e: prev });
+	const first = times[0];
+	const last = times[times.length - 1];
+	const gridFrom = first - Math.max(0, Math.ceil((first - fromMs) / step)) * step;
+	const gridTo = last + Math.max(0, Math.floor((toMs - last) / step) - 1) * step;
 
-	const firstSample = times.length ? times[0] - step : fromMs;
-	const lastSample = times.length ? times[times.length - 1] : fromMs;
-	const rightMs = toMs - lastSample <= threshold ? lastSample : toMs;
-	const left = firstSample - fromMs <= 2 * step ? firstSample : fromMs;
-	const [xLeft, xRight] = rightMs > left ? [left, rightMs] : [fromMs, rightMs];
-
+	const present = new Set(times);
 	const gaps: { from: Date; to: Date }[] = [];
-	let cursor = xLeft;
-	for (const c of covered) {
-		if (c.s > cursor) gaps.push({ from: new Date(cursor), to: new Date(Math.min(c.s, xRight)) });
-		cursor = Math.max(cursor, c.e);
+	let runStart: number | null = null;
+	for (let t = gridFrom; t <= gridTo; t += step) {
+		if (!present.has(t)) {
+			if (runStart === null) runStart = t;
+		} else if (runStart !== null) {
+			gaps.push({ from: new Date(runStart - step), to: new Date(t - step) });
+			runStart = null;
+		}
 	}
-	if (xRight - cursor > threshold) gaps.push({ from: new Date(cursor), to: new Date(xRight) });
+	if (runStart !== null) gaps.push({ from: new Date(runStart - step), to: new Date(gridTo) });
 
-	return { gaps, xFrom: new Date(xLeft), xTo: new Date(xRight) };
+	return { gaps, xFrom: new Date(gridFrom), xTo: new Date(gridTo), step };
 }
 
 export function buildMetricChartModel(
@@ -69,28 +47,13 @@ export function buildMetricChartModel(
 ): MetricChartModel {
 	const fromMs = from.getTime();
 	const toMs = to.getTime();
-	const step = resolveStep(fromMs, toMs, bucketMs);
-	const threshold = step * 1.5;
 
-	const gapData: MetricSeriesPoint[] = [];
-	let prev: number | null = null;
-	for (const p of data) {
-		const cur = p.at.getTime();
-		if (prev !== null && cur - prev > threshold) {
-			gapData.push({ at: new Date((prev + cur) / 2), value: null });
-		}
-		gapData.push(p);
-		prev = cur;
-	}
-
-	const span = buildSpan(
+	return buildSpan(
 		data.map((p) => p.at.getTime()),
 		fromMs,
 		toMs,
-		step
+		resolveStep(fromMs, toMs, bucketMs)
 	);
-
-	return { gapData, step, ...span };
 }
 
 export function buildMetricMultiChartModel(
@@ -102,7 +65,6 @@ export function buildMetricMultiChartModel(
 	const fromMs = from.getTime();
 	const toMs = to.getTime();
 	const step = resolveStep(fromMs, toMs, bucketMs);
-	const threshold = step * 1.5;
 
 	const times = new Set<number>();
 	for (const points of series) {
@@ -114,12 +76,12 @@ export function buildMetricMultiChartModel(
 	const rows: MetricSeriesRow[] = [];
 	let prev: number | null = null;
 	for (const t of sorted) {
-		if (prev !== null && t - prev > threshold) {
-			rows.push({ at: new Date((prev + t) / 2), values: series.map(() => null) });
+		if (prev !== null && t - prev > step) {
+			rows.push({ at: new Date(prev + step), values: series.map(() => null) });
 		}
 		rows.push({ at: new Date(t), values: lookups.map((m) => m.get(t) ?? null) });
 		prev = t;
 	}
 
-	return { rows, step, ...buildSpan(sorted, fromMs, toMs, step) };
+	return { rows, ...buildSpan(sorted, fromMs, toMs, step) };
 }

@@ -55,7 +55,7 @@
 			y={() => 0}
 			yDomain={[0, yMax || 1]}
 			yNice
-			padding={{ left: 36, bottom: 24 }}
+			padding={{ left: 36, right: 16, bottom: 24 }}
 			tooltipContext={{ mode: 'bisect-x' }}
 		>
 			<Svg>

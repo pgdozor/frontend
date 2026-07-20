@@ -71,7 +71,7 @@
 				<main
 					id="main-content"
 					tabindex="-1"
-					class="mx-auto w-full max-w-[82.5rem] min-w-0 flex-1 px-4 pt-7 pb-16 focus:outline-none sm:px-5 md:px-7"
+					class="mx-auto w-full max-w-[120rem] min-w-0 flex-1 px-4 pt-7 pb-16 focus:outline-none sm:px-5 md:px-7"
 				>
 					{@render children()}
 				</main>

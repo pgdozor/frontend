@@ -130,10 +130,14 @@
 						</div>
 					</td>
 					<td
-						title={q.usr}
 						class="hidden border-b border-line-soft px-4 py-3 align-top font-mono text-md leading-[20px] text-ink sm:table-cell"
 					>
-						<span class="block truncate">{q.usr}</span>
+						<a
+							href={href(q.id)}
+							title={q.usr}
+							tabindex="-1"
+							class="relative z-[1] block truncate focus-visible:outline-none">{q.usr}</a
+						>
 					</td>
 					<td
 						class="border-b border-line-soft px-4 py-3 text-right align-top leading-[20px] font-mono text-md font-semibold whitespace-nowrap"

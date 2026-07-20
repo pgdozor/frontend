@@ -11,17 +11,19 @@
 		return data
 			.filter((d) => d.value != null)
 			.map((d) => {
-				const left = Number(c.xScale(new Date(d.at.getTime() - bucketMs)));
-				const right = Number(c.xScale(d.at));
+				const left = Math.max(0, Number(c.xScale(new Date(d.at.getTime() - bucketMs))));
+				const right = Math.min(c.width, Number(c.xScale(d.at)));
 				const top = Number(c.yScale(d.value as number));
 				return {
 					at: d.at.getTime(),
 					x: left,
 					y: Math.min(top, y0),
+					span: right - left,
 					width: Math.max(1, right - left - 1),
 					height: Math.abs(y0 - top)
 				};
-			});
+			})
+			.filter((b) => b.span > 0);
 	});
 </script>
 

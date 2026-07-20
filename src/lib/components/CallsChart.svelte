@@ -26,6 +26,8 @@
 
 	const model = $derived(buildMetricChartModel(data, from, to, bucketMs));
 
+	const bars = $derived(data.filter((d) => d.at.getTime() > model.xFrom.getTime()));
+
 	const bucketCenter = $derived((d: MetricSeriesPoint) => new Date(d.at.getTime() - model.step / 2));
 </script>
 
@@ -33,14 +35,14 @@
 	<ChartLegend items={[{ label, color: fill }]} />
 	<div class="h-[15rem]">
 		<Chart
-			{data}
+			data={bars}
 			x={bucketCenter}
 			xScale={scaleTime()}
 			xDomain={[model.xFrom, model.xTo]}
 			y="value"
 			yDomain={[0, null]}
 			yNice
-			padding={{ left: 36, bottom: 24 }}
+			padding={{ left: 36, right: 16, bottom: 24 }}
 			tooltipContext={{ mode: 'bisect-x' }}
 		>
 			<Svg>
@@ -60,7 +62,7 @@
 					format={fmtAxisTime}
 					tickLabelProps={{ class: 'fill-ink/45 font-mono text-2xs', stroke: 'none' }}
 				/>
-				<MetricBars {data} bucketMs={model.step} {fill} />
+				<MetricBars data={bars} bucketMs={model.step} {fill} />
 				<Highlight lines motion="none" />
 				<SeriesPoints colors={[fill]} values={(d: MetricSeriesPoint) => [d.value]} />
 			</Svg>
