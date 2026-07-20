@@ -69,6 +69,7 @@
 
 		metaLoading = true;
 		metaError = null;
+		detail = undefined;
 
 		statementClient
 			.queryStatementDetail(
@@ -112,6 +113,7 @@
 
 		chartLoading = true;
 		chartError = null;
+		metrics = undefined;
 
 		statementClient
 			.queryStatementDetailMetrics(
@@ -177,6 +179,8 @@
 
 		samplesLoading = true;
 		samplesError = null;
+		samples = [];
+		hasMore = false;
 
 		statementClient
 			.queryStatementSamples(request, { signal: ac.signal })

@@ -36,6 +36,7 @@
 		const ac = new AbortController();
 		loading = true;
 		error = null;
+		trees = [];
 
 		activityClient
 			.queryBlocking(request, { signal: ac.signal })
@@ -100,7 +101,7 @@
 	const startedLabel = (ts?: Timestamp): string => (ts ? `started ${fmtClockDate(timestampDate(ts))}` : '—');
 </script>
 
-{#if loading && trees.length === 0}
+{#if loading}
 	<StateBlock class="border border-line-card bg-card px-4 py-7" message="Loading…" />
 {:else if error}
 	<StateBlock kind="error" class="border border-line-card bg-card px-4 py-7" message={error} />

@@ -65,6 +65,7 @@
 		const ac = new AbortController();
 		loading = true;
 		error = null;
+		resp = undefined;
 
 		logClient
 			.queryLogs(request, { signal: ac.signal })

@@ -104,6 +104,7 @@
 		const ac = chartAc;
 		chartLoading = true;
 		chartError = null;
+		metrics = undefined;
 
 		statementClient
 			.queryStatementMetrics(
@@ -164,6 +165,8 @@
 		const ac = tableAc;
 		tableLoading = true;
 		tableError = null;
+		rows = [];
+		hasMore = false;
 
 		statementClient
 			.queryStatements(request, { signal: ac.signal })

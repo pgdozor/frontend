@@ -43,6 +43,7 @@
 		const ac = new AbortController();
 		loading = true;
 		error = null;
+		transactions = [];
 
 		activityClient
 			.queryTransactions(request, { signal: ac.signal })
@@ -143,7 +144,7 @@
 </script>
 
 <div class="border border-line-card bg-card">
-	{#if loading && transactions.length === 0}
+	{#if loading}
 		<StateBlock class="px-4 py-7" message="Loading…" />
 	{:else if error}
 		<StateBlock kind="error" class="px-4 py-7" message={error} />
