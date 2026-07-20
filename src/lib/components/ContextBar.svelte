@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DatabaseIcon, ClockIcon, ChevronDownIcon, CheckIcon, ArrowRightIcon, CircleAlertIcon } from '@lucide/svelte';
+	import { DatabaseIcon, ClockIcon, ChevronDownIcon, CheckIcon, ArrowRightIcon } from '@lucide/svelte';
 	import { Select, Popover } from 'bits-ui';
 	import { page } from '$app/state';
 	import { screenDescription, screenTitle } from '$lib/nav';
@@ -61,16 +61,6 @@
 	</div>
 
 	<div class="flex flex-wrap items-center gap-2.5">
-		{#if serversState.error}
-			<span
-				role="alert"
-				title={serversState.error}
-				class="flex items-center gap-1.5 border border-danger/30 bg-danger/8 px-2.5 py-2 font-condensed text-2xs font-semibold tracking-[0.6px] text-danger uppercase"
-			>
-				<CircleAlertIcon class="size-3.5 flex-none" />
-				Servers unavailable
-			</span>
-		{/if}
 		<div class="flex border border-line-card bg-card">
 			{#if scopeLock.locked}
 				<div
