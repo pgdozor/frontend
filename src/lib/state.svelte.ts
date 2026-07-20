@@ -1,4 +1,4 @@
-import { fmtClock } from './format';
+import { fmtClock, errMsg } from './format';
 import { timestampDate } from '@bufbuild/protobuf/wkt';
 import type { MonitoredServer } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/health_pb';
 import { healthClient } from './connect';
@@ -133,14 +133,16 @@ export const scopeLock = new ScopeLock();
 // Servers whose last health check is older than 24h are already excluded by the backend.
 class ServersState {
 	list = $state<MonitoredServer[]>([]);
+	error = $state<string | null>(null);
 
 	async load() {
 		try {
 			const { servers } = await healthClient.queryServers({});
 			this.list = servers;
+			this.error = null;
 			this.reconcile();
 		} catch (err) {
-			console.error('failed to load monitored servers', err);
+			this.error = errMsg(err);
 		}
 	}
 

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { timestampFromDate, timestampDate } from '@bufbuild/protobuf/wkt';
 	import type {
@@ -10,6 +9,7 @@
 	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 	import { StatementSortColumn } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 	import { statementClient } from '$lib/connect';
+	import StateBlock from '$lib/components/StateBlock.svelte';
 	import { ctx } from '$lib/state.svelte';
 	import { urlSync } from '$lib/urlState.svelte';
 	import { QueryFilterState, parseDisplayTag } from '$lib/queryFilter.svelte';
@@ -18,6 +18,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import CallsChart from '$lib/components/CallsChart.svelte';
 	import ChartPanel from '$lib/components/ChartPanel.svelte';
+	import ChartEmpty from '$lib/components/ChartEmpty.svelte';
 	import LineChart from '$lib/components/LineChart.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
@@ -85,20 +86,27 @@
 	}
 
 	let chartGen = 0;
+	let chartAc: AbortController | null = null;
 	$effect(() => {
 		const { from, to } = ctx.timeRange();
 		chartRange = { from, to };
 		const gen = ++chartGen;
+		chartAc?.abort();
+		chartAc = new AbortController();
+		const ac = chartAc;
 		chartLoading = true;
 		chartError = null;
 
 		statementClient
-			.queryStatementMetrics({
-				serverName: ctx.server,
-				databaseName: ctx.db,
-				from: timestampFromDate(from),
-				to: timestampFromDate(to)
-			})
+			.queryStatementMetrics(
+				{
+					serverName: ctx.server,
+					databaseName: ctx.db,
+					from: timestampFromDate(from),
+					to: timestampFromDate(to)
+				},
+				{ signal: ac.signal }
+			)
 			.then((res) => {
 				if (gen === chartGen) metrics = res.metrics;
 			})
@@ -130,14 +138,18 @@
 	}
 
 	let tableGen = 0;
+	let tableAc: AbortController | null = null;
 	$effect(() => {
 		const request = tableRequest(0);
 		const gen = ++tableGen;
+		tableAc?.abort();
+		tableAc = new AbortController();
+		const ac = tableAc;
 		tableLoading = true;
 		tableError = null;
 
 		statementClient
-			.queryStatements(request)
+			.queryStatements(request, { signal: ac.signal })
 			.then((res) => {
 				if (gen !== tableGen) return;
 				rows = res.statements.map(toRow);
@@ -171,7 +183,7 @@
 	}
 
 	function toPoints(m?: StatementMetric): MetricSeriesPoint[] {
-		return (m?.series ?? []).filter((p) => p.at != null).map((p) => ({ at: timestampDate(p.at!), value: p.value }));
+		return (m?.series ?? []).flatMap((p) => (p.at ? [{ at: timestampDate(p.at), value: p.value }] : []));
 	}
 
 	const bucketMs = $derived(Number(metrics?.bucketMs ?? 0n));
@@ -181,10 +193,6 @@
 		{ label: 'p95', color: 'var(--color-warn)', points: toPoints(metrics?.p95) },
 		{ label: 'p99', color: 'var(--color-danger)', points: toPoints(metrics?.p99) }
 	]);
-
-	function open(id: string) {
-		goto(`/queries/${id}`);
-	}
 
 	// The tag sits inside a row that navigates on click.
 	function filterByTag(e: MouseEvent, text: string) {
@@ -206,9 +214,7 @@
 				label="calls"
 			/>
 		{:else}
-			<div class="flex h-[15rem] items-center justify-center font-mono text-sm text-ink/40">
-				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
-			</div>
+			<ChartEmpty message={chartLoading ? 'Loading…' : (chartError ?? 'No data')} />
 		{/if}
 	</ChartPanel>
 
@@ -219,9 +225,7 @@
 		{#if chartRange && latency.some((s) => s.points.length > 0)}
 			<LineChart series={latency} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
 		{:else}
-			<div class="flex h-[15rem] items-center justify-center font-mono text-sm text-ink/40">
-				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
-			</div>
+			<ChartEmpty message={chartLoading ? 'Loading…' : (chartError ?? 'No data')} />
 		{/if}
 	</ChartPanel>
 </div>
@@ -232,14 +236,14 @@
 	</header>
 	<TagFilterBar bind:searchText={search} tags={filters} />
 
-	<StatementTable {rows} bind:sort {sql} onOpen={open} onFilterTag={filterByTag} />
+	<StatementTable {rows} bind:sort {sql} href={(id) => `/queries/${id}`} onFilterTag={filterByTag} />
 
 	{#if tableLoading}
-		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
+		<StateBlock class="px-4 py-7" message="Loading…" />
 	{:else if tableError}
-		<div class="px-4 py-7 text-center font-mono text-sm text-danger">{tableError}</div>
+		<StateBlock kind="error" class="px-4 py-7" message={tableError} />
 	{:else if rows.length === 0}
-		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">No statements found</div>
+		<StateBlock class="px-4 py-7" message="No statements found" />
 	{:else if hasMore}
 		<div class="border-t border-line-soft p-3 text-center">
 			<Button variant="ghost" onclick={loadMore} disabled={loadingMore}>

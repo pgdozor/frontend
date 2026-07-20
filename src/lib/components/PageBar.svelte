@@ -23,11 +23,11 @@
 
 	<div class="flex min-w-0 flex-1 flex-col gap-0.5">
 		<div class="flex items-baseline gap-2.5">
-			<span class="truncate font-condensed text-xl leading-[1.15] font-bold tracking-[0.6px] text-ink uppercase"
-				>{title}</span
-			>
+			<h1 class="truncate font-condensed text-xl leading-[1.15] font-bold tracking-[0.6px] text-ink uppercase">
+				{title}
+			</h1>
 		</div>
-		<p class="truncate text-xs leading-[1.2] text-ink/45">{description}</p>
+		<p class="truncate text-xs leading-[1.2] text-ink/55">{description}</p>
 	</div>
 	{#if actions}
 		<div class="flex flex-wrap items-center gap-2.5">

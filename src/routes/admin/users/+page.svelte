@@ -1,10 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { PlusIcon, SquarePenIcon, Trash2Icon, CircleAlertIcon, CheckIcon } from '@lucide/svelte';
+	import { PlusIcon, SquarePenIcon, Trash2Icon, CheckIcon } from '@lucide/svelte';
+	import Alert from '$lib/components/Alert.svelte';
+	import FormLabel from '$lib/components/FormLabel.svelte';
+	import TextInput from '$lib/components/TextInput.svelte';
 	import { timestampDate } from '@bufbuild/protobuf/wkt';
 	import type { User } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/auth_pb';
 	import { adminClient } from '$lib/connect';
-	import { errMsg, fmtDateTime } from '$lib/format';
+	import StateBlock from '$lib/components/StateBlock.svelte';
+	import { cleanErr, errMsg, fmtDateTime } from '$lib/format';
+	import Button from '$lib/components/Button.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import PageBar from '$lib/components/PageBar.svelte';
 
@@ -97,7 +102,7 @@
 			close();
 			await load();
 		} catch (e) {
-			userError = errMsg(e).replace(/^\[[a-z_]+\]\s*/, '');
+			userError = cleanErr(e);
 		} finally {
 			saving = false;
 		}
@@ -123,14 +128,7 @@
 
 <PageBar>
 	{#snippet actions()}
-		<button
-			type="button"
-			onclick={openCreate}
-			class="flex cursor-pointer items-center gap-2 bg-command px-3.5 py-2 font-condensed text-sm font-bold tracking-[0.8px] whitespace-nowrap text-paper uppercase hover:bg-danger"
-		>
-			<PlusIcon class="size-3.5 stroke-[2.4]" />
-			<span>New User</span>
-		</button>
+		<Button onclick={openCreate}><PlusIcon class="size-3.5 stroke-[2.4]" /><span>New User</span></Button>
 	{/snippet}
 </PageBar>
 
@@ -140,11 +138,11 @@
 			<table class="w-full min-w-[53.75rem] border-collapse font-sans">
 				<thead>
 					<tr class="bg-hover-soft">
-						<th class="{th} w-[11.875rem]">Name</th>
-						<th class="{th} w-[13.125rem]">Email</th>
-						<th class="{th} w-[9.375rem]">Created</th>
-						<th class={th}>Permissions</th>
-						<th class="{th} w-[9.375rem] text-right">Actions</th>
+						<th scope="col" class="{th} w-[11.875rem]">Name</th>
+						<th scope="col" class="{th} w-[13.125rem]">Email</th>
+						<th scope="col" class="{th} w-[9.375rem]">Created</th>
+						<th scope="col" class={th}>Permissions</th>
+						<th scope="col" class="{th} w-[9.375rem] text-right">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -166,7 +164,7 @@
 									{#if u.isSuperAdmin}
 										<span class={allChip}>All servers</span>
 									{:else if u.allowedServers.length === 0}
-										<span class="font-mono text-sm text-ink/40">—</span>
+										<span class="font-mono text-sm text-ink/55">—</span>
 									{:else}
 										{#each u.allowedServers as s (s)}
 											<span class={serverChip}>{s}</span>
@@ -203,11 +201,11 @@
 		</div>
 
 		{#if loading}
-			<div class="px-11 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
+			<StateBlock class="px-11 py-7" message="Loading…" />
 		{:else if error}
-			<div class="px-11 py-7 text-center font-mono text-sm text-danger">{error}</div>
+			<StateBlock kind="error" class="px-11 py-7" message={error} />
 		{:else if users.length === 0}
-			<div class="px-11 py-11 text-center font-mono text-sm text-ink/45">No users yet</div>
+			<StateBlock class="px-11 py-11" message="No users yet" />
 		{/if}
 	</div>
 </div>
@@ -215,49 +213,27 @@
 {#if modal !== null}
 	<Modal title={modal === 'edit' ? 'Edit User' : 'New User'} onclose={close} maxWidth="520px">
 		<div class="p-5">
-			<label
-				class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase"
-				for="um-name"
-			>
-				Name
-			</label>
-			<input
-				id="um-name"
-				type="text"
-				bind:value={umName}
-				placeholder="Jane Doe"
-				spellcheck="false"
-				class="mb-4 h-[2.625rem] w-full border border-line-strong bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
-			/>
+			<FormLabel for="um-name">Name</FormLabel>
+			<TextInput id="um-name" type="text" bind:value={umName} placeholder="Jane Doe" spellcheck="false" class="mb-4" />
 
-			<label
-				class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase"
-				for="um-email"
-			>
-				Email
-			</label>
-			<input
+			<FormLabel for="um-email">Email</FormLabel>
+			<TextInput
 				id="um-email"
 				type="email"
 				bind:value={umEmail}
 				placeholder="jdoe@company.com"
 				spellcheck="false"
-				class="mb-4 h-[2.625rem] w-full border border-line-strong bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
+				class="mb-4"
 			/>
 
-			<label
-				class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase"
-				for="um-password"
-			>
-				Password
-			</label>
-			<input
+			<FormLabel for="um-password">Password</FormLabel>
+			<TextInput
 				id="um-password"
 				type="password"
 				bind:value={umPassword}
 				placeholder={modal === 'edit' ? 'Leave blank to keep current' : 'Set a password'}
 				autocomplete="new-password"
-				class="mb-5 h-[2.625rem] w-full border border-line-strong bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
+				class="mb-5"
 			/>
 
 			{#if editingSuperAdmin}
@@ -269,7 +245,7 @@
 					Allowed Servers
 				</span>
 				{#if serverOptions.length === 0}
-					<div class="font-mono text-sm text-ink/45">No servers yet — create a collector token first</div>
+					<div class="font-mono text-sm text-ink/55">No servers yet — create a collector token first</div>
 				{:else}
 					<div class="flex flex-wrap gap-2">
 						{#each serverOptions as name (name)}
@@ -289,28 +265,14 @@
 			{/if}
 
 			{#if userError}
-				<div class="mt-4 flex items-center gap-2 border border-danger/30 bg-danger/8 px-3 py-2.5 text-sm text-danger">
-					<CircleAlertIcon class="size-3.5 flex-none" />
-					<span>{userError}</span>
-				</div>
+				<Alert message={userError} class="mt-4 px-3 py-2.5" />
 			{/if}
 		</div>
 		<div class="flex justify-end gap-2.5 border-t border-line px-5 py-3.5">
-			<button
-				type="button"
-				onclick={close}
-				class="cursor-pointer border border-line-strong px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-ink/60 uppercase hover:bg-hover"
-			>
-				Cancel
-			</button>
-			<button
-				type="button"
-				onclick={save}
-				disabled={saving}
-				class="cursor-pointer border border-command bg-command px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-paper uppercase hover:bg-danger disabled:opacity-70"
-			>
+			<Button variant="secondary" onclick={close}>Cancel</Button>
+			<Button onclick={save} disabled={saving}>
 				{saving ? 'Saving…' : modal === 'edit' ? 'Save Changes' : 'Create User'}
-			</button>
+			</Button>
 		</div>
 	</Modal>
 {/if}

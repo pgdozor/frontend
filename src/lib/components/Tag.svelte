@@ -3,12 +3,14 @@
 		text,
 		size = 'sm',
 		onclick,
-		title
+		title,
+		class: klass = ''
 	}: {
 		text: string;
 		size?: 'sm' | 'md';
 		onclick?: (e: MouseEvent) => void;
 		title?: string;
+		class?: string;
 	} = $props();
 
 	const cls = $derived(
@@ -19,9 +21,14 @@
 </script>
 
 {#if onclick}
-	<button type="button" {onclick} {title} class="{cls} cursor-pointer hover:border-accent-line hover:text-command">
+	<button
+		type="button"
+		{onclick}
+		{title}
+		class="{cls} cursor-pointer hover:border-accent-line hover:text-command {klass}"
+	>
 		{text}
 	</button>
 {:else}
-	<span class={cls} {title}>{text}</span>
+	<span class="{cls} {klass}" {title}>{text}</span>
 {/if}

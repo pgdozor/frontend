@@ -9,6 +9,7 @@
 		StatementSample
 	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 	import { statementClient } from '$lib/connect';
+	import StateBlock from '$lib/components/StateBlock.svelte';
 	import { ctx, scopeLock } from '$lib/state.svelte';
 	import { format } from 'sql-formatter';
 	import { fmtDuration, sevByDuration, fmtTs, kvTags, errMsg } from '$lib/format';
@@ -16,6 +17,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import CallsChart from '$lib/components/CallsChart.svelte';
 	import ChartPanel from '$lib/components/ChartPanel.svelte';
+	import ChartEmpty from '$lib/components/ChartEmpty.svelte';
 	import LineChart from '$lib/components/LineChart.svelte';
 	import QueryTextBlock from '$lib/components/QueryTextBlock.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
@@ -49,10 +51,14 @@
 	const validId = $derived(/^\d+$/.test(id));
 
 	let metaGen = 0;
+	let metaAc: AbortController | null = null;
 	$effect(() => {
 		const statementId = id;
 		const { from, to } = ctx.timeRange();
 		const gen = ++metaGen;
+		metaAc?.abort();
+		metaAc = new AbortController();
+		const ac = metaAc;
 
 		if (!validId) {
 			metaError = 'Invalid query id';
@@ -65,11 +71,14 @@
 		metaError = null;
 
 		statementClient
-			.queryStatementDetail({
-				id: BigInt(statementId),
-				from: timestampFromDate(from),
-				to: timestampFromDate(to)
-			})
+			.queryStatementDetail(
+				{
+					id: BigInt(statementId),
+					from: timestampFromDate(from),
+					to: timestampFromDate(to)
+				},
+				{ signal: ac.signal }
+			)
 			.then((res) => {
 				if (gen === metaGen) detail = res;
 			})
@@ -84,11 +93,15 @@
 	});
 
 	let chartGen = 0;
+	let chartAc: AbortController | null = null;
 	$effect(() => {
 		const statementId = id;
 		const { from, to } = ctx.timeRange();
 		chartRange = { from, to };
 		const gen = ++chartGen;
+		chartAc?.abort();
+		chartAc = new AbortController();
+		const ac = chartAc;
 
 		if (!validId) {
 			chartError = 'Invalid query id';
@@ -101,11 +114,14 @@
 		chartError = null;
 
 		statementClient
-			.queryStatementDetailMetrics({
-				id: BigInt(statementId),
-				from: timestampFromDate(from),
-				to: timestampFromDate(to)
-			})
+			.queryStatementDetailMetrics(
+				{
+					id: BigInt(statementId),
+					from: timestampFromDate(from),
+					to: timestampFromDate(to)
+				},
+				{ signal: ac.signal }
+			)
 			.then((res) => {
 				if (gen === chartGen) metrics = res.metrics;
 			})
@@ -143,9 +159,13 @@
 	}
 
 	let samplesGen = 0;
+	let samplesAc: AbortController | null = null;
 	$effect(() => {
 		const request = validId ? sampleRequest(0) : null;
 		const gen = ++samplesGen;
+		samplesAc?.abort();
+		samplesAc = new AbortController();
+		const ac = samplesAc;
 
 		if (!request) {
 			samplesError = 'Invalid query id';
@@ -159,7 +179,7 @@
 		samplesError = null;
 
 		statementClient
-			.queryStatementSamples(request)
+			.queryStatementSamples(request, { signal: ac.signal })
 			.then((res) => {
 				if (gen !== samplesGen) return;
 				samples = res.samples.map(toSampleRow);
@@ -224,7 +244,7 @@
 	});
 
 	function toPoints(m?: StatementMetric): MetricSeriesPoint[] {
-		return (m?.series ?? []).filter((p) => p.at != null).map((p) => ({ at: timestampDate(p.at!), value: p.value }));
+		return (m?.series ?? []).flatMap((p) => (p.at ? [{ at: timestampDate(p.at), value: p.value }] : []));
 	}
 
 	const bucketMs = $derived(Number(metrics?.bucketMs ?? 0n));
@@ -285,9 +305,7 @@
 				label="calls"
 			/>
 		{:else}
-			<div class="flex h-[15rem] items-center justify-center font-mono text-sm text-ink/40">
-				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
-			</div>
+			<ChartEmpty message={chartLoading ? 'Loading…' : (chartError ?? 'No data')} />
 		{/if}
 	</ChartPanel>
 
@@ -298,15 +316,13 @@
 		{#if chartRange && timing.some((s) => s.points.length > 0)}
 			<LineChart series={timing} from={chartRange.from} to={chartRange.to} {bucketMs} format={fmtDuration} />
 		{:else}
-			<div class="flex h-[15rem] items-center justify-center font-mono text-sm text-ink/40">
-				{chartLoading ? 'Loading…' : (chartError ?? 'No data')}
-			</div>
+			<ChartEmpty message={chartLoading ? 'Loading…' : (chartError ?? 'No data')} />
 		{/if}
 	</ChartPanel>
 </div>
 
 <div class="mt-4 border border-line-card bg-card">
-	<div class="border-b border-line px-5 py-3.5">
+	<div class="border-b border-line px-4 py-3.5">
 		<SectionHeader
 			title="Captured samples"
 			description="Individual runs of this query — the real values each one used, and a plan when captured"
@@ -316,11 +332,11 @@
 	<SamplesTable {samples} {sql} {id} {hasBaseTags} {extraTags} />
 
 	{#if samplesLoading}
-		<div class="px-5 py-6 text-center font-mono text-sm text-ink/45">Loading…</div>
+		<StateBlock class="px-4 py-6" message="Loading…" />
 	{:else if samplesError}
-		<div class="px-5 py-6 text-center font-mono text-sm text-danger">{samplesError}</div>
+		<StateBlock kind="error" class="px-4 py-6" message={samplesError} />
 	{:else if samples.length === 0}
-		<div class="px-5 py-6 text-center font-mono text-sm text-ink/45">No samples captured in this range</div>
+		<StateBlock class="px-4 py-6" message="No samples captured in this range" />
 	{:else if hasMore}
 		<div class="border-t border-line-soft p-3 text-center">
 			<Button variant="ghost" onclick={loadMore} disabled={loadingMore}>

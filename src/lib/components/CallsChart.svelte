@@ -77,7 +77,7 @@
 					<div class="flex flex-col gap-1 font-mono text-xs leading-[1.4] whitespace-nowrap">
 						<div class="text-ink/50">{fmtBucketRange(point.at, model.step)}</div>
 						{#if point.value == null}
-							<div class="text-ink/40">No data</div>
+							<div class="text-ink/55">No data</div>
 						{:else}
 							<div class="font-semibold text-ink">{fmtCountFull(point.value)} calls</div>
 						{/if}

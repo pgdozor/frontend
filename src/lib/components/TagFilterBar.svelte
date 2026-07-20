@@ -79,7 +79,7 @@
 				tags.clear();
 				picker = null;
 			}}
-			class="translate-y-[1px] cursor-pointer px-1.5 py-1 font-mono text-xs text-ink/45 hover:text-danger"
+			class="translate-y-[1px] cursor-pointer px-1.5 py-1 font-mono text-xs text-ink/55 hover:text-danger"
 		>
 			Clear all
 		</button>
@@ -99,15 +99,15 @@
 						onchange={(e) => (tags.kinds[opt.key] = e.currentTarget.checked)}
 						class="m-0 block size-3.5 shrink-0 cursor-pointer accent-command"
 					/>
-					<span class="translate-y-[1px] leading-none">{opt.label}</span>
+					<span class="leading-none">{opt.label}</span>
 				</label>
 			{/each}
 		</div>
 
 		<div
-			class="flex w-full min-w-[10rem] flex-1 items-center gap-2 border border-line-strong bg-paper px-2.5 py-1 md:w-[13.75rem] md:flex-none"
+			class="flex w-full min-w-[10rem] flex-1 items-center gap-2 border border-line-strong bg-paper px-2.5 py-1 focus-within:border-command md:w-[13.75rem] md:flex-none"
 		>
-			<SearchIcon class="size-3.5 flex-none text-ink/40" />
+			<SearchIcon class="size-3.5 flex-none text-ink/55" />
 			<input
 				type="text"
 				bind:value={searchText}

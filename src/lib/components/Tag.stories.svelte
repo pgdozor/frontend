@@ -11,7 +11,7 @@
 
 <Story name="Sizes">
 	{#snippet template()}
-		<div class="flex flex-wrap items-center gap-[8px]">
+		<div class="flex flex-wrap items-center gap-2">
 			<Tag text="env=production" />
 			<Tag text="env=production" size="md" />
 		</div>
@@ -20,7 +20,7 @@
 
 <Story name="Clickable (filter)">
 	{#snippet template()}
-		<div class="flex flex-wrap items-center gap-[8px]">
+		<div class="flex flex-wrap items-center gap-2">
 			<Tag text="service=checkout-api" title="Filter by service=checkout-api" onclick={() => {}} />
 			<Tag text="team=payments" title="Filter by team=payments" onclick={() => {}} />
 		</div>
@@ -29,7 +29,7 @@
 
 <Story name="Wrapping row">
 	{#snippet template()}
-		<div class="flex max-w-[320px] flex-wrap items-center gap-[6px]">
+		<div class="flex max-w-[320px] flex-wrap items-center gap-1.5">
 			<Tag text="service=checkout-api" />
 			<Tag text="route=POST:/v1/orders/confirm" />
 			<Tag text="env=production" />

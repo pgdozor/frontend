@@ -7,6 +7,7 @@
 		type TransactionEvent
 	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/activity_pb';
 	import { activityClient } from '$lib/connect';
+	import StateBlock from '$lib/components/StateBlock.svelte';
 	import { ctx } from '$lib/state.svelte';
 	import { fmtDuration, fmtRel, fmtClockDate, errMsg, kvTags } from '$lib/format';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
@@ -30,11 +31,12 @@
 		};
 
 		let cancelled = false;
+		const ac = new AbortController();
 		loading = true;
 		error = null;
 
 		activityClient
-			.queryTransactions(request)
+			.queryTransactions(request, { signal: ac.signal })
 			.then((res) => {
 				if (cancelled) return;
 				transactions = res.transactions;
@@ -50,6 +52,7 @@
 
 		return () => {
 			cancelled = true;
+			ac.abort();
 		};
 	});
 
@@ -131,12 +134,12 @@
 </script>
 
 <div class="border border-line-card bg-card">
-	{#if loading}
-		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
+	{#if loading && transactions.length === 0}
+		<StateBlock class="px-4 py-7" message="Loading…" />
 	{:else if error}
-		<div class="px-4 py-7 text-center font-mono text-sm text-danger">{error}</div>
+		<StateBlock kind="error" class="px-4 py-7" message={error} />
 	{:else if transactions.length === 0}
-		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">No transactions in this range</div>
+		<StateBlock class="px-4 py-7" message="No transactions in this range" />
 	{:else}
 		{#each transactions as t (rowKey(t))}
 			{@const open = expanded[rowKey(t)] ?? false}
@@ -146,6 +149,7 @@
 					onkeydown={(e) => onRowKey(e, t)}
 					role="button"
 					tabindex="0"
+					aria-expanded={open}
 					class="flex cursor-pointer items-center gap-3 px-5 py-3.5 transition-colors hover:bg-accent-soft"
 				>
 					{#if open}<ChevronDownIcon class="size-3.5 flex-none text-command" />{:else}<ChevronRightIcon
@@ -173,10 +177,14 @@
 							<div class="mt-4 first:mt-0">
 								{#if g.query}
 									<div class="leading-[18px]">
-										<code
+										<button
+											type="button"
 											onmouseenter={(ev) => sql.show(g.query, ev)}
 											onmouseleave={sql.hide}
-											class="inline-block max-w-full truncate align-top font-mono text-sm text-ink/75">{g.query}</code
+											onfocus={(ev) => sql.show(g.query, ev)}
+											onblur={sql.hide}
+											class="inline-block max-w-full cursor-default truncate border-0 bg-transparent p-0 text-left align-top font-mono text-sm text-ink/75 transition-colors hover:text-command focus-visible:text-command focus-visible:outline-none"
+											>{g.query}</button
 										>
 										{#if Object.keys(g.queryTags).length > 0}
 											<div class="mt-1.5 flex flex-wrap gap-1.5">

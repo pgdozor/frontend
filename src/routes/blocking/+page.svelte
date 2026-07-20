@@ -2,6 +2,7 @@
 	import { timestampFromDate, timestampDate, type Timestamp } from '@bufbuild/protobuf/wkt';
 	import { type BlockingTree, type BlockedEvent } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/activity_pb';
 	import { activityClient } from '$lib/connect';
+	import StateBlock from '$lib/components/StateBlock.svelte';
 	import { ctx } from '$lib/state.svelte';
 	import { fmtDuration, fmtClockDate, errMsg } from '$lib/format';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
@@ -23,11 +24,12 @@
 		};
 
 		let cancelled = false;
+		const ac = new AbortController();
 		loading = true;
 		error = null;
 
 		activityClient
-			.queryBlocking(request)
+			.queryBlocking(request, { signal: ac.signal })
 			.then((res) => {
 				if (cancelled) return;
 				trees = res.trees;
@@ -43,6 +45,7 @@
 
 		return () => {
 			cancelled = true;
+			ac.abort();
 		};
 	});
 
@@ -88,16 +91,12 @@
 	const startedLabel = (ts?: Timestamp): string => (ts ? `started ${fmtClockDate(timestampDate(ts))}` : '—');
 </script>
 
-{#if loading}
-	<div class="border border-line-card bg-card px-4 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
+{#if loading && trees.length === 0}
+	<StateBlock class="border border-line-card bg-card px-4 py-7" message="Loading…" />
 {:else if error}
-	<div class="border border-line-card bg-card px-4 py-7 text-center font-mono text-sm text-danger">
-		{error}
-	</div>
+	<StateBlock kind="error" class="border border-line-card bg-card px-4 py-7" message={error} />
 {:else if trees.length === 0}
-	<div class="border border-line-card bg-card px-4 py-7 text-center font-mono text-sm text-ink/45">
-		No blocking in this range
-	</div>
+	<StateBlock class="border border-line-card bg-card px-4 py-7" message="No blocking in this range" />
 {:else}
 	{#each trees as tree (tree.rootPid)}
 		<div class="mb-4 border border-line-card bg-card last:mb-0">
@@ -124,17 +123,21 @@
 			{#each orderVictims(tree) as { event, level } (event.pid)}
 				<div class="flex items-start border-t border-line-soft py-3 pr-5" style:padding-left={`${level * 22}px`}>
 					<!-- Arrow column width matches the 22px indent step, so pids align across levels. -->
-					<span class="w-6 flex-none font-mono text-xs leading-[18px] text-ink/40">↳</span>
+					<span class="w-6 flex-none font-mono text-xs leading-[18px] text-ink/55">↳</span>
 					<div class="min-w-0 flex-1">
 						<div class="flex flex-wrap items-baseline gap-2.5">
 							<span class="font-mono text-md font-semibold text-ink">pid {event.pid}</span>
 							<span class="font-sans text-sm text-ink/60">{event.applicationName}</span>
 						</div>
 						<div class="mt-2 flex min-w-0 items-baseline">
-							<code
+							<button
+								type="button"
 								onmouseenter={(ev) => sql.show(event.query, ev)}
 								onmouseleave={sql.hide}
-								class="min-w-0 flex-initial truncate font-mono text-sm text-ink/70">{event.query}</code
+								onfocus={(ev) => sql.show(event.query, ev)}
+								onblur={sql.hide}
+								class="min-w-0 flex-initial cursor-default truncate border-0 bg-transparent p-0 text-left font-mono text-sm text-ink/70 transition-colors hover:text-command focus-visible:text-command focus-visible:outline-none"
+								>{event.query}</button
 							>
 							{#if event.lockMode}
 								<span class="flex-none font-mono text-sm font-medium whitespace-nowrap text-danger">

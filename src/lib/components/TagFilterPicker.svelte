@@ -4,6 +4,7 @@
 	import { timestampFromDate } from '@bufbuild/protobuf/wkt';
 	import { statementClient } from '$lib/connect';
 	import { ctx } from '$lib/state.svelte';
+	import { errMsg } from '$lib/format';
 	import type { TagFilter, TagOp } from '$lib/queryFilter.svelte';
 
 	let {
@@ -73,7 +74,7 @@
 				keyRows = res.keys.map((k) => ({ key: k.key, valueCount: Number(k.valueCount) }));
 			})
 			.catch((e: unknown) => {
-				if (!cancelled) error = e instanceof Error ? e.message : String(e);
+				if (!cancelled) error = errMsg(e);
 			})
 			.finally(() => {
 				if (!cancelled) loading = false;
@@ -100,7 +101,7 @@
 				valueRows = res.values.map((v) => ({ value: v.value, statementCount: Number(v.statementCount) }));
 			})
 			.catch((e: unknown) => {
-				if (!cancelled) error = e instanceof Error ? e.message : String(e);
+				if (!cancelled) error = errMsg(e);
 			})
 			.finally(() => {
 				if (!cancelled) loading = false;
@@ -193,11 +194,11 @@
 <div
 	role="presentation"
 	{onkeydown}
-	class="absolute top-[calc(100%+6px)] left-0 z-[2] w-[min(320px,calc(100vw-32px))] border border-line-strong bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
+	class="absolute top-[calc(100%+6px)] left-0 z-[2] w-[min(320px,calc(100vw-32px))] border border-line-strong bg-card shadow-popover"
 >
 	{#if step === 'key'}
 		<div class="flex items-center gap-2 border-b border-line px-2.5 py-2">
-			<SearchIcon class="size-3.5 flex-none text-ink/40" />
+			<SearchIcon class="size-3.5 flex-none text-ink/55" />
 			<input
 				bind:this={searchInput}
 				bind:value={keySearch}
@@ -220,10 +221,10 @@
 					class="{rowCls} {i === highlight ? 'bg-hover' : ''}"
 				>
 					<span class="flex-1 text-left">{k.key}</span>
-					<span class="text-xs text-ink/45">{k.valueCount}</span>
+					<span class="text-xs text-ink/55">{k.valueCount}</span>
 				</button>
 			{:else}
-				<div class="px-2.5 py-2.5 font-mono text-sm text-ink/45">
+				<div class="px-2.5 py-2.5 font-mono text-sm text-ink/55">
 					{loading ? 'Loading…' : (error ?? (keyRows.length > 0 ? 'No matching tag keys' : 'No tags found'))}
 				</div>
 			{/each}
@@ -234,7 +235,7 @@
 				type="button"
 				onclick={back}
 				aria-label="Back to tag keys"
-				class="cursor-pointer p-1 text-ink/45 hover:text-ink"
+				class="cursor-pointer p-1 text-ink/55 hover:text-ink"
 			>
 				<ChevronLeftIcon class="size-3.5" />
 			</button>
@@ -259,7 +260,7 @@
 		</div>
 
 		<div class="flex items-center gap-2 border-b border-line px-2.5 py-2">
-			<SearchIcon class="size-3.5 flex-none text-ink/40" />
+			<SearchIcon class="size-3.5 flex-none text-ink/55" />
 			<input
 				bind:this={searchInput}
 				bind:value={valueSearch}
@@ -303,10 +304,10 @@
 						{#if picked.includes(v.value)}<CheckIcon class="size-3 text-command" />{/if}
 					</span>
 					<span class="flex-1 truncate text-left">{v.value}</span>
-					<span class="text-xs text-ink/45">{v.statementCount}</span>
+					<span class="text-xs text-ink/55">{v.statementCount}</span>
 				</button>
 			{:else}
-				<div class="px-2.5 py-2.5 font-mono text-sm text-ink/45">
+				<div class="px-2.5 py-2.5 font-mono text-sm text-ink/55">
 					{loading ? 'Loading…' : (error ?? (valueRows.length > 0 ? 'No matching values' : 'No values in this window'))}
 				</div>
 			{/each}

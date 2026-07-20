@@ -54,7 +54,7 @@ export class SqlPopoverState {
 	// The trigger is a table row you cross constantly while scanning, so opening
 	// costs a deliberate pause. Once one is open the next is instant: moving
 	// between rows is then reading, not passing through.
-	show(text: string, e: MouseEvent) {
+	show(text: string, e: MouseEvent | FocusEvent) {
 		this.#clearShow();
 		this.#clearHide();
 		this.#activeKey = null;
@@ -76,7 +76,7 @@ export class SqlPopoverState {
 	// Like show(), but the full text is fetched on demand by id. The list row
 	// only carries a short preview, so the ~20KB body is pulled the first time a
 	// row is hovered and cached for repeat hovers.
-	showLazy(id: bigint, e: MouseEvent) {
+	showLazy(id: bigint, e: MouseEvent | FocusEvent) {
 		this.#clearShow();
 		this.#clearHide();
 

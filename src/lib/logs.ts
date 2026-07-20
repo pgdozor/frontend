@@ -16,13 +16,6 @@ const META: Record<LogEvent_LogLevel, LevelMeta> = {
 	[LogEvent_LogLevel.DEBUG]: { tier: 'info', color: 'var(--color-taupe)' }
 };
 
-// Warm brown used for warn-tier text on a tinted background (design value).
-const WARN_TEXT = '#9A5B12';
-
-export function levelTier(level: LogEvent_LogLevel): LevelTier {
-	return (META[level] ?? { tier: 'info' }).tier;
-}
-
 export function levelColor(level: LogEvent_LogLevel): string {
 	return (META[level] ?? { color: 'var(--color-steel)' }).color;
 }
@@ -44,9 +37,8 @@ export const LEVEL_ORDER: LogEvent_LogLevel[] = [
 	LogEvent_LogLevel.DEBUG
 ];
 
-function hexA(hex: string, alpha: number): string {
-	const n = parseInt(hex.slice(1), 16);
-	return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+function tint(color: string, pct: number): string {
+	return `color-mix(in oklab, ${color} ${pct}%, transparent)`;
 }
 
 export type PillStyle = { color: string; background: string; border: string };
@@ -54,11 +46,15 @@ export type PillStyle = { color: string; background: string; border: string };
 export function levelChip(level: LogEvent_LogLevel, active: boolean): PillStyle {
 	const m = META[level] ?? { tier: 'info', color: 'var(--color-steel)' };
 	if (!active)
-		return { color: 'rgba(58,42,31,0.4)', background: 'transparent', border: '1px solid rgba(58,42,31,0.2)' };
+		return {
+			color: tint('var(--color-ink)', 40),
+			background: 'transparent',
+			border: '1px solid var(--color-line-strong)'
+		};
 	if (m.tier === 'severe') return { color: 'var(--color-paper)', background: m.color, border: `1px solid ${m.color}` };
 	if (m.tier === 'warn')
-		return { color: WARN_TEXT, background: hexA(m.color, 0.16), border: `1px solid ${hexA(m.color, 0.5)}` };
-	return { color: m.color, background: hexA(m.color, 0.1), border: `1px solid ${hexA(m.color, 0.45)}` };
+		return { color: 'var(--color-warn-text)', background: tint(m.color, 16), border: `1px solid ${tint(m.color, 50)}` };
+	return { color: m.color, background: tint(m.color, 10), border: `1px solid ${tint(m.color, 45)}` };
 }
 
 export function levelBadge(level: LogEvent_LogLevel): PillStyle {

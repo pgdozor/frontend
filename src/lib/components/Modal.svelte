@@ -5,12 +5,13 @@
 
 	type Props = {
 		title: string;
+		description?: string;
 		onclose: () => void;
 		children: Snippet;
 		maxWidth?: string;
 	};
 
-	let { title, onclose, children, maxWidth = '480px' }: Props = $props();
+	let { title, description, onclose, children, maxWidth = '480px' }: Props = $props();
 </script>
 
 <Dialog.Root
@@ -22,13 +23,14 @@
 	<Dialog.Portal>
 		<Dialog.Overlay class="fixed inset-0 z-[60] bg-scrim" />
 		<Dialog.Content
-			class="fixed top-1/2 left-1/2 z-[61] max-h-[calc(100vh-48px)] w-[calc(100vw-48px)] -translate-x-1/2 -translate-y-1/2 overflow-auto border border-line-bold bg-card font-sans shadow-[0_24px_60px_rgba(58,42,31,0.32)]"
+			class="fixed top-1/2 left-1/2 z-[61] max-h-[calc(100vh-48px)] w-[calc(100vw-48px)] -translate-x-1/2 -translate-y-1/2 overflow-auto border border-line-bold bg-card font-sans shadow-modal"
 			style="max-width: {maxWidth};"
 		>
 			<div class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
 				<Dialog.Title class="font-condensed text-xl font-bold tracking-[0.6px] text-ink uppercase">{title}</Dialog.Title
 				>
-				<Dialog.Close aria-label="Close" class="cursor-pointer leading-none text-ink/45 hover:text-danger">
+				<Dialog.Description class="sr-only">{description ?? title}</Dialog.Description>
+				<Dialog.Close aria-label="Close" class="cursor-pointer leading-none text-ink/55 hover:text-danger">
 					<XIcon class="size-4" />
 				</Dialog.Close>
 			</div>

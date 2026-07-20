@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DatabaseIcon, ClockIcon, ChevronDownIcon, CheckIcon, ArrowRightIcon } from '@lucide/svelte';
+	import { DatabaseIcon, ClockIcon, ChevronDownIcon, CheckIcon, ArrowRightIcon, CircleAlertIcon } from '@lucide/svelte';
 	import { Select, Popover } from 'bits-ui';
 	import { page } from '$app/state';
 	import { screenDescription, screenTitle } from '$lib/nav';
@@ -54,14 +54,24 @@
 
 	<div class="flex min-w-0 flex-1 flex-col gap-0.5">
 		<div class="flex items-baseline gap-2.5">
-			<span class="truncate font-condensed text-xl leading-[1.15] font-bold tracking-[0.6px] text-ink uppercase"
-				>{title}</span
-			>
+			<h1 class="truncate font-condensed text-xl leading-[1.15] font-bold tracking-[0.6px] text-ink uppercase">
+				{title}
+			</h1>
 		</div>
-		<p class="truncate text-xs leading-[1.2] text-ink/45">{description}</p>
+		<p class="truncate text-xs leading-[1.2] text-ink/55">{description}</p>
 	</div>
 
 	<div class="flex flex-wrap items-center gap-2.5">
+		{#if serversState.error}
+			<span
+				role="alert"
+				title={serversState.error}
+				class="flex items-center gap-1.5 border border-danger/30 bg-danger/8 px-2.5 py-2 font-condensed text-2xs font-semibold tracking-[0.6px] text-danger uppercase"
+			>
+				<CircleAlertIcon class="size-3.5 flex-none" />
+				Servers unavailable
+			</span>
+		{/if}
 		<div class="flex border border-line-card bg-card">
 			{#if scopeLock.locked}
 				<div
@@ -91,7 +101,7 @@
 									title={dotTitle(selfHealth === 'ok')}
 								></span>
 								<span class="font-mono text-sm font-medium text-ink">{ctx.server || '—'}</span>
-								<ChevronDownIcon class="size-3.5 text-ink/45" />
+								<ChevronDownIcon class="size-3.5 text-ink/55" />
 							</button>
 						{/snippet}
 					</Select.Trigger>
@@ -109,7 +119,7 @@
 									{/snippet}
 								</Select.Item>
 							{:else}
-								<div class="px-2.5 py-2 font-mono text-sm text-ink/45">No servers</div>
+								<div class="px-2.5 py-2 font-mono text-sm text-ink/55">No servers</div>
 							{/each}
 						</Select.Content>
 					</Select.Portal>
@@ -125,7 +135,7 @@
 							>
 								<DatabaseIcon class="size-3.5 flex-none text-steel" />
 								<span class="font-mono text-sm font-medium text-ink">{ctx.db || '—'}</span>
-								<ChevronDownIcon class="size-3.5 text-ink/45" />
+								<ChevronDownIcon class="size-3.5 text-ink/55" />
 							</button>
 						{/snippet}
 					</Select.Trigger>
@@ -142,7 +152,7 @@
 									{/snippet}
 								</Select.Item>
 							{:else}
-								<div class="px-2.5 py-2 font-mono text-sm text-ink/45">No databases</div>
+								<div class="px-2.5 py-2 font-mono text-sm text-ink/55">No databases</div>
 							{/each}
 						</Select.Content>
 					</Select.Portal>
@@ -169,13 +179,13 @@
 						{#if ctx.isCustom}
 							<span class="flex items-center gap-1.5 font-mono text-sm font-medium whitespace-nowrap text-ink">
 								{ctx.customFromLabel}
-								<ArrowRightIcon class="size-3 flex-none text-ink/40" />
+								<ArrowRightIcon class="size-3 flex-none text-ink/55" />
 								{ctx.customToLabel}
 							</span>
 						{:else}
 							<span class="font-mono text-sm font-medium whitespace-nowrap text-ink">{ctx.timeLabel}</span>
 						{/if}
-						<ChevronDownIcon class="size-3.5 text-ink/45" />
+						<ChevronDownIcon class="size-3.5 text-ink/55" />
 					</button>
 				{/snippet}
 			</Popover.Trigger>
@@ -183,7 +193,7 @@
 				<Popover.Content
 					sideOffset={6}
 					align="end"
-					class="z-50 flex max-w-[calc(100vw-24px)] flex-col border border-line-strong bg-card shadow-[0_10px_28px_rgba(58,42,31,0.2)] sm:flex-row"
+					class="z-50 flex max-w-[calc(100vw-24px)] flex-col border border-line-strong bg-card shadow-popover sm:flex-row"
 				>
 					<div class="border-b border-line px-2 py-3.5 sm:min-w-[10.75rem] sm:border-r sm:border-b-0">
 						<div class="mb-2.5 px-2.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">

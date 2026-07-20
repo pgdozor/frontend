@@ -24,32 +24,6 @@ export function fmtCount(n: number): string {
 	return sig3(n / 1e9) + 'B';
 }
 
-export function fmtDurationParts(ms: number): { value: string; unit: string }[] {
-	if (ms < 1000) return [{ value: sig3(ms), unit: 'ms' }];
-	const total = Math.round(ms);
-	const units: [number, string][] = [
-		[86_400_000, 'd'],
-		[3_600_000, 'h'],
-		[60_000, 'min'],
-		[1_000, 's'],
-		[1, 'ms']
-	];
-	const parts: { value: string; unit: string }[] = [];
-	let rem = total;
-	for (const [size, label] of units) {
-		const v = Math.floor(rem / size);
-		if (v > 0) parts.push({ value: String(v), unit: label });
-		rem %= size;
-	}
-	return parts;
-}
-
-export function fmtDurationFull(ms: number): string {
-	return fmtDurationParts(ms)
-		.map((p) => `${p.value} ${p.unit}`)
-		.join(', ');
-}
-
 export function fmtCountFull(n: number): string {
 	return Math.round(n).toLocaleString('en-US');
 }
@@ -123,10 +97,11 @@ export function errMsg(e: unknown): string {
 	return e instanceof Error ? e.message : String(e);
 }
 
+export function cleanErr(e: unknown): string {
+	return errMsg(e).replace(/^\[[a-z_]+\]\s*/, '');
+}
+
 export const sevByMean = (ms: number): string =>
 	ms >= 4000 ? 'var(--color-danger)' : ms >= 800 ? 'var(--color-warn)' : 'var(--color-ok)';
 export const sevByDuration = (ms: number): string =>
 	ms >= 10000 ? 'var(--color-danger)' : ms >= 1000 ? 'var(--color-warn)' : 'var(--color-ok)';
-
-export const sevColorByLevel = (level: 'normal' | 'warning' | 'critical'): string =>
-	level === 'critical' ? 'var(--color-danger)' : level === 'warning' ? 'var(--color-warn)' : 'var(--color-ok)';

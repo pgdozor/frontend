@@ -10,10 +10,12 @@ import { AdminService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/admin_
 import { AlertService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/alert_pb';
 
 const baseUrl = env.PUBLIC_API_URL || '/api';
+const REQUEST_TIMEOUT_MS = 30_000;
 
 // fetch override sends the HTTP-only session cookie on every request (cross-origin in dev).
 const transport = createConnectTransport({
 	baseUrl,
+	defaultTimeoutMs: REQUEST_TIMEOUT_MS,
 	fetch: (input, init) => globalThis.fetch(input, { ...init, credentials: 'include' })
 });
 

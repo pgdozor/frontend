@@ -1,25 +1,17 @@
 <script lang="ts">
-	import { SearchIcon, XIcon, ChevronDownIcon, ChevronRightIcon, CheckIcon } from '@lucide/svelte';
+	import { SearchIcon, XIcon, ChevronDownIcon, CheckIcon } from '@lucide/svelte';
 	import { timestampFromDate, timestampDate } from '@bufbuild/protobuf/wkt';
 	import {
 		LogEvent_LogLevel,
 		LogEvent_LogClassification,
-		type QueryLogsResponse,
-		type LogRecord
+		type QueryLogsResponse
 	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/log_pb';
 	import { logClient } from '$lib/connect';
+	import StateBlock from '$lib/components/StateBlock.svelte';
+	import LogsTable from '$lib/components/LogsTable.svelte';
 	import { ctx } from '$lib/state.svelte';
-	import { fmtCount, fmtTs, errMsg } from '$lib/format';
-	import {
-		levelLabel,
-		levelColor,
-		levelBadge,
-		levelChip,
-		LEVEL_ORDER,
-		classificationLabel,
-		classificationCode,
-		ALL_CLASSIFICATIONS
-	} from '$lib/logs';
+	import { fmtCount, errMsg } from '$lib/format';
+	import { levelLabel, levelColor, levelChip, LEVEL_ORDER, classificationLabel, ALL_CLASSIFICATIONS } from '$lib/logs';
 	import LogHistogram from '$lib/components/LogHistogram.svelte';
 
 	let resp = $state<QueryLogsResponse | undefined>(undefined);
@@ -32,7 +24,6 @@
 	let selectedLevels = $state<LogEvent_LogLevel[]>([]);
 	let selectedClasses = $state<LogEvent_LogClassification[]>([]);
 
-	let expanded = $state<Record<string, boolean>>({});
 	let menu = $state<'class' | null>(null);
 
 	$effect(() => {
@@ -62,11 +53,12 @@
 		};
 
 		let cancelled = false;
+		const ac = new AbortController();
 		loading = true;
 		error = null;
 
 		logClient
-			.queryLogs(request)
+			.queryLogs(request, { signal: ac.signal })
 			.then((res) => {
 				if (cancelled) return;
 				resp = res;
@@ -82,6 +74,7 @@
 
 		return () => {
 			cancelled = true;
+			ac.abort();
 		};
 	});
 
@@ -139,25 +132,6 @@
 		search = '';
 		filter = '';
 	}
-
-	const rowKey = (r: LogRecord): string => r.id.toString();
-	function toggleRow(r: LogRecord) {
-		const k = rowKey(r);
-		expanded[k] = !expanded[k];
-	}
-	function onRowKey(e: KeyboardEvent, r: LogRecord) {
-		if (e.key === 'Enter' || e.key === ' ') {
-			e.preventDefault();
-			toggleRow(r);
-		}
-	}
-
-	const tsFmt = (r: LogRecord): string => (r.occurredAt ? fmtTs(timestampDate(r.occurredAt)) : '—');
-	const hasSecondary = (r: LogRecord): boolean => !!(r.stateCode || r.detail || r.hint || r.context || r.statement);
-
-	const th =
-		'py-2.5 px-3.5 text-left font-condensed text-xs font-semibold tracking-[0.7px] uppercase text-ink/55 border-b border-line whitespace-nowrap';
-	const td = 'px-3.5 py-2.5 border-b border-line-soft align-top';
 </script>
 
 <div class="mb-4 border border-line-card bg-card px-5 pt-5 pb-3.5">
@@ -212,8 +186,10 @@
 
 <div class="border border-line-card bg-card">
 	<div class="flex flex-wrap items-center gap-2.5 border-b border-line p-3 px-3.5">
-		<div class="flex h-10 min-w-[15rem] flex-1 items-center gap-2.5 border border-line-strong bg-paper px-3">
-			<SearchIcon class="size-3.5 flex-none text-ink/40" />
+		<div
+			class="flex h-10 min-w-[15rem] flex-1 items-center gap-2.5 border border-line-strong bg-paper px-3 focus-within:border-command"
+		>
+			<SearchIcon class="size-3.5 flex-none text-ink/55" />
 			<input
 				type="text"
 				bind:value={search}
@@ -226,7 +202,7 @@
 					type="button"
 					title="Clear"
 					onclick={() => (search = '')}
-					class="cursor-pointer text-ink/45 hover:text-danger"><XIcon class="size-3.5" /></button
+					class="cursor-pointer text-ink/55 hover:text-danger"><XIcon class="size-3.5" /></button
 				>
 			{/if}
 		</div>
@@ -235,15 +211,17 @@
 			<button
 				type="button"
 				onclick={() => (menu = menu === 'class' ? null : 'class')}
+				aria-haspopup="menu"
+				aria-expanded={menu === 'class'}
 				class="flex h-10 cursor-pointer items-center gap-2.5 border border-line-strong bg-paper px-3 hover:bg-hover-soft"
 			>
 				<span class="font-condensed text-2xs font-semibold tracking-[0.8px] text-ink/50 uppercase">Class</span>
 				<span class="font-mono text-sm font-medium whitespace-nowrap text-ink">{classLabel}</span>
-				<ChevronDownIcon class="size-3.5 text-ink/45" />
+				<ChevronDownIcon class="size-3.5 text-ink/55" />
 			</button>
 			{#if menu === 'class'}
 				<div
-					class="absolute top-[calc(100%+6px)] right-0 z-[22] max-h-[21.25rem] min-w-[18.75rem] overflow-auto border border-line-strong bg-card p-1.5 shadow-[0_10px_28px_rgba(58,42,31,0.2)]"
+					class="absolute top-[calc(100%+6px)] right-0 z-[22] max-h-[21.25rem] min-w-[18.75rem] overflow-auto border border-line-strong bg-card p-1.5 shadow-popover"
 				>
 					{#each ALL_CLASSIFICATIONS as c (c)}
 						<button
@@ -260,156 +238,13 @@
 		</div>
 	</div>
 
-	<div class="overflow-x-auto">
-		<table class="w-full min-w-[67rem] table-fixed border-collapse font-sans">
-			<thead>
-				<tr class="bg-hover-soft">
-					<th class="{th} pl-8" style="width:188px">At</th>
-					<th class={th} style="width:84px">Level</th>
-					<th class={th}>Classification</th>
-					<th class={th} style="width:68px">PID</th>
-					<th class={th} style="width:100px">Database</th>
-					<th class={th} style="width:112px">User</th>
-					<th class={th} style="width:132px">Application</th>
-					<th class={th} style="width:156px">Backend</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each records as r (rowKey(r))}
-					{@const open = expanded[rowKey(r)] ?? false}
-					{@const lb = levelBadge(r.logLevel)}
-					<tr
-						onclick={() => toggleRow(r)}
-						onkeydown={(e) => onRowKey(e, r)}
-						role="button"
-						tabindex="0"
-						class="cursor-pointer transition-colors hover:bg-accent-soft"
-					>
-						<td class={td}>
-							<div class="flex items-start gap-2">
-								{#if open}<ChevronDownIcon class="mt-px size-3.5 flex-none text-command" />{:else}<ChevronRightIcon
-										class="mt-px size-3.5 flex-none text-command"
-									/>{/if}
-								<span class="font-mono text-sm leading-[18px] whitespace-nowrap text-ink/80">{tsFmt(r)}</span>
-							</div>
-						</td>
-						<td class={td}>
-							<div class="flex h-5 items-center">
-								<span
-									class="px-2 py-px font-condensed text-2xs font-bold tracking-[0.7px] whitespace-nowrap uppercase"
-									style:color={lb.color}
-									style:background={lb.background}
-									style:border={lb.border}>{levelLabel(r.logLevel)}</span
-								>
-							</div>
-						</td>
-						<td class="{td} overflow-hidden">
-							<span
-								title={classificationCode(r.classification)}
-								class="block overflow-hidden font-sans text-sm leading-[18px] text-ellipsis whitespace-nowrap text-ink"
-								>{classificationLabel(r.classification)}</span
-							>
-						</td>
-						<td class="{td} font-mono text-sm leading-[18px] text-ink/80">{r.pid || '—'}</td>
-						<td class="{td} overflow-hidden">
-							<span class="block overflow-hidden text-sm leading-[18px] text-ellipsis whitespace-nowrap text-ink/78"
-								>{r.databaseName || '—'}</span
-							>
-						</td>
-						<td class="{td} overflow-hidden">
-							<span class="block overflow-hidden text-sm leading-[18px] text-ellipsis whitespace-nowrap text-ink/78"
-								>{r.username || '—'}</span
-							>
-						</td>
-						<td class="{td} overflow-hidden">
-							<span class="block overflow-hidden text-sm leading-[18px] text-ellipsis whitespace-nowrap text-ink/78"
-								>{r.applicationName || '—'}</span
-							>
-						</td>
-						<td class={td}>
-							<span class="block font-mono text-xs leading-[18px] break-words text-ink/70">{r.backendType || '—'}</span>
-						</td>
-					</tr>
-					{#if open}
-						<tr>
-							<td colspan="8" class="border-b border-line p-0">
-								<div class="bg-paper px-5 py-4 pl-8">
-									<div class="mb-3.5">
-										<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
-											Message
-										</div>
-										<div class="font-mono text-md leading-[1.6] break-words whitespace-pre-wrap text-ink">
-											{r.message}
-										</div>
-									</div>
-
-									{#if r.stateCode}
-										<div class="mb-3.5">
-											<span
-												class="border border-danger/30 bg-danger/10 px-2.5 py-1 font-mono text-xs font-semibold text-danger"
-												>SQLSTATE {r.stateCode}</span
-											>
-										</div>
-									{/if}
-
-									{#if r.detail}
-										<div class="mb-3.5">
-											<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
-												Detail
-											</div>
-											<div class="font-mono text-sm leading-[1.6] break-words whitespace-pre-wrap text-ink">
-												{r.detail}
-											</div>
-										</div>
-									{/if}
-
-									{#if r.hint}
-										<div class="mb-3.5">
-											<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
-												Hint
-											</div>
-											<div class="font-sans text-md leading-[1.55] text-ink/82">{r.hint}</div>
-										</div>
-									{/if}
-
-									{#if r.context}
-										<div class="mb-3.5">
-											<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
-												Context
-											</div>
-											<div class="font-mono text-sm leading-[1.55] break-words whitespace-pre-wrap text-ink/80">
-												{r.context}
-											</div>
-										</div>
-									{/if}
-
-									{#if r.statement}
-										<div>
-											<div class="mb-1.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
-												Statement
-											</div>
-											<pre
-												class="m-0 bg-ink px-3.5 py-3 font-mono text-sm leading-[1.7] break-words whitespace-pre-wrap text-paper">{r.statement}</pre>
-										</div>
-									{/if}
-
-									{#if !hasSecondary(r)}
-										<div class="font-mono text-sm text-ink/40">No additional fields recorded for this event</div>
-									{/if}
-								</div>
-							</td>
-						</tr>
-					{/if}
-				{/each}
-			</tbody>
-		</table>
-	</div>
+	<LogsTable {records} />
 
 	{#if loading}
-		<div class="px-4 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
+		<StateBlock class="px-4 py-7" message="Loading…" />
 	{:else if error}
-		<div class="px-4 py-7 text-center font-mono text-sm text-danger">{error}</div>
+		<StateBlock kind="error" class="px-4 py-7" message={error} />
 	{:else if records.length === 0}
-		<div class="px-10 py-10 text-center font-mono text-sm text-ink/45">No log events match the current filters</div>
+		<StateBlock class="px-10 py-10" message="No log events match the current filters" />
 	{/if}
 </div>

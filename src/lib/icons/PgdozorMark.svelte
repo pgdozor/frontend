@@ -5,8 +5,7 @@
 	let props: SVGAttributes<SVGSVGElement> = $props();
 </script>
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" {...props}>
-	<title>PGDOZOR</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" aria-hidden="true" {...props}>
 	<circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2.5" />
 	<circle cx="20" cy="20" r="11.5" fill="none" stroke="currentColor" stroke-width="1" />
 	<path d="M20 6 L20 34 M6 20 L34 20" stroke="currentColor" stroke-width="1" />

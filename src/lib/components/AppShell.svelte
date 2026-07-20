@@ -57,16 +57,28 @@
 </script>
 
 {#if allowed}
+	<a
+		href="#main-content"
+		class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:border focus:border-command focus:bg-paper focus:px-3 focus:py-2 focus:font-condensed focus:text-sm focus:font-semibold focus:tracking-[0.6px] focus:text-command focus:uppercase"
+	>
+		Skip to content
+	</a>
 	<div class="flex min-h-screen flex-row bg-paper text-ink">
 		<Sidebar />
 		<div class="flex min-w-0 flex-1 flex-col">
 			{#if contextBar}
 				<ContextBar {dbSwitch} />
-				<div class="mx-auto w-full max-w-[82.5rem] min-w-0 flex-1 px-4 pt-7 pb-16 sm:px-5 md:px-7">
+				<main
+					id="main-content"
+					tabindex="-1"
+					class="mx-auto w-full max-w-[82.5rem] min-w-0 flex-1 px-4 pt-7 pb-16 focus:outline-none sm:px-5 md:px-7"
+				>
 					{@render children()}
-				</div>
+				</main>
 			{:else}
-				{@render children()}
+				<main id="main-content" tabindex="-1" class="flex min-w-0 flex-1 flex-col focus:outline-none">
+					{@render children()}
+				</main>
 			{/if}
 		</div>
 	</div>

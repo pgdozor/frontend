@@ -26,13 +26,13 @@
 		rows,
 		sort = $bindable(),
 		sql,
-		onOpen,
+		href,
 		onFilterTag
 	}: {
 		rows: StatementRow[];
 		sort: { col: StatementSortCol; dir: 'asc' | 'desc' };
 		sql: SqlPopoverState;
-		onOpen: (id: string) => void;
+		href: (id: string) => string;
 		onFilterTag: (e: MouseEvent, text: string) => void;
 	} = $props();
 
@@ -41,7 +41,7 @@
 		{ key: 'usr', label: 'User', align: 'left', width: '7.5rem', hide: 'hidden sm:table-cell' },
 		{ key: 'meanMs', label: 'Avg', align: 'right', width: '5.625rem' },
 		{ key: 'calls', label: 'Calls', align: 'right', width: '5.625rem' },
-		{ key: 'rowsPerCall', label: 'Rows/Call', align: 'right', width: '6.125rem', hide: 'hidden lg:table-cell' },
+		{ key: 'rowsPerCall', label: 'Rows/Call', align: 'right', width: '6.75rem', hide: 'hidden lg:table-cell' },
 		{ key: 'pctIo', label: '% IO', align: 'right', width: '4.875rem', hide: 'hidden lg:table-cell' },
 		{ key: 'pctTime', label: '% Time', align: 'right', width: '5.25rem', hide: 'hidden lg:table-cell' }
 	];
@@ -54,13 +54,6 @@
 		if (sort.col === key) sort = { col: key, dir: sort.dir === 'asc' ? 'desc' : 'asc' };
 		else sort = { col: key, dir: key === 'query' || key === 'usr' ? 'asc' : 'desc' };
 	}
-
-	function onRowKey(e: KeyboardEvent, id: string) {
-		if (e.key === 'Enter' || e.key === ' ') {
-			e.preventDefault();
-			onOpen(id);
-		}
-	}
 </script>
 
 <div class="overflow-x-auto">
@@ -69,52 +62,67 @@
 			<tr class="bg-hover-soft">
 				{#each headDef as h (h.key)}
 					<th
-						onclick={() => sortBy(h.key)}
+						scope="col"
+						aria-sort={sort.col === h.key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
 						style:width={h.width}
 						class={clsx(
-							'cursor-pointer border-b border-line py-2.5 pr-4 font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase select-none',
-							h.key === 'query' ? 'pl-8' : 'pl-4',
-							h.align === 'right' ? 'text-right' : 'text-left',
+							'border-b border-line font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase',
 							h.hide
 						)}
 					>
-						<span class="inline-flex items-center gap-1 align-middle">
-							<span>{h.label}</span>
-							{#if sort.col === h.key}
-								{#if sort.dir === 'asc'}
-									<ArrowUpIcon class="size-3 flex-none text-command" />
-								{:else}
-									<ArrowDownIcon class="size-3 flex-none text-command" />
+						<button
+							type="button"
+							onclick={() => sortBy(h.key)}
+							class={clsx(
+								'block w-full cursor-pointer py-2.5 pr-4 uppercase select-none focus-visible:text-command',
+								h.key === 'query' ? 'pl-8' : 'pl-4',
+								h.align === 'right' ? 'text-right' : 'text-left'
+							)}
+						>
+							<span class="inline-flex items-center gap-1 align-middle">
+								<span>{h.label}</span>
+								{#if sort.col === h.key}
+									{#if sort.dir === 'asc'}
+										<ArrowUpIcon class="size-3 flex-none text-command" />
+									{:else}
+										<ArrowDownIcon class="size-3 flex-none text-command" />
+									{/if}
 								{/if}
-							{/if}
-						</span>
+							</span>
+						</button>
 					</th>
 				{/each}
 			</tr>
 		</thead>
 		<tbody>
 			{#each rows as q (q.id)}
-				<tr
-					onclick={() => onOpen(q.id)}
-					onkeydown={(e) => onRowKey(e, q.id)}
-					role="button"
-					tabindex="0"
-					class="cursor-pointer transition-colors hover:bg-accent-soft"
-				>
+				<tr class="group relative transition-colors hover:bg-accent-soft">
 					<td class="border-b border-line-soft px-4 py-3 align-top">
-						<div class="flex items-start gap-2.5">
-							<span class="mt-2 h-2 w-2 flex-none rounded-full" style:background={q.sev}></span>
+						<div class="flex items-start gap-2">
+							<span class="mt-1.5 h-2 w-2 flex-none rounded-full" style:background={q.sev}></span>
 							<div class="min-w-0 flex-1">
-								<code
-									onmouseenter={(e) => sql.showLazy(BigInt(q.id), e)}
-									onmouseleave={sql.hide}
-									class="inline-block max-w-full cursor-default overflow-hidden align-top font-mono text-sm leading-[20px] text-ellipsis whitespace-nowrap text-ink transition-colors hover:text-command"
-									>{q.query}</code
+								<a
+									href={href(q.id)}
+									onfocus={(e) => e.currentTarget.matches(':focus-visible') && sql.showLazy(BigInt(q.id), e)}
+									onblur={sql.hide}
+									class="group/link inline-block max-w-full align-top after:absolute after:inset-0 focus-visible:outline-none"
 								>
+									<code
+										onmouseenter={(e) => sql.showLazy(BigInt(q.id), e)}
+										onmouseleave={sql.hide}
+										class="relative z-[1] inline-block max-w-full overflow-hidden align-top font-mono text-sm leading-[20px] text-ellipsis whitespace-nowrap text-ink transition-colors hover:text-command group-focus-visible/link:text-command"
+										>{q.query}</code
+									>
+								</a>
 								{#if q.tags.length > 0}
-									<div class="mt-1 flex flex-wrap gap-1.5">
+									<div class="pointer-events-none relative z-[1] mt-1 flex flex-wrap gap-1.5">
 										{#each q.tags as t (t)}
-											<Tag text={t} title="Filter by {t}" onclick={(e) => onFilterTag(e, t)} />
+											<Tag
+												text={t}
+												title="Filter by {t}"
+												onclick={(e) => onFilterTag(e, t)}
+												class="pointer-events-auto"
+											/>
 										{/each}
 									</div>
 								{/if}

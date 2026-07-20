@@ -72,7 +72,7 @@
 <Story name="Default">
 	{#snippet template()}
 		<div class="border border-line-card bg-card">
-			<StatementTable {rows} bind:sort {sql} onOpen={() => {}} onFilterTag={() => {}} />
+			<StatementTable {rows} bind:sort {sql} href={(id) => `/queries/${id}`} onFilterTag={() => {}} />
 		</div>
 	{/snippet}
 </Story>
@@ -80,7 +80,7 @@
 <Story name="Empty">
 	{#snippet template()}
 		<div class="border border-line-card bg-card">
-			<StatementTable rows={[]} bind:sort {sql} onOpen={() => {}} onFilterTag={() => {}} />
+			<StatementTable rows={[]} bind:sort {sql} href={(id) => `/queries/${id}`} onFilterTag={() => {}} />
 		</div>
 	{/snippet}
 </Story>

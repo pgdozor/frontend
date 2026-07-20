@@ -13,7 +13,7 @@
 	{#snippet template()}
 		<ChartPanel title="Query volume over time" description="How many times queries ran">
 			<div
-				class="flex h-[240px] items-center justify-center border border-dashed border-line-strong font-mono text-[12px] text-ink/40"
+				class="flex h-[15rem] items-center justify-center border border-dashed border-line-strong font-mono text-2xs text-ink/55"
 			>
 				[ chart renders here ]
 			</div>
@@ -27,7 +27,7 @@
 			title="Query speed over time"
 			description="How long queries took — p90 means roughly 9 in 10 finished faster"
 		>
-			<div class="flex h-[240px] items-center justify-center font-mono text-[12px] text-ink/40">No data</div>
+			<div class="flex h-[15rem] items-center justify-center font-mono text-2xs text-ink/55">No data</div>
 		</ChartPanel>
 	{/snippet}
 </Story>

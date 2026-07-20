@@ -1,10 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { PlusIcon, Trash2Icon, CircleAlertIcon, TriangleAlertIcon, CopyIcon } from '@lucide/svelte';
+	import { PlusIcon, Trash2Icon, TriangleAlertIcon, CopyIcon } from '@lucide/svelte';
+	import Alert from '$lib/components/Alert.svelte';
+	import FormLabel from '$lib/components/FormLabel.svelte';
+	import TextInput from '$lib/components/TextInput.svelte';
 	import { timestampDate } from '@bufbuild/protobuf/wkt';
 	import type { CollectorToken } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/admin_pb';
 	import { adminClient } from '$lib/connect';
-	import { errMsg, fmtDateTime } from '$lib/format';
+	import StateBlock from '$lib/components/StateBlock.svelte';
+	import { cleanErr, errMsg, fmtDateTime } from '$lib/format';
 	import Button from '$lib/components/Button.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import PageBar from '$lib/components/PageBar.svelte';
@@ -70,7 +74,7 @@
 			modal = 'reveal';
 			await load();
 		} catch (e) {
-			formError = errMsg(e).replace(/^\[[a-z_]+\]\s*/, '');
+			formError = cleanErr(e);
 		} finally {
 			creating = false;
 		}
@@ -114,9 +118,9 @@
 			<table class="w-full min-w-[35rem] border-collapse font-sans">
 				<thead>
 					<tr class="bg-hover-soft">
-						<th class="{th} text-left">Postgres Server</th>
-						<th class="{th} text-left">Created</th>
-						<th class="{th} w-[7.5rem] text-right">Actions</th>
+						<th scope="col" class="{th} text-left">Postgres Server</th>
+						<th scope="col" class="{th} text-left">Created</th>
+						<th scope="col" class="{th} w-[7.5rem] text-right">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -145,13 +149,11 @@
 		</div>
 
 		{#if loading}
-			<div class="px-11 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
+			<StateBlock class="px-11 py-7" message="Loading…" />
 		{:else if error}
-			<div class="px-11 py-7 text-center font-mono text-sm text-danger">{error}</div>
+			<StateBlock kind="error" class="px-11 py-7" message={error} />
 		{:else if tokens.length === 0}
-			<div class="px-11 py-11 text-center font-mono text-sm text-ink/45">
-				No collector tokens yet. Create one to connect a collector
-			</div>
+			<StateBlock class="px-11 py-11" message="No collector tokens yet. Create one to connect a collector" />
 		{/if}
 	</div>
 </div>
@@ -160,28 +162,17 @@
 	<Modal title={modal === 'reveal' ? 'Token Created' : 'Create Collector Token'} onclose={close}>
 		{#if modal === 'form'}
 			<div class="p-5">
-				<label
-					class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase"
-					for="token-server"
-				>
-					Postgres Server
-				</label>
-				<input
+				<FormLabel for="token-server">Postgres Server</FormLabel>
+				<TextInput
 					id="token-server"
 					type="text"
 					bind:value={serverName}
 					placeholder="e.g. shdp-prod-5"
 					spellcheck="false"
 					onkeydown={(e) => e.key === 'Enter' && create()}
-					class="h-[2.625rem] w-full border border-line-strong bg-paper px-3.5 font-mono text-md text-ink outline-none focus:border-command"
 				/>
 				{#if formError}
-					<div
-						class="mt-3.5 flex items-center gap-2 border border-danger/30 bg-danger/8 px-3 py-2.5 text-sm text-danger"
-					>
-						<CircleAlertIcon class="size-3.5 flex-none" />
-						<span>{formError}</span>
-					</div>
+					<Alert message={formError} class="mt-3.5 px-3 py-2.5" />
 				{/if}
 			</div>
 			<div class="flex justify-end gap-2.5 border-t border-line px-5 py-3.5">
@@ -192,7 +183,7 @@
 			</div>
 		{:else}
 			<div class="p-5">
-				<div class="mb-4 flex items-center gap-2.5 border border-danger/30 bg-danger/8 px-3.5 py-3">
+				<div role="alert" class="mb-4 flex items-center gap-2.5 border border-danger/30 bg-danger/8 px-3.5 py-3">
 					<TriangleAlertIcon class="size-4 flex-none text-danger" />
 					<div class="font-condensed text-sm font-bold tracking-[0.6px] text-danger uppercase">
 						Copy this token now. It will not be shown again.
@@ -217,13 +208,7 @@
 				</div>
 			</div>
 			<div class="flex justify-end gap-2.5 border-t border-line px-5 py-3.5">
-				<button
-					type="button"
-					onclick={close}
-					class="cursor-pointer border border-command bg-command px-4 py-2.5 font-condensed text-sm font-bold tracking-[0.8px] text-paper uppercase hover:bg-danger"
-				>
-					Done
-				</button>
+				<Button onclick={close}>Done</Button>
 			</div>
 		{/if}
 	</Modal>

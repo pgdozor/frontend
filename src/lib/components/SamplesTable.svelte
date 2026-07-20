@@ -30,17 +30,17 @@
 	} = $props();
 
 	const thBase =
-		'border-b border-line px-5 py-2.5 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/55 uppercase';
+		'border-b border-line px-4 py-2.5 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/55 uppercase';
 </script>
 
 <div class="overflow-x-auto">
 	<table class="w-full min-w-[26.25rem] table-fixed border-collapse">
 		<thead>
 			<tr class="bg-hover-soft">
-				<th class="{thBase} hidden w-[11.25rem] text-left sm:table-cell">At</th>
-				<th class="{thBase} text-left">Query</th>
-				<th class="{thBase} w-[7rem] text-left">Plan</th>
-				<th class="{thBase} w-[6.875rem] text-right">Duration</th>
+				<th scope="col" class="{thBase} hidden w-[11.25rem] text-left sm:table-cell">At</th>
+				<th scope="col" class="{thBase} text-left">Query</th>
+				<th scope="col" class="{thBase} w-[7rem] text-left">Plan</th>
+				<th scope="col" class="{thBase} w-[6.875rem] text-right">Duration</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -48,22 +48,25 @@
 				{@const extra = extraTags(s.tags)}
 				<tr class="hover:bg-hover-soft">
 					<td
-						class="hidden border-b border-line-soft px-5 py-3 align-top font-mono text-sm leading-[20px] whitespace-nowrap text-ink/75 sm:table-cell"
+						class="hidden border-b border-line-soft px-4 py-3 align-top font-mono text-sm leading-[20px] whitespace-nowrap text-ink/75 sm:table-cell"
 						>{s.ts}</td
 					>
-					<td class="min-w-0 border-b border-line-soft px-5 py-3 align-top">
-						<code
+					<td class="min-w-0 border-b border-line-soft px-4 py-3 align-top">
+						<button
+							type="button"
 							onmouseenter={(e) => sql.showLazy(BigInt(s.id), e)}
 							onmouseleave={sql.hide}
-							class="inline-block max-w-full cursor-default overflow-hidden align-top font-mono text-sm leading-[20px] text-ellipsis whitespace-nowrap text-ink transition-colors hover:text-command"
-							>{s.short}</code
+							onfocus={(e) => sql.showLazy(BigInt(s.id), e)}
+							onblur={sql.hide}
+							class="inline-block max-w-full cursor-default overflow-hidden border-0 bg-transparent p-0 text-left align-top font-mono text-sm leading-[20px] text-ellipsis whitespace-nowrap text-ink transition-colors hover:text-command focus-visible:text-command focus-visible:outline-none"
+							>{s.short}</button
 						>
 						{#if hasBaseTags || extra.length > 0}
 							<div class="mt-1 flex flex-wrap items-center gap-1.5">
 								{#if hasBaseTags}
 									<span
 										title="Also carries the base tags shown at the top"
-										class="inline-flex items-center gap-1 border border-line px-1.5 py-px font-mono text-xs text-ink/40"
+										class="inline-flex items-center gap-1 border border-line px-1.5 py-px font-mono text-xs text-ink/55"
 									>
 										<ArrowUpIcon class="size-2.5" />base tags
 									</span>
@@ -74,7 +77,7 @@
 							</div>
 						{/if}
 					</td>
-					<td class="border-b border-line-soft px-5 py-3 align-top">
+					<td class="border-b border-line-soft px-4 py-3 align-top">
 						{#if s.hasPlan}
 							<a
 								href="/queries/{id}/plan/{s.id}"
@@ -90,7 +93,7 @@
 						{/if}
 					</td>
 					<td
-						class="border-b border-line-soft px-5 py-3 text-right align-top font-mono text-md leading-[20px] font-semibold whitespace-nowrap"
+						class="border-b border-line-soft px-4 py-3 text-right align-top font-mono text-md leading-[20px] font-semibold whitespace-nowrap"
 						style:color={s.sev}>{s.durFmt}</td
 					>
 				</tr>

@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { CircleAlertIcon, LinkIcon, InfoIcon, XIcon } from '@lucide/svelte';
+	import { LinkIcon, InfoIcon, XIcon } from '@lucide/svelte';
+	import Alert from '$lib/components/Alert.svelte';
+	import FormLabel from '$lib/components/FormLabel.svelte';
 	import { AlertLevel } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/alert_pb';
 	import type { ServerAlertSettings, AlertSetting } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/alert_pb';
 	import { alertClient } from '$lib/connect';
+	import StateBlock from '$lib/components/StateBlock.svelte';
 	import { errMsg } from '$lib/format';
 	import PageBar from '$lib/components/PageBar.svelte';
 
@@ -74,28 +77,21 @@
 		[AlertLevel.INFO]: { label: 'Info', chip: 'border-steel/34 bg-steel/10 text-steel' },
 		[AlertLevel.UNSPECIFIED]: { label: 'Info', chip: 'border-steel/34 bg-steel/10 text-steel' }
 	};
-
-	const label = 'mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase';
 </script>
 
 <PageBar />
 
 <div class="mx-auto w-full max-w-[68.75rem] min-w-0 px-7 pt-7 pb-16">
 	{#if error && servers.length > 0}
-		<div class="mb-5 flex items-center gap-2 border border-danger/30 bg-danger/8 px-3.5 py-2.5 text-sm text-danger">
-			<CircleAlertIcon class="size-3.5 flex-none" />
-			<span>{error}</span>
-		</div>
+		<Alert message={error} class="mb-5 px-3.5 py-2.5" />
 	{/if}
 
 	{#if loading}
-		<div class="px-11 py-7 text-center font-mono text-sm text-ink/45">Loading…</div>
+		<StateBlock class="px-11 py-7" message="Loading…" />
 	{:else if error && servers.length === 0}
-		<div class="px-11 py-7 text-center font-mono text-sm text-danger">{error}</div>
+		<StateBlock kind="error" class="px-11 py-7" message={error} />
 	{:else if servers.length === 0}
-		<div class="border border-line-card bg-card px-11 py-11 text-center font-mono text-sm text-ink/45">
-			No servers to configure yet
-		</div>
+		<StateBlock class="border border-line-card bg-card px-11 py-11" message="No servers to configure yet" />
 	{:else}
 		<div class="flex flex-col gap-6">
 			{#each servers as s (s.serverName)}
@@ -105,12 +101,12 @@
 					</div>
 
 					<div class="border-b border-line-soft px-5 py-4">
-						<label class={label} for={`wh-${s.serverName}`}>Slack webhook URL</label>
+						<FormLabel for={`wh-${s.serverName}`}>Slack webhook URL</FormLabel>
 						<div class="flex items-stretch gap-2.5">
 							<div
 								class="flex min-w-0 flex-1 items-center gap-2.5 border border-line-strong bg-paper px-3.5 focus-within:border-command"
 							>
-								<LinkIcon class="size-4 shrink-0 text-ink/45" />
+								<LinkIcon class="size-4 shrink-0 text-ink/55" />
 								<input
 									id={`wh-${s.serverName}`}
 									type="text"
@@ -125,7 +121,7 @@
 										aria-label="Remove webhook"
 										title="Remove webhook"
 										onclick={() => clearWebhook(s)}
-										class="shrink-0 cursor-pointer text-ink/40 hover:text-danger"
+										class="shrink-0 cursor-pointer text-ink/55 hover:text-danger"
 									>
 										<XIcon class="size-3.5" />
 									</button>

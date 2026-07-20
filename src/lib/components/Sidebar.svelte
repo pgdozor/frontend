@@ -59,7 +59,7 @@
 
 	{#if session.isSuperAdmin}
 		<div class="mt-auto border-t border-line px-2 pt-2 pb-1">
-			<div class="px-3.5 pt-2 pb-2 font-condensed text-2xs font-bold tracking-[1.4px] text-ink/40 uppercase">Admin</div>
+			<div class="px-3.5 pt-2 pb-2 font-condensed text-2xs font-bold tracking-[1.4px] text-ink/55 uppercase">Admin</div>
 			<div class="flex flex-col gap-0.5">
 				{#each adminItems as item (item.key)}
 					<a href={item.href} title={item.label} class={navClass(isNavActive(item, page.url.pathname))}>
