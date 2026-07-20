@@ -29,7 +29,7 @@
 		style:bottom={state.pop.bottom != null ? `${state.pop.bottom}px` : null}
 	>
 		<div
-			class="flex max-w-[calc(100vw-24px)] flex-col border border-line-boldest bg-ink shadow-[0_14px_36px_rgba(58,42,31,0.32)]"
+			class="flex max-w-[calc(100vw-24px)] flex-col border border-line-boldest bg-ink shadow-sql"
 			style:width="{POPOVER_WIDTH}px"
 			style:max-height="{state.pop.maxHeight}px"
 		>

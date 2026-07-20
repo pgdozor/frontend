@@ -103,7 +103,7 @@
 	<Dialog.Portal>
 		<Dialog.Overlay class="fixed inset-0 z-40 bg-scrim md:hidden" />
 		<Dialog.Content
-			class="fixed inset-y-0 left-0 z-50 flex h-screen w-[15.625rem] flex-none flex-col border-r border-line bg-shell shadow-[0_0_40px_rgba(58,42,31,0.28)] md:hidden"
+			class="fixed inset-y-0 left-0 z-50 flex h-screen w-[15.625rem] flex-none flex-col border-r border-line bg-shell shadow-drawer md:hidden"
 		>
 			<Dialog.Title class="sr-only">Navigation</Dialog.Title>
 			{@render body()}

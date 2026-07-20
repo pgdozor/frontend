@@ -201,7 +201,9 @@
 		const gen = samplesGen;
 		loadingMore = true;
 		try {
-			const res = await statementClient.queryStatementSamples(sampleRequest(samples.length));
+			const res = await statementClient.queryStatementSamples(sampleRequest(samples.length), {
+				signal: samplesAc?.signal
+			});
 			if (gen !== samplesGen) return;
 			samples = [...samples, ...res.samples.map(toSampleRow)];
 			hasMore = res.hasMore;

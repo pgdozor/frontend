@@ -64,11 +64,12 @@
 		if (step !== 'key') return;
 
 		let cancelled = false;
+		const ac = new AbortController();
 		loading = true;
 		error = null;
 
 		statementClient
-			.listTagKeys(scope())
+			.listTagKeys(scope(), { signal: ac.signal })
 			.then((res) => {
 				if (cancelled) return;
 				keyRows = res.keys.map((k) => ({ key: k.key, valueCount: Number(k.valueCount) }));
@@ -82,6 +83,7 @@
 
 		return () => {
 			cancelled = true;
+			ac.abort();
 		};
 	});
 
@@ -91,11 +93,12 @@
 		if (step !== 'value' || !key) return;
 
 		let cancelled = false;
+		const ac = new AbortController();
 		loading = true;
 		error = null;
 
 		statementClient
-			.listTagValues({ ...scope(), key })
+			.listTagValues({ ...scope(), key }, { signal: ac.signal })
 			.then((res) => {
 				if (cancelled) return;
 				valueRows = res.values.map((v) => ({ value: v.value, statementCount: Number(v.statementCount) }));
@@ -109,6 +112,7 @@
 
 		return () => {
 			cancelled = true;
+			ac.abort();
 		};
 	});
 

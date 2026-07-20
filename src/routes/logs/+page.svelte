@@ -9,7 +9,7 @@
 	import { logClient } from '$lib/connect';
 	import StateBlock from '$lib/components/StateBlock.svelte';
 	import LogsTable from '$lib/components/LogsTable.svelte';
-	import { ctx } from '$lib/state.svelte';
+	import { ctx, serversState } from '$lib/state.svelte';
 	import { fmtCount, errMsg } from '$lib/format';
 	import { levelLabel, levelColor, levelChip, LEVEL_ORDER, classificationLabel, ALL_CLASSIFICATIONS } from '$lib/logs';
 	import LogHistogram from '$lib/components/LogHistogram.svelte';
@@ -51,6 +51,15 @@
 			logLevels: [...selectedLevels],
 			classifications: [...selectedClasses]
 		};
+
+		if (!ctx.server) {
+			loading = !serversState.loaded;
+			if (serversState.loaded) {
+				resp = undefined;
+				error = null;
+			}
+			return;
+		}
 
 		let cancelled = false;
 		const ac = new AbortController();

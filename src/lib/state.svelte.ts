@@ -134,6 +134,7 @@ export const scopeLock = new ScopeLock();
 class ServersState {
 	list = $state<MonitoredServer[]>([]);
 	error = $state<string | null>(null);
+	loaded = $state(false);
 
 	async load() {
 		try {
@@ -143,6 +144,8 @@ class ServersState {
 			this.reconcile();
 		} catch (err) {
 			this.error = errMsg(err);
+		} finally {
+			this.loaded = true;
 		}
 	}
 

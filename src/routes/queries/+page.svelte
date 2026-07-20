@@ -10,7 +10,7 @@
 	import { StatementSortColumn } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
 	import { statementClient } from '$lib/connect';
 	import StateBlock from '$lib/components/StateBlock.svelte';
-	import { ctx } from '$lib/state.svelte';
+	import { ctx, serversState } from '$lib/state.svelte';
 	import { urlSync } from '$lib/urlState.svelte';
 	import { QueryFilterState, parseDisplayTag } from '$lib/queryFilter.svelte';
 	import { fmtDuration, sevByMean, kvTags, errMsg } from '$lib/format';
@@ -90,6 +90,14 @@
 	$effect(() => {
 		const { from, to } = ctx.timeRange();
 		chartRange = { from, to };
+		if (!ctx.server) {
+			chartLoading = !serversState.loaded;
+			if (serversState.loaded) {
+				metrics = undefined;
+				chartError = null;
+			}
+			return;
+		}
 		const gen = ++chartGen;
 		chartAc?.abort();
 		chartAc = new AbortController();
@@ -140,6 +148,15 @@
 	let tableGen = 0;
 	let tableAc: AbortController | null = null;
 	$effect(() => {
+		if (!ctx.server) {
+			tableLoading = !serversState.loaded;
+			if (serversState.loaded) {
+				rows = [];
+				hasMore = false;
+				tableError = null;
+			}
+			return;
+		}
 		const request = tableRequest(0);
 		const gen = ++tableGen;
 		tableAc?.abort();
@@ -171,7 +188,7 @@
 		const gen = tableGen;
 		loadingMore = true;
 		try {
-			const res = await statementClient.queryStatements(tableRequest(rows.length));
+			const res = await statementClient.queryStatements(tableRequest(rows.length), { signal: tableAc?.signal });
 			if (gen !== tableGen) return;
 			rows = [...rows, ...res.statements.map(toRow)];
 			hasMore = res.hasMore;

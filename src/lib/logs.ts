@@ -45,15 +45,17 @@ export type PillStyle = { color: string; background: string; border: string };
 
 export function levelChip(level: LogEvent_LogLevel, active: boolean): PillStyle {
 	const m = META[level] ?? { tier: 'info', color: 'var(--color-steel)' };
-	if (!active)
+	if (!active) {
 		return {
 			color: tint('var(--color-ink)', 40),
 			background: 'transparent',
 			border: '1px solid var(--color-line-strong)'
 		};
+	}
 	if (m.tier === 'severe') return { color: 'var(--color-paper)', background: m.color, border: `1px solid ${m.color}` };
-	if (m.tier === 'warn')
+	if (m.tier === 'warn') {
 		return { color: 'var(--color-warn-text)', background: tint(m.color, 16), border: `1px solid ${tint(m.color, 50)}` };
+	}
 	return { color: m.color, background: tint(m.color, 10), border: `1px solid ${tint(m.color, 45)}` };
 }
 

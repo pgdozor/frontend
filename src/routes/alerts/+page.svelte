@@ -167,7 +167,7 @@
 											</span>
 											<span
 												role="tooltip"
-												class="pointer-events-none invisible absolute bottom-[calc(100%+9px)] left-[-8px] z-40 w-[15.75rem] translate-y-[3px] bg-ink px-3 py-2.5 font-sans text-sm leading-[1.5] text-paper opacity-0 shadow-[0_8px_22px_rgba(58,42,31,0.3)] transition duration-[130ms] group-hover:visible group-hover:translate-y-0 group-hover:opacity-100"
+												class="pointer-events-none invisible absolute bottom-[calc(100%+9px)] left-[-8px] z-40 w-[15.75rem] translate-y-[3px] bg-ink px-3 py-2.5 font-sans text-sm leading-[1.5] text-paper opacity-0 shadow-tooltip transition duration-[130ms] group-hover:visible group-hover:translate-y-0 group-hover:opacity-100"
 											>
 												{alert.description}
 												<span class="absolute top-full left-5 h-0 w-0 border-[6px] border-transparent border-t-ink"
@@ -186,7 +186,7 @@
 											: 'bg-ink/22'}"
 									>
 										<span
-											class="absolute top-0.5 h-5 w-5 rounded-full bg-card shadow-[0_1px_2px_rgba(58,42,31,0.3)] transition-[left] {alert.enabled
+											class="absolute top-0.5 h-5 w-5 rounded-full bg-card shadow-knob transition-[left] {alert.enabled
 												? 'left-5'
 												: 'left-0.5'}"
 										></span>

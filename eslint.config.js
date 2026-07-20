@@ -20,7 +20,10 @@ export default defineConfig(
 			'no-undef': 'off',
 			'svelte/no-navigation-without-resolve': 'off',
 			'@typescript-eslint/no-non-null-assertion': 'error',
-			'no-console': ['error', { allow: ['warn', 'error'] }]
+			'no-console': ['error', { allow: ['warn', 'error'] }],
+			eqeqeq: ['error', 'smart'],
+			curly: ['error', 'multi-line'],
+			'svelte/block-lang': ['error', { script: 'ts' }]
 		}
 	},
 	{

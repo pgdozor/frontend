@@ -3,7 +3,7 @@
 	import { type BlockingTree, type BlockedEvent } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/activity_pb';
 	import { activityClient } from '$lib/connect';
 	import StateBlock from '$lib/components/StateBlock.svelte';
-	import { ctx } from '$lib/state.svelte';
+	import { ctx, serversState } from '$lib/state.svelte';
 	import { fmtDuration, fmtClockDate, errMsg } from '$lib/format';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
 	import { SqlPopoverState } from '$lib/sqlPopover.svelte';
@@ -22,6 +22,15 @@
 			from: timestampFromDate(from),
 			to: timestampFromDate(to)
 		};
+
+		if (!ctx.server) {
+			loading = !serversState.loaded;
+			if (serversState.loaded) {
+				trees = [];
+				error = null;
+			}
+			return;
+		}
 
 		let cancelled = false;
 		const ac = new AbortController();

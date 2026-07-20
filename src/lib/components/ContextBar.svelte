@@ -36,8 +36,7 @@
 	}
 
 	const triggerCls = 'flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-hover-soft';
-	const panelCls =
-		'z-50 max-w-[calc(100vw-24px)] border border-line-strong bg-card p-1.5 shadow-[0_8px_24px_rgba(58,42,31,0.18)]';
+	const panelCls = 'z-50 max-w-[calc(100vw-24px)] border border-line-strong bg-card p-1.5 shadow-dropdown';
 	const itemCls =
 		'flex w-full cursor-pointer items-center gap-2.5 px-2.5 py-2 font-mono text-sm text-ink hover:bg-hover data-[highlighted]:bg-hover';
 	const labelCls = 'px-2.5 pt-1.5 pb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase';
