@@ -193,7 +193,8 @@
 		try {
 			const res = await statementClient.queryStatements(tableRequest(rows.length), { signal: tableAc?.signal });
 			if (gen !== tableGen) return;
-			rows = [...rows, ...res.statements.map(toRow)];
+			const seen = new Set(rows.map((r) => r.id));
+			rows = [...rows, ...res.statements.map(toRow).filter((r) => !seen.has(r.id))];
 			hasMore = res.hasMore;
 		} catch (e: unknown) {
 			if (gen === tableGen) tableError = errMsg(e);

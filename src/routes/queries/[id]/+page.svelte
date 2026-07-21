@@ -209,7 +209,8 @@
 				signal: samplesAc?.signal
 			});
 			if (gen !== samplesGen) return;
-			samples = [...samples, ...res.samples.map(toSampleRow)];
+			const seen = new Set(samples.map((s) => s.id));
+			samples = [...samples, ...res.samples.map(toSampleRow).filter((s) => !seen.has(s.id))];
 			hasMore = res.hasMore;
 		} catch (e: unknown) {
 			if (gen === samplesGen) samplesError = errMsg(e);
