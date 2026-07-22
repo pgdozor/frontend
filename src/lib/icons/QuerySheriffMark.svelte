@@ -5,9 +5,39 @@
 	let props: SVGAttributes<SVGSVGElement> = $props();
 </script>
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" aria-hidden="true" {...props}>
-	<circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2.5" />
-	<circle cx="20" cy="20" r="11.5" fill="none" stroke="currentColor" stroke-width="1" />
-	<path d="M20 6 L20 34 M6 20 L34 20" stroke="currentColor" stroke-width="1" />
-	<circle cx="20" cy="20" r="4" fill="currentColor" />
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" {...props}
+	><rect width="1024" height="1024" fill="#F4EFE6"></rect><path
+		d="M512.0 172.0L640.1 345.6L844.9 413.8L719.3 589.4L717.7 805.2L512.0 740.0L306.3 805.2L304.7 589.4L179.1 413.8L383.9 345.6Z"
+		fill="#3A2A1F"
+	></path><circle cx="512.0" cy="172.0" r="44" fill="#3A2A1F"></circle><circle
+		cx="844.9"
+		cy="413.8"
+		r="44"
+		fill="#3A2A1F"
+	></circle><circle cx="717.7" cy="805.2" r="44" fill="#3A2A1F"></circle><circle
+		cx="306.3"
+		cy="805.2"
+		r="44"
+		fill="#3A2A1F"
+	></circle><circle cx="179.1" cy="413.8" r="44" fill="#3A2A1F"></circle><circle
+		cx="512"
+		cy="522"
+		r="182"
+		fill="#F4EFE6"
+	></circle><line x1="391.7" y1="565.8" x2="363.5" y2="576.0" stroke="#3A2A1F" stroke-width="15" stroke-linecap="round"
+	></line><line x1="396.0" y1="467.9" x2="368.8" y2="455.2" stroke="#3A2A1F" stroke-width="15" stroke-linecap="round"
+	></line><line x1="468.2" y1="401.7" x2="458.0" y2="373.5" stroke="#3A2A1F" stroke-width="15" stroke-linecap="round"
+	></line><line x1="566.1" y1="406.0" x2="578.8" y2="378.8" stroke="#3A2A1F" stroke-width="15" stroke-linecap="round"
+	></line><line x1="632.3" y1="478.2" x2="660.5" y2="468.0" stroke="#3A2A1F" stroke-width="15" stroke-linecap="round"
+	></line><line x1="372.1" y1="515.9" x2="354.2" y2="515.1" stroke="#3A2A1F" stroke-width="9" stroke-linecap="round"
+	></line><line x1="417.4" y1="418.8" x2="405.3" y2="405.5" stroke="#3A2A1F" stroke-width="9" stroke-linecap="round"
+	></line><line x1="518.1" y1="382.1" x2="518.9" y2="364.2" stroke="#3A2A1F" stroke-width="9" stroke-linecap="round"
+	></line><line x1="615.2" y1="427.4" x2="628.5" y2="415.3" stroke="#3A2A1F" stroke-width="9" stroke-linecap="round"
+	></line>
+	<path d="M500.2 505.8 L633.4 433.8 L523.8 538.2 Z" fill="#A83D2B"></path><circle
+		cx="512"
+		cy="522"
+		r="31"
+		fill="#3A2A1F"
+	></circle></svg
+>
