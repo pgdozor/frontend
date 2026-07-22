@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ChevronDownIcon, ChevronRightIcon } from '@lucide/svelte';
 	import { timestampDate } from '@bufbuild/protobuf/wkt';
-	import type { LogRecord } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/log_pb';
+	import type { LogRecord } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/log_pb';
 	import { fmtTs } from '$lib/format';
 	import { levelBadge, levelLabel, classificationLabel, classificationCode } from '$lib/logs';
 

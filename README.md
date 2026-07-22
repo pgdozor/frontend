@@ -1,8 +1,8 @@
 # Frontend
 
-The pgdozor dashboard — a SvelteKit app (Svelte 5 runes, Tailwind 4) that talks to the backend over Connect-web.
+The querysheriff dashboard — a SvelteKit app (Svelte 5 runes, Tailwind 4) that talks to the backend over Connect-web.
 
-> Production deployment (Kubernetes / Helm) lives in the [`pgdozor/docs`](https://github.com/pgdozor/docs) repo. This README is for working on the frontend itself.
+> Production deployment (Kubernetes / Helm) lives in the [`querysheriff/docs`](https://github.com/querysheriff/docs) repo. This README is for working on the frontend itself.
 
 ## Local development
 

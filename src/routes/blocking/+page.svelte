@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { timestampFromDate, timestampDate, type Timestamp } from '@bufbuild/protobuf/wkt';
-	import { type BlockingTree, type BlockedEvent } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/activity_pb';
+	import { type BlockingTree, type BlockedEvent } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/activity_pb';
 	import { activityClient } from '$lib/connect';
 	import StateBlock from '$lib/components/StateBlock.svelte';
 	import { ctx, serversState } from '$lib/state.svelte';

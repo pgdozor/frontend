@@ -1,13 +1,13 @@
 import { createClient, type Client } from '@connectrpc/connect';
 import { createConnectTransport } from '@connectrpc/connect-web';
 import { env } from '$env/dynamic/public';
-import { ActivityService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/activity_pb';
-import { StatementService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
-import { HealthService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/health_pb';
-import { LogService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/log_pb';
-import { AuthService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/auth_pb';
-import { AdminService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/admin_pb';
-import { AlertService } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/alert_pb';
+import { ActivityService } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/activity_pb';
+import { StatementService } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/statement_pb';
+import { HealthService } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/health_pb';
+import { LogService } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/log_pb';
+import { AuthService } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/auth_pb';
+import { AdminService } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/admin_pb';
+import { AlertService } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/alert_pb';
 
 const baseUrl = env.PUBLIC_API_URL || '/api';
 const REQUEST_TIMEOUT_MS = 30_000;

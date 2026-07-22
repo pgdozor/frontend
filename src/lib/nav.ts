@@ -45,7 +45,7 @@ export const screenMeta: Record<string, { title: string; description: string }> 
 	},
 	'admin-collectors': {
 		title: 'COLLECTORS',
-		description: 'Access tokens that let collectors report into pgdozor'
+		description: 'Access tokens that let collectors report into querysheriff'
 	},
 	'admin-users': {
 		title: 'USERS',

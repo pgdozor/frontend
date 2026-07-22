@@ -28,7 +28,7 @@ jobs:
       - id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/pgdozor/frontend
+          images: ghcr.io/querysheriff/frontend
           tags: |
             type=semver,pattern={{version}}
             type=sha

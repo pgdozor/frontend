@@ -1,4 +1,4 @@
-import { LogEvent_LogLevel, LogEvent_LogClassification } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/log_pb';
+import { LogEvent_LogLevel, LogEvent_LogClassification } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/log_pb';
 
 export type LevelTier = 'info' | 'warn' | 'severe';
 

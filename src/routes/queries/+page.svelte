@@ -6,8 +6,8 @@
 		StatementMetrics,
 		StatementMetric,
 		StatementStat
-	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
-	import { StatementSortColumn } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
+	} from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/statement_pb';
+	import { StatementSortColumn } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/statement_pb';
 	import { statementClient } from '$lib/connect';
 	import StateBlock from '$lib/components/StateBlock.svelte';
 	import { ctx, serversState } from '$lib/state.svelte';

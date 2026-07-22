@@ -1,6 +1,6 @@
 import { fmtClock } from './format';
 import { timestampDate } from '@bufbuild/protobuf/wkt';
-import type { MonitoredServer } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/health_pb';
+import type { MonitoredServer } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/health_pb';
 import { healthClient } from './connect';
 import { urlSync } from './urlState.svelte';
 

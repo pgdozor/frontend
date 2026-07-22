@@ -3,8 +3,8 @@
 	import { LinkIcon, InfoIcon, XIcon } from '@lucide/svelte';
 	import Alert from '$lib/components/Alert.svelte';
 	import FormLabel from '$lib/components/FormLabel.svelte';
-	import { AlertLevel } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/alert_pb';
-	import type { ServerAlertSettings, AlertSetting } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/alert_pb';
+	import { AlertLevel } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/alert_pb';
+	import type { ServerAlertSettings, AlertSetting } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/alert_pb';
 	import { alertClient } from '$lib/connect';
 	import StateBlock from '$lib/components/StateBlock.svelte';
 	import { errMsg } from '$lib/format';

@@ -8,7 +8,7 @@
 	import { navItems, adminItems, isNavActive } from '$lib/nav';
 	import { session } from '$lib/session.svelte';
 	import { sidebar } from '$lib/sidebar.svelte';
-	import PgdozorMark from '$lib/icons/PgdozorMark.svelte';
+	import QuerySheriffMark from '$lib/icons/QuerySheriffMark.svelte';
 
 	const visibleNav = $derived(session.isSuperAdmin ? navItems : navItems.filter((i) => i.key === 'slow-queries'));
 
@@ -37,8 +37,8 @@
 
 {#snippet body()}
 	<div class="flex items-center gap-3 border-b border-line px-5 py-5">
-		<PgdozorMark class="size-8 flex-none text-command" />
-		<span class="font-condensed text-2xl font-bold tracking-[2.5px] text-ink">PGDOZOR</span>
+		<QuerySheriffMark class="size-8 flex-none text-command" />
+		<span class="font-condensed text-2xl font-bold tracking-[2.5px] text-ink">QUERYSHERIFF</span>
 		<button
 			type="button"
 			aria-label="Close navigation"

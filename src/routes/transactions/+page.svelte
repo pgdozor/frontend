@@ -5,7 +5,7 @@
 		TransactionEventStatus,
 		type Transaction,
 		type TransactionEvent
-	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/activity_pb';
+	} from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/activity_pb';
 	import { activityClient } from '$lib/connect';
 	import StateBlock from '$lib/components/StateBlock.svelte';
 	import { ctx, serversState } from '$lib/state.svelte';

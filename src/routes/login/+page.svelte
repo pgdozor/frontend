@@ -5,7 +5,7 @@
 	import { cleanErr } from '$lib/format';
 	import Alert from '$lib/components/Alert.svelte';
 	import FormLabel from '$lib/components/FormLabel.svelte';
-	import PgdozorMark from '$lib/icons/PgdozorMark.svelte';
+	import QuerySheriffMark from '$lib/icons/QuerySheriffMark.svelte';
 
 	let email = $state('');
 	let password = $state('');
@@ -40,8 +40,8 @@
 <div class="flex min-h-screen items-center justify-center bg-paper p-8 font-sans">
 	<div class="w-full max-w-[25.25rem]">
 		<div class="mb-8 flex items-center justify-center gap-3">
-			<PgdozorMark class="size-10 flex-none text-command" />
-			<h1 class="font-condensed text-[27px] font-bold tracking-[3px] text-ink">PGDOZOR</h1>
+			<QuerySheriffMark class="size-10 flex-none text-command" />
+			<h1 class="font-condensed text-[27px] font-bold tracking-[3px] text-ink">QUERYSHERIFF</h1>
 		</div>
 
 		<form onsubmit={submit} class="border border-line-card bg-card px-8 pt-8 pb-7">

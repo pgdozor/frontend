@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 
-const STORAGE_KEY = 'pgdozor:sidebar-collapsed';
+const STORAGE_KEY = 'querysheriff:sidebar-collapsed';
 
 class SidebarState {
 	collapsed = $state(browser && localStorage.getItem(STORAGE_KEY) === '1');

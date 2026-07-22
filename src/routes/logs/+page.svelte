@@ -5,7 +5,7 @@
 		LogEvent_LogLevel,
 		LogEvent_LogClassification,
 		type QueryLogsResponse
-	} from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/log_pb';
+	} from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/log_pb';
 	import { logClient } from '$lib/connect';
 	import StateBlock from '$lib/components/StateBlock.svelte';
 	import LogsTable from '$lib/components/LogsTable.svelte';

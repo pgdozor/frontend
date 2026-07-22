@@ -1,4 +1,4 @@
-import { TagFilterOperator, QueryKind } from '@buf/pgdozor_backend.bufbuild_es/pgdozor/v1/statement_pb';
+import { TagFilterOperator, QueryKind } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/statement_pb';
 import type { UrlParams } from './urlState.svelte';
 
 export type TagOp = 'eq' | 'ne' | 'exists';
