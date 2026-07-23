@@ -165,8 +165,9 @@
 		const ac = tableAc;
 		tableLoading = true;
 		tableError = null;
-		rows = [];
-		hasMore = false;
+		// Keep the existing rows on screen while re-fetching (sort/filter/range
+		// changes) and swap them in atomically — clearing here would collapse the
+		// table to an empty body and jump the layout before the new data lands.
 
 		statementClient
 			.queryStatements(request, { signal: ac.signal })
@@ -264,7 +265,7 @@
 
 	<StatementTable {rows} bind:sort {sql} href={(id) => `/queries/${id}`} onFilterTag={filterByTag} />
 
-	{#if tableLoading}
+	{#if tableLoading && rows.length === 0}
 		<StateBlock class="px-4 py-7" message="Loading…" />
 	{:else if tableError}
 		<StateBlock kind="error" class="px-4 py-7" message={tableError} />
