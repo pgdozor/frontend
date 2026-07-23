@@ -160,7 +160,7 @@
 					role="button"
 					tabindex="0"
 					aria-expanded={open}
-					class="flex cursor-pointer items-center gap-3 px-5 py-3.5 transition-colors hover:bg-accent-soft"
+					class="flex cursor-pointer items-center gap-3 px-5 py-3.5 transition-colors hover:bg-hover"
 				>
 					{#if open}<ChevronDownIcon class="size-3.5 flex-none text-command" />{:else}<ChevronRightIcon
 							class="size-3.5 flex-none text-command"

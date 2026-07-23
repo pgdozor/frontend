@@ -100,7 +100,7 @@
 		</thead>
 		<tbody>
 			{#each rows as q (q.id)}
-				<tr class="group relative transition-colors hover:bg-accent-soft">
+				<tr class="group relative transition-colors hover:bg-hover">
 					<td class="border-b border-line-soft px-4 py-3 align-top">
 						<div class="flex items-start gap-2">
 							<span class="mt-1.5 h-2 w-2 flex-none rounded-full" style:background={q.sev}></span>

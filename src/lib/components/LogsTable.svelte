@@ -53,7 +53,7 @@
 					role="button"
 					tabindex="0"
 					aria-expanded={open}
-					class="cursor-pointer transition-colors hover:bg-accent-soft"
+					class="cursor-pointer transition-colors hover:bg-hover"
 				>
 					<td class={td}>
 						<div class="flex items-start gap-2">

@@ -94,7 +94,8 @@
 		text-rendering: optimizeLegibility;
 	}
 	::selection {
-		background: rgba(168, 61, 43, 0.22);
+		/* Neutral ink tint, matching the grey hover scale (not the terracotta accent). */
+		background: color-mix(in oklab, var(--color-ink) 16%, transparent);
 	}
 	::-webkit-scrollbar {
 		width: 11px;
