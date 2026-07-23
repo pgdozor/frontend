@@ -1,5 +1,6 @@
 import { fmtClock } from './format';
 import { timestampDate } from '@bufbuild/protobuf/wkt';
+import { parseDateTime, getLocalTimeZone, type CalendarDateTime, type DateValue } from '@internationalized/date';
 import type { MonitoredServer } from '@buf/querysheriff_backend.bufbuild_es/querysheriff/v1/health_pb';
 import { healthClient } from './connect';
 import { urlSync } from './urlState.svelte';
@@ -33,6 +34,20 @@ function todayAt(time: string): string {
 function toInputStr(d: Date): string {
 	const p = (n: number) => String(n).padStart(2, '0');
 	return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+
+// Bridge the "YYYY-MM-DD HH:MM:SS" custom-range strings to the CalendarDateTime
+// values the bits-ui range picker binds to (parseDateTime wants an ISO "T").
+export function rangeStrToDateTime(s: string): CalendarDateTime | undefined {
+	try {
+		return parseDateTime(s.replace(' ', 'T'));
+	} catch {
+		return undefined;
+	}
+}
+
+export function dateTimeToRangeStr(dt: DateValue): string {
+	return toInputStr(dt.toDate(getLocalTimeZone()));
 }
 
 class ContextState {

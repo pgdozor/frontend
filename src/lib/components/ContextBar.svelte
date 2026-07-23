@@ -1,16 +1,21 @@
 <script lang="ts">
 	import { DatabaseIcon, ClockIcon, ChevronDownIcon, CheckIcon, ArrowRightIcon } from '@lucide/svelte';
 	import { Select, Popover } from 'bits-ui';
+	import type { DateRange } from 'bits-ui';
 	import { page } from '$app/state';
 	import { screenDescription, screenTitle } from '$lib/nav';
-	import { ctx, scopeLock, serversState, presets } from '$lib/state.svelte';
+	import { ctx, scopeLock, serversState, presets, rangeStrToDateTime, dateTimeToRangeStr } from '$lib/state.svelte';
 	import SidebarToggle from '$lib/components/SidebarToggle.svelte';
+	import DateTimeRangeField from '$lib/components/DateTimeRangeField.svelte';
 
 	let { dbSwitch = true }: { dbSwitch?: boolean } = $props();
 
 	let timeOpen = $state(false);
-	let draftFrom = $state(ctx.customFrom);
-	let draftTo = $state(ctx.customTo);
+	let draftRange = $state<DateRange>(currentRange());
+
+	function currentRange(): DateRange {
+		return { start: rangeStrToDateTime(ctx.customFrom), end: rangeStrToDateTime(ctx.customTo) };
+	}
 
 	const title = $derived(screenTitle(page.url.pathname));
 	const description = $derived(screenDescription(page.url.pathname));
@@ -29,8 +34,10 @@
 		timeOpen = false;
 	}
 	function applyCustom() {
-		ctx.customFrom = draftFrom;
-		ctx.customTo = draftTo;
+		const { start, end } = draftRange;
+		if (!start || !end) return;
+		ctx.customFrom = dateTimeToRangeStr(start);
+		ctx.customTo = dateTimeToRangeStr(end);
 		ctx.range = 'custom';
 		timeOpen = false;
 	}
@@ -152,10 +159,7 @@
 		<Popover.Root
 			bind:open={timeOpen}
 			onOpenChange={(o) => {
-				if (o) {
-					draftFrom = ctx.customFrom;
-					draftTo = ctx.customTo;
-				}
+				if (o) draftRange = currentRange();
 			}}
 		>
 			<Popover.Trigger>
@@ -205,28 +209,11 @@
 						<div class="mb-2.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
 							Absolute time range
 						</div>
-						<label class="mb-1 block font-sans text-xs text-ink/65" for="ctx-from">From</label>
-						<input
-							id="ctx-from"
-							type="text"
-							bind:value={draftFrom}
-							placeholder="YYYY-MM-DD HH:MM:SS"
-							spellcheck="false"
-							class="mb-3 w-full border border-line-strong bg-paper px-2.5 py-2 font-mono text-sm text-ink"
-						/>
-						<label class="mb-1 block font-sans text-xs text-ink/65" for="ctx-to">To</label>
-						<input
-							id="ctx-to"
-							type="text"
-							bind:value={draftTo}
-							placeholder="YYYY-MM-DD HH:MM:SS"
-							spellcheck="false"
-							class="mb-3.5 w-full border border-line-strong bg-paper px-2.5 py-2 font-mono text-sm text-ink"
-						/>
+						<DateTimeRangeField bind:value={draftRange} onSubmit={applyCustom} />
 						<button
 							type="button"
 							onclick={applyCustom}
-							class="w-full cursor-pointer bg-command px-2.5 py-2.5 text-center font-condensed text-md font-semibold tracking-[0.6px] text-paper uppercase hover:bg-danger"
+							class="mt-3.5 w-full cursor-pointer bg-command px-2.5 py-2.5 text-center font-condensed text-md font-semibold tracking-[0.6px] text-paper uppercase hover:bg-danger"
 						>
 							Apply range
 						</button>
