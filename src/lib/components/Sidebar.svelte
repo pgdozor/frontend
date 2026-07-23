@@ -36,7 +36,8 @@
 </script>
 
 {#snippet body()}
-	<div class="flex items-center gap-3 border-b border-line px-5 py-5">
+	<!-- Height matches the ContextBar (min-h-[4.25rem]) so this border lines up with the section header's. -->
+	<div class="flex h-[4.25rem] items-center gap-3 border-b border-line px-5">
 		<QuerySheriffMark class="size-8 flex-none text-command" />
 		<span class="font-condensed text-2xl font-bold tracking-[2.5px] text-ink">QuerySheriff</span>
 		<button

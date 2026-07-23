@@ -13,7 +13,7 @@
 	import { ctx, serversState } from '$lib/state.svelte';
 	import { urlSync } from '$lib/urlState.svelte';
 	import { QueryFilterState, parseDisplayTag } from '$lib/queryFilter.svelte';
-	import { fmtDuration, sevByMean, kvTags, errMsg } from '$lib/format';
+	import { fmtDuration, fmtBucketSize, sevByMean, kvTags, errMsg } from '$lib/format';
 	import type { MetricSeriesPoint } from '$lib/metricChart';
 	import Button from '$lib/components/Button.svelte';
 	import CallsChart from '$lib/components/CallsChart.svelte';
@@ -209,6 +209,11 @@
 
 	const bucketMs = $derived(Number(metrics?.bucketMs ?? 0n));
 	const callsPoints = $derived(toPoints(metrics?.calls));
+	const volumeDescription = $derived(
+		callsPoints.length > 0
+			? `How many times queries ran · ${fmtBucketSize(bucketMs)} buckets`
+			: 'How many times queries ran'
+	);
 	const latency = $derived([
 		{ label: 'p90', color: 'var(--color-steel)', points: toPoints(metrics?.p90) },
 		{ label: 'p95', color: 'var(--color-warn)', points: toPoints(metrics?.p95) },
@@ -224,7 +229,7 @@
 </script>
 
 <div class="mb-6 grid gap-4">
-	<ChartPanel title="Query volume over time" description="How many times queries ran">
+	<ChartPanel title="Query volume over time" description={volumeDescription}>
 		{#if chartRange && callsPoints.length > 0}
 			<CallsChart
 				data={callsPoints}

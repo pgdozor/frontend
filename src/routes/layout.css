@@ -18,10 +18,13 @@
 	--color-command: #a83d2b;
 
 	/* Status */
-	--color-danger: #8b1e1e;
+	/* Status — warm, earthy but vivid (ok/warn/error = fast/acceptable/slow).
+	   Warm-shifted to sit inside the terracotta/cream palette rather than pop as
+	   a foreign "modern" set, while staying clearly brighter than muted neutrals. */
+	--color-danger: #c23a24;
 	--color-warn-text: #9a5b12;
-	--color-warn: #c7771a;
-	--color-ok: #6b7a3a;
+	--color-warn: #d97b1c;
+	--color-ok: #5c9e34;
 	--color-panic: #5e1414;
 
 	/* Data / chart series */

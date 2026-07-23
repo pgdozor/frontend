@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PlusIcon, SearchIcon } from '@lucide/svelte';
+	import { SearchIcon } from '@lucide/svelte';
 	import TagChip from '$lib/components/TagChip.svelte';
 	import TagFilterPicker from '$lib/components/TagFilterPicker.svelte';
 	import { type TagFilter, type KindKey, type QueryFilterState } from '$lib/queryFilter.svelte';
@@ -61,7 +61,7 @@
 			aria-expanded={picker !== null}
 			class="relative z-[2] flex cursor-pointer items-center gap-1.5 border border-dashed border-line-bold px-2.5 py-1 font-mono text-sm text-ink/60 hover:border-accent-line hover:text-command"
 		>
-			<PlusIcon class="size-3" />
+			<SearchIcon class="size-3" />
 			Tag
 		</button>
 

@@ -68,6 +68,17 @@ export function fmtBucketRange(end: Date, bucketMs: number): string {
 	return `${head} – ${MONTHS[end.getMonth()]} ${end.getDate()} ${hm(end)}`;
 }
 
+// The metric bucket is always a whole number of minutes (backend rounds to the
+// minute, floor 1). Renders it as an adjective for "<size> buckets", e.g.
+// "1-minute" / "24-minute" / "2-hour".
+export function fmtBucketSize(bucketMs: number): string {
+	const minutes = Math.round(bucketMs / 60_000);
+	if (minutes < 60) return `${minutes}-minute`;
+	const hours = minutes / 60;
+	if (Number.isInteger(hours)) return `${hours}-hour`;
+	return `${minutes}-minute`;
+}
+
 export function fmtAxisTime(value: Date | number): string {
 	const d = value instanceof Date ? value : new Date(value);
 	const p = (n: number) => String(n).padStart(2, '0');

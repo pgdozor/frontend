@@ -47,7 +47,7 @@
 </script>
 
 <div
-	class="sticky top-0 z-30 flex flex-wrap items-center gap-2.5 border-b border-line bg-paper/70 px-4 py-3.5 backdrop-blur-[3px] backdrop-saturate-[1.1] sm:px-5 md:gap-5 md:px-7"
+	class="sticky top-0 z-30 flex min-h-[4.25rem] flex-wrap items-center gap-2.5 border-b border-line bg-paper/70 px-4 py-3.5 backdrop-blur-[3px] backdrop-saturate-[1.1] sm:px-5 md:gap-5 md:px-7"
 >
 	<SidebarToggle />
 
