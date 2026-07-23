@@ -97,6 +97,11 @@
 		/* Neutral ink tint, matching the grey hover scale (not the terracotta accent). */
 		background: color-mix(in oklab, var(--color-ink) 16%, transparent);
 	}
+	/* That ink tint is invisible on the dark code surfaces; tint with paper there. */
+	.bg-ink::selection,
+	.bg-ink ::selection {
+		background: color-mix(in oklab, var(--color-paper) 22%, transparent);
+	}
 	::-webkit-scrollbar {
 		width: 11px;
 		height: 11px;
