@@ -12,7 +12,7 @@
 </script>
 
 <svelte:head>
-	<title>QUERYSHERIFF</title>
+	<title>QuerySheriff</title>
 	<link rel="icon" href={favicon} />
 </svelte:head>
 

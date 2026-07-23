@@ -38,7 +38,7 @@
 {#snippet body()}
 	<div class="flex items-center gap-3 border-b border-line px-5 py-5">
 		<QuerySheriffMark class="size-8 flex-none text-command" />
-		<span class="font-condensed text-2xl font-bold tracking-[2.5px] text-ink">QUERYSHERIFF</span>
+		<span class="font-condensed text-2xl font-bold tracking-[2.5px] text-ink">QuerySheriff</span>
 		<button
 			type="button"
 			aria-label="Close navigation"

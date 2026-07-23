@@ -41,7 +41,7 @@
 	<div class="w-full max-w-[25.25rem]">
 		<div class="mb-8 flex items-center justify-center gap-3">
 			<QuerySheriffMark class="size-10 flex-none text-command" />
-			<h1 class="font-condensed text-[27px] font-bold tracking-[3px] text-ink">QUERYSHERIFF</h1>
+			<h1 class="font-condensed text-[27px] font-bold tracking-[3px] text-ink">QuerySheriff</h1>
 		</div>
 
 		<form onsubmit={submit} class="border border-line-card bg-card px-8 pt-8 pb-7">
