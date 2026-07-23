@@ -19,6 +19,7 @@
 	import CallsChart from '$lib/components/CallsChart.svelte';
 	import ChartPanel from '$lib/components/ChartPanel.svelte';
 	import ChartEmpty from '$lib/components/ChartEmpty.svelte';
+	import DocCard from '$lib/components/DocCard.svelte';
 	import LineChart from '$lib/components/LineChart.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import SqlPopover from '$lib/components/SqlPopover.svelte';
@@ -230,7 +231,7 @@
 </script>
 
 <div class="mb-6 grid gap-4">
-	<ChartPanel title="Query volume over time" description={volumeDescription}>
+	<ChartPanel docId="q-volume" title="Query volume over time" description={volumeDescription}>
 		{#if chartRange && callsPoints.length > 0}
 			<CallsChart
 				data={callsPoints}
@@ -246,6 +247,7 @@
 	</ChartPanel>
 
 	<ChartPanel
+		docId="q-speed"
 		title="Query speed over time"
 		description="How long queries took — p90 means roughly 9 in 10 finished faster"
 	>
@@ -257,8 +259,8 @@
 	</ChartPanel>
 </div>
 
-<div class="border border-line-card bg-card">
-	<header class="px-4 pt-3.5 pb-0">
+<DocCard id="q-table">
+	<header class="pt-3.5 pr-11 pb-0 pl-4">
 		<SectionHeader title="Queries" description="Grouped by shape, with the most time-consuming first" />
 	</header>
 	<TagFilterBar bind:searchText={search} tags={filters} />
@@ -278,6 +280,6 @@
 			</Button>
 		</div>
 	{/if}
-</div>
+</DocCard>
 
 <SqlPopover state={sql} />

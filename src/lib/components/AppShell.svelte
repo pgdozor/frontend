@@ -10,13 +10,15 @@
 
 	type Props = {
 		children: Snippet;
+		/** Optional panel docked to the right of the content, in the layout flow (not overlaid). */
+		rightPanel?: Snippet;
 		contextBar?: boolean;
 		/** LOGS disables this because log events are server-wide, not per-database. */
 		dbSwitch?: boolean;
 		requireSuperAdmin?: boolean;
 	};
 
-	let { children, contextBar = true, dbSwitch = true, requireSuperAdmin = false }: Props = $props();
+	let { children, rightPanel, contextBar = true, dbSwitch = true, requireSuperAdmin = false }: Props = $props();
 
 	const REFRESH_MS = 30_000;
 
@@ -81,5 +83,6 @@
 				</main>
 			{/if}
 		</div>
+		{@render rightPanel?.()}
 	</div>
 {/if}

@@ -18,6 +18,7 @@
 	import CallsChart from '$lib/components/CallsChart.svelte';
 	import ChartPanel from '$lib/components/ChartPanel.svelte';
 	import ChartEmpty from '$lib/components/ChartEmpty.svelte';
+	import DocCard from '$lib/components/DocCard.svelte';
 	import LineChart from '$lib/components/LineChart.svelte';
 	import QueryTextBlock from '$lib/components/QueryTextBlock.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
@@ -306,7 +307,7 @@
 </div>
 
 <div class="mt-4 grid gap-4">
-	<ChartPanel title="Query volume over time" description={volumeDescription}>
+	<ChartPanel docId="qd-volume" title="Query volume over time" description={volumeDescription}>
 		{#if chartRange && callsPoints.length > 0}
 			<CallsChart
 				data={callsPoints}
@@ -322,6 +323,7 @@
 	</ChartPanel>
 
 	<ChartPanel
+		docId="qd-speed"
 		title="Query speed over time"
 		description="How long this query took per run on average, and how much of that was disk I/O"
 	>
@@ -333,8 +335,8 @@
 	</ChartPanel>
 </div>
 
-<div class="mt-4 border border-line-card bg-card">
-	<div class="border-b border-line px-4 py-3.5">
+<DocCard id="qd-samples" class="mt-4">
+	<div class="border-b border-line py-3.5 pr-11 pl-4">
 		<SectionHeader
 			title="Captured samples"
 			description="Individual runs of this query — the real values each one used, and a plan when captured"
@@ -356,6 +358,6 @@
 			</Button>
 		</div>
 	{/if}
-</div>
+</DocCard>
 
 <SqlPopover state={sql} />
