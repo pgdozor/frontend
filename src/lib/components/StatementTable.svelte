@@ -79,19 +79,30 @@
 								h.align === 'right' ? 'text-right' : 'text-left'
 							)}
 						>
-							<span class="inline-flex items-center gap-1 align-middle">
+							<!-- The sort icon is absolutely positioned beside the label so it never
+							     consumes layout width — the label stays flush with the column's
+							     values even when the column is too narrow to fit both. It sits left
+							     of the label on right-aligned columns, right of it otherwise. -->
+							<span class="relative inline-flex items-center align-middle">
 								<span>{h.label}</span>
-								{#if sort.col === h.key}
-									{#if sort.dir === 'asc'}
-										<ArrowUpIcon class="size-3 flex-none text-command" />
+								<span
+									class={clsx(
+										'pointer-events-none absolute inset-y-0 flex items-center',
+										h.align === 'right' ? 'right-full pr-1' : 'left-full pl-1'
+									)}
+								>
+									{#if sort.col === h.key}
+										{#if sort.dir === 'asc'}
+											<ArrowUpIcon class="size-3 flex-none text-command" />
+										{:else}
+											<ArrowDownIcon class="size-3 flex-none text-command" />
+										{/if}
 									{:else}
-										<ArrowDownIcon class="size-3 flex-none text-command" />
+										<ArrowUpDownIcon
+											class="size-3 flex-none text-ink/35 opacity-0 transition-opacity group-hover/sort:opacity-100 group-focus-visible/sort:opacity-100"
+										/>
 									{/if}
-								{:else}
-									<ArrowUpDownIcon
-										class="size-3 flex-none text-ink/35 opacity-0 transition-opacity group-hover/sort:opacity-100 group-focus-visible/sort:opacity-100"
-									/>
-								{/if}
+								</span>
 							</span>
 						</button>
 					</th>
