@@ -17,7 +17,7 @@
 
 <script lang="ts">
 	import { clsx } from 'clsx';
-	import { ArrowUpIcon, ArrowDownIcon } from '@lucide/svelte';
+	import { ArrowUpIcon, ArrowDownIcon, ArrowUpDownIcon } from '@lucide/svelte';
 	import { fmtDuration, fmtCount } from '$lib/format';
 	import type { SqlPopoverState } from '$lib/sqlPopover.svelte';
 	import Tag from '$lib/components/Tag.svelte';
@@ -74,7 +74,7 @@
 							type="button"
 							onclick={() => sortBy(h.key)}
 							class={clsx(
-								'block w-full cursor-pointer py-2.5 pr-4 uppercase select-none focus-visible:text-command',
+								'group/sort block w-full cursor-pointer py-2.5 pr-4 uppercase select-none focus-visible:text-command',
 								h.key === 'query' ? 'pl-8' : 'pl-4',
 								h.align === 'right' ? 'text-right' : 'text-left'
 							)}
@@ -87,6 +87,10 @@
 									{:else}
 										<ArrowDownIcon class="size-3 flex-none text-command" />
 									{/if}
+								{:else}
+									<ArrowUpDownIcon
+										class="size-3 flex-none text-ink/35 opacity-0 transition-opacity group-hover/sort:opacity-100 group-focus-visible/sort:opacity-100"
+									/>
 								{/if}
 							</span>
 						</button>
