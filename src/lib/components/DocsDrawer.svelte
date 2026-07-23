@@ -8,7 +8,31 @@
 	function onKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape' && docs.activeId) docs.close();
 	}
+
+	// Light inline markup: `code` spans render as <code> and **bold** as <strong>.
+	type Seg = { text: string; code?: boolean; bold?: boolean };
+	function inlineSegs(text: string): Seg[] {
+		const segs: Seg[] = [];
+		const re = /`[^`]+`|\*\*[^*]+\*\*/g;
+		let last = 0;
+		let m: RegExpExecArray | null;
+		while ((m = re.exec(text)) !== null) {
+			if (m.index > last) segs.push({ text: text.slice(last, m.index) });
+			const tok = m[0];
+			if (tok[0] === '`') segs.push({ text: tok.slice(1, -1), code: true });
+			else segs.push({ text: tok.slice(2, -2), bold: true });
+			last = m.index + tok.length;
+		}
+		if (last < text.length) segs.push({ text: text.slice(last) });
+		return segs;
+	}
 </script>
+
+{#snippet inline(text: string)}
+	{#each inlineSegs(text) as seg, i (i)}{#if seg.code}<code
+				class="rounded-sm bg-hover-strong px-1 font-mono text-[0.85em] text-ink">{seg.text}</code
+			>{:else if seg.bold}<strong class="font-semibold text-ink">{seg.text}</strong>{:else}{seg.text}{/if}{/each}
+{/snippet}
 
 <svelte:window onkeydown={onKeydown} />
 
@@ -42,8 +66,16 @@
 					<h3 class="mb-1.5 font-condensed text-2xs font-bold tracking-[1px] text-command uppercase">
 						{section.heading}
 					</h3>
-					{#each section.body as para (para)}
-						<p class="mb-2 text-sm leading-[1.55] text-ink/80 last:mb-0">{para}</p>
+					{#each section.body as block, i (i)}
+						{#if typeof block === 'string'}
+							<p class="mb-2 text-sm leading-[1.55] text-ink/80 last:mb-0">{@render inline(block)}</p>
+						{:else}
+							<ul class="mb-2 ml-4 list-disc space-y-1 text-sm leading-[1.5] text-ink/80 last:mb-0 marker:text-ink/40">
+								{#each block.list as item (item)}
+									<li>{@render inline(item)}</li>
+								{/each}
+							</ul>
+						{/if}
 					{/each}
 					{#if section.link}
 						<a

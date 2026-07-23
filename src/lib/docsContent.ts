@@ -3,7 +3,10 @@
 // look at, and how it's produced under the hood.
 
 export type DocLink = { label: string; href: string };
-export type DocSection = { heading: string; body: string[]; link?: DocLink };
+// A block is a paragraph (string) or a bullet list. Inline `code` spans in any
+// string are wrapped in backticks and rendered as code by the drawer.
+export type DocBlock = string | { list: string[] };
+export type DocSection = { heading: string; body: DocBlock[]; link?: DocLink };
 export type DocEntry = { title: string; sections: DocSection[] };
 
 export const docContent: Record<string, DocEntry> = {
@@ -11,21 +14,37 @@ export const docContent: Record<string, DocEntry> = {
 		title: 'Query volume over time',
 		sections: [
 			{
-				heading: 'What it shows',
+				heading: 'What this chart shows',
 				body: [
-					'How many times queries ran in each time bucket on this server and database, added up across every query shape that matches your current filters. Taller bars mean more traffic.'
+					'This chart shows how many database queries ran over time.',
+					'A query is any request the application sends to PostgreSQL, such as reading data, updating a record, or deleting something. Each bar shows the total number of queries during a specific time period.',
+					'A taller bar means more queries ran during that period, which usually means the database was under more load.'
 				]
 			},
 			{
-				heading: 'Why it matters',
+				heading: 'Why this matters',
 				body: [
-					'Volume is your load signal. Spikes line up with deploys, cron jobs, or incidents, and they give the speed numbers context — a query that is slow only when volume is high behaves very differently from one that is always slow.'
+					'The number of queries can help explain why the application felt slow at a certain time.',
+					'When many queries run at the same time, they compete for database resources such as CPU, memory, and disk access. This can cause queries to take longer and may slow down the application.',
+					'Large spikes or sudden drops are worth checking. A spike may be caused by:',
+					{
+						list: [
+							'A scheduled task or cron job',
+							'A sudden increase in users',
+							'A bug that sends too many queries, like an N+1 problem',
+							'A DDoS attack'
+						]
+					}
 				]
 			},
 			{
-				heading: 'Under the hood',
+				heading: 'How the chart works',
 				body: [
-					'pg_stat_statements keeps a running total of how many times each statement has executed. The collector samples that counter on an interval and the backend subtracts consecutive samples, then groups the result into time buckets. The bucket size grows as you widen the selected range.'
+					'PostgreSQL provides the `pg_stat_statements` extension, which keeps a total count of how many times each query has been executed.',
+					'The collector reads these counters every minute. It compares the latest values with the previous values to calculate how many queries ran during that one-minute period. The backend then stores these results.',
+					'The chart groups the stored values into equal time intervals, with one bar for each interval.',
+					'When you select a wider time range, each bar represents a longer period of time. This keeps the chart readable instead of showing too many small bars.',
+					'Because the collector reads the counters once per minute, the smallest available interval is one minute.'
 				]
 			}
 		]
@@ -35,34 +54,45 @@ export const docContent: Record<string, DocEntry> = {
 		title: 'Query speed over time',
 		sections: [
 			{
-				heading: 'What it shows',
+				heading: 'What this chart shows',
 				body: [
-					'The p90, p95, and p99 of query execution time over the range. p90 means 9 of every 10 executions finished at least this fast; p99 means 99 of every 100 did.',
-					'Rising lines mean queries are getting slower. A widening gap between p90 and p99 means the slow tail — the worst 1% — is getting worse even if the typical query is fine.'
+					'This chart shows how long database queries took to complete over time.',
+					'It uses three percentile lines:',
+					{
+						list: [
+							'**p90**: 9 out of 10 queries finished faster than this value',
+							'**p95**: 19 out of 20 queries finished faster than this value',
+							'**p99**: 99 out of 100 queries finished faster than this value'
+						]
+					},
+					'When a line goes up, queries are taking longer. A large gap between p90 and p99 means most queries are fast, but a small number are much slower.'
 				]
 			},
 			{
-				heading: 'Why percentiles, not an average',
+				heading: 'Why this matters',
 				body: [
-					'An average hides its own outliers: a handful of very slow runs barely move the mean, yet they are exactly what users feel. Percentiles describe the distribution instead, so p95 and p99 track the experience of the slowest few percent — which is where latency problems actually surface.'
+					'These lines show both how fast queries are and how consistent their performance is.',
+					'They are often more useful than an average because a few very slow queries may not change the average much. Percentiles make those slower queries easier to notice.',
+					'High or rising values may be caused by:',
+					{
+						list: [
+							'A missing index',
+							'Queries reading large amounts of data from disk',
+							'Queries waiting for locks',
+							'High CPU or memory usage'
+						]
+					}
 				]
 			},
 			{
-				heading: 'How it is approximated',
+				heading: 'How the chart works',
 				body: [
-					'Postgres, through pg_stat_statements, never stores the timing of individual executions — only per-shape aggregates: total time, mean, standard deviation, and a call count. True percentiles over real executions therefore are not available.',
-					'QuerySheriff estimates them by taking each query shape’s mean time and computing a percentile weighted by how often that shape ran in the bucket. Treat the values as directional, not exact.'
-				],
-				link: {
-					label: 'How pganalyze approximates percentiles',
-					href: 'https://pganalyze.com/docs/query-performance'
-				}
-			},
-			{
-				heading: 'Why it can look surprisingly high',
-				body: [
-					'Because the estimate is weighted by call volume and uses each shape’s average, extremely frequent statements dominate it. A flood of tiny, frequent statements like BEGIN and COMMIT (COMMIT often waits on a disk or WAL flush) carries enormous weight and can drag the percentile upward.',
-					'So a high p95 or p99 may reflect that bookkeeping traffic rather than any one analytical query being slow. For the exact timing of a specific query, open it and read its captured samples.'
+					'PostgreSQL provides the `pg_stat_statements` extension, which keeps a total count of how many times each query has been executed and how much time was spent running it.',
+					'The collector reads these counters every minute. It compares the latest values with the previous values to calculate how many times each query ran and how much time it used during that one-minute period. The backend then stores these results.',
+					'Because PostgreSQL does not store the duration of every individual query run, the backend estimates the percentiles. It calculates an average time for each query and gives more weight to queries that ran more often.',
+					'For example, when a query runs 20 times with an average time of 400 ms, the calculation treats this as 20 query runs of 400 ms.',
+					'The chart groups these results into equal time intervals and calculates the estimated p90, p95, and p99 values for each interval.',
+					'Lower percentiles such as p75 are not shown. In PostgreSQL, many queries are very fast and run frequently, such as `BEGIN` and `COMMIT` for transactions. These fast queries would dominate lower percentiles and make them less useful, so higher percentiles are used to better highlight slower queries.'
 				]
 			}
 		]
@@ -72,27 +102,58 @@ export const docContent: Record<string, DocEntry> = {
 		title: 'Queries',
 		sections: [
 			{
-				heading: 'What it shows',
+				heading: 'What this table shows',
 				body: [
-					'Every query shape seen in the range, one row each, with its aggregate stats: average time, call count, rows per call, the share of time spent on I/O, and its share of total execution time. Sort any column to reorder.'
+					'This table lists the normalized queries that ran during the selected time range and summarizes how they performed.',
+					'A normalized query is a query where changing values are replaced with placeholders, so queries with the same SQL structure can be grouped together.',
+					'For example:',
+					'`SELECT * FROM users WHERE id = 10`',
+					'and',
+					'`SELECT * FROM users WHERE id = 25`',
+					'are recorded as one normalized query:',
+					'`SELECT * FROM users WHERE id = $1`',
+					'The `$1` placeholder means that different values were used when the query ran. Each row in the table represents one normalized query recorded by PostgreSQL.',
+					'Tags can also be collected from individual query samples. For example, the query comment `/* service=payment-api */` adds the tag `service=payment-api`.',
+					'A tag is shown on the normalized query only when it has the same value across all its samples. Tags that change for every sample, such as `request_id`, remain available only on the individual sample.',
+					'The columns are:',
+					{
+						list: [
+							'**Query**: The normalized SQL statement preview.',
+							'**User**: The database user that executed the query.',
+							'**Avg**: The average time one execution of the query took.',
+							'**Calls**: The number of times the query was executed.',
+							'**Rows/Call**: The average number of rows returned or changed by each execution.',
+							'**% IO**: The percentage of total disk time used by this query. For example, 20% means it was responsible for 20% of the time all queries spent reading from or writing to disk.',
+							'**% Time**: The percentage of total query time used by this query. For example, 20% means it was responsible for 20% of the time spent running all queries.'
+						]
+					}
 				]
 			},
 			{
-				heading: 'Why it matters',
+				heading: 'Why this matters',
 				body: [
-					'This is where you decide what to optimize. Sorting by % Time surfaces the queries that consume the most database time overall — usually a better target than the single slowest call, because a moderately slow query run millions of times costs far more than a very slow one run twice. It is the same guidance the Postgres docs give.'
+					'This table helps you identify which queries are most worth improving.',
+					'You can sort the table by any column. Sorting by **% Time** is often the most useful because it shows which queries use the most database time overall.',
+					'The query with the highest average time is not always the biggest problem. For example, a query that takes 50 ms but runs millions of times may use much more database time than a query that takes 5 seconds but runs only twice.',
+					'Useful things to look for include:',
+					{
+						list: [
+							'**High % Time**: Queries that use the most database time overall',
+							'**High Avg**: Queries that are slow each time they run',
+							'**High Calls**: Frequently executed queries where even a small improvement can have a large effect',
+							'**High Rows/Call**: Queries that return or change many rows each time they run, which may mean they are fetching more data than needed',
+							'**High % IO**: Queries that spend a large amount of time accessing disk and may benefit from an index or other optimization'
+						]
+					}
 				]
 			},
 			{
-				heading: 'Reading the columns',
+				heading: 'How the table works',
 				body: [
-					'Query is the normalized shape, with literal values replaced by $1, $2, … so all runs of the same statement collapse into one row. Avg is mean execution time, % IO is the fraction of that time spent reading from disk, and the colored dot flags shapes whose average time is in warning or slow territory.'
-				]
-			},
-			{
-				heading: 'Under the hood',
-				body: [
-					'Every figure comes from pg_stat_statements aggregates differenced over time — not from logging individual executions — so it is cheap to collect but describes the shape as a whole. To see real runs with actual values and plans, open a query.'
+					'PostgreSQL provides the `pg_stat_statements` extension, which keeps totals for each query. These totals include how many times the query was executed, how much time it used, how many rows it processed, and how much time was spent reading from or writing to disk.',
+					'The collector reads these counters every minute. It compares the latest values with the previous values to calculate what happened during that one-minute period. The backend then stores these results.',
+					'For the selected time range, the backend adds together the stored values for each query and uses them to calculate the averages and percentages shown in the table.',
+					'To investigate a specific query in more detail, open it from the table.'
 				]
 			}
 		]
@@ -102,21 +163,10 @@ export const docContent: Record<string, DocEntry> = {
 		title: 'Query volume over time',
 		sections: [
 			{
-				heading: 'What it shows',
+				heading: 'What this chart shows',
 				body: [
-					'How often this one query shape ran over time, in buckets — the same idea as the volume chart on the Queries list, narrowed to this statement.'
-				]
-			},
-			{
-				heading: 'Why it matters',
-				body: [
-					'Pairing volume with the speed chart below tells you whether a change in this query’s total database impact came from it getting slower or simply running more often.'
-				]
-			},
-			{
-				heading: 'Under the hood',
-				body: [
-					'Derived from this statement’s pg_stat_statements call counter, sampled and differenced by the collector, then grouped into time buckets.'
+					'This chart shows how many times this specific query ran over time.',
+					'It works exactly the same as the Query volume over time chart on the Queries page, and reads the same PostgreSQL counters in the same way. The only difference is that it counts this one query instead of all queries.'
 				]
 			}
 		]
@@ -126,21 +176,30 @@ export const docContent: Record<string, DocEntry> = {
 		title: 'Query speed over time',
 		sections: [
 			{
-				heading: 'What it shows',
+				heading: 'What this chart shows',
 				body: [
-					'Two lines for this query over time. Avg total is the mean wall-clock time per execution; avg IO is the part of that spent reading or writing data blocks. The gap between them is roughly time on CPU, locking, and everything else.'
+					'This chart shows how long this specific query took to run over time. It uses two lines:',
+					{
+						list: [
+							'**avg total**: the average time one run of the query took',
+							'**avg IO**: the average part of that time spent reading from or writing to disk'
+						]
+					},
+					'IO (input/output) is disk access, which is much slower than memory, so it is often where a slow query loses time. The gap between the lines is everything else, such as CPU work or waiting for locks.'
 				]
 			},
 			{
-				heading: 'Why it matters',
+				heading: 'Why this matters',
 				body: [
-					'The trend tells you whether the query is degrading, and the I/O share tells you why: a query dominated by I/O usually needs an index or less data scanned, while one with little I/O but high total time is often CPU-bound or waiting.'
+					'It tells you whether this query is getting slower, and the avg IO line helps explain why. A query that spends most of its time on disk usually reads a lot of data and may benefit from an index.',
+					'This chart uses an average, not the p90, p95, and p99 percentiles from the Queries page. Those percentiles are estimated by combining many queries, and a single query does not have enough data to estimate them well.'
 				]
 			},
 			{
-				heading: 'Under the hood',
+				heading: 'How the chart works',
 				body: [
-					'Both come from pg_stat_statements — mean execution time and block read/write timing (which requires track_io_timing to be enabled in Postgres). Values are per-shape averages differenced over time, not individual runs.'
+					'Like the other charts, the values come from PostgreSQL’s `pg_stat_statements` extension, read every minute and compared with the previous values.',
+					'For each interval, avg total is the total time divided by the number of runs, and avg IO is the total disk time divided by the number of runs. Disk time is only measured when `track_io_timing` is turned on.'
 				]
 			}
 		]
@@ -150,21 +209,33 @@ export const docContent: Record<string, DocEntry> = {
 		title: 'Captured samples',
 		sections: [
 			{
-				heading: 'What it shows',
+				heading: 'What this table shows',
 				body: [
-					'Individual captured executions of this query — the real parameter values each run used, when it ran, how long it took, and an EXPLAIN plan when one was captured.'
+					'This table shows individual runs of this query, with the real values each one used. Unlike the normalized query above, each row here is one actual execution.',
+					'The columns are:',
+					{
+						list: [
+							'**At**: When the query ran.',
+							'**Query**: The full query text, with the real values used in that run.',
+							'**Plan**: The execution plan for that run, when one was captured. It shows the steps PostgreSQL took to run the query.',
+							'**Duration**: How long that run took.'
+						]
+					}
 				]
 			},
 			{
-				heading: 'Why it matters',
+				heading: 'Why this matters',
 				body: [
-					'Aggregates tell you a query is slow on average; samples tell you which actual inputs were slow and let you reproduce them. The plan shows exactly how Postgres executed that run — the fastest way to spot a missing index or a bad row estimate.'
+					'The charts tell you a query is slow on average. A sample shows which real values were slow, so you can reproduce it.',
+					'The plan is the most useful part. It shows exactly how PostgreSQL ran the query and is the best way to spot a missing index or a bad row estimate.'
 				]
 			},
 			{
-				heading: 'Under the hood',
+				heading: 'How the table works',
 				body: [
-					'The collector captures a bounded sample of real executions — recording every one would add overhead — so this is a representative slice, not the complete history. Rows with a plan link have an EXPLAIN captured for that specific run.'
+					'These samples come from the PostgreSQL logs, not from the counters the charts use.',
+					'PostgreSQL logs slow queries when `log_min_duration_statement` is set, and the `auto_explain` extension adds the execution plan. The collector reads these log entries and the backend stores them here.',
+					'Because only slow queries are logged, this is a sample of runs, not every execution.'
 				]
 			}
 		]
