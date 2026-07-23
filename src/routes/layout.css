@@ -22,13 +22,17 @@
 	   Warm-shifted to sit inside the terracotta/cream palette rather than pop as
 	   a foreign "modern" set, while staying clearly brighter than muted neutrals. */
 	--color-danger: #c23a24;
+	/* -text variants are darkened to clear WCAG AA (4.5:1) as text; the vivid
+	   base colors stay for dots, bars, and fills (non-text). */
 	--color-warn-text: #9a5b12;
 	--color-warn: #d97b1c;
 	--color-ok: #5c9e34;
+	--color-ok-text: #46781f;
 	--color-panic: #5e1414;
 
 	/* Data / chart series */
 	--color-steel: #6c8392;
+	--color-steel-text: #546774; /* darker steel that clears AA as text (e.g. tag labels) */
 	--color-teal: #4e7a86;
 	--color-taupe: #9a8f7e;
 

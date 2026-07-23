@@ -116,3 +116,8 @@ export const sevByMean = (ms: number): string =>
 	ms >= 4000 ? 'var(--color-danger)' : ms >= 800 ? 'var(--color-warn)' : 'var(--color-ok)';
 export const sevByDuration = (ms: number): string =>
 	ms >= 10000 ? 'var(--color-danger)' : ms >= 1000 ? 'var(--color-warn)' : 'var(--color-ok)';
+
+// The vivid warn/ok fills fail text contrast; swap them for their darker
+// text-safe variants when a severity color paints text (danger already passes).
+export const sevText = (sev: string): string =>
+	sev === 'var(--color-warn)' ? 'var(--color-warn-text)' : sev === 'var(--color-ok)' ? 'var(--color-ok-text)' : sev;

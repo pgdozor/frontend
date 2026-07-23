@@ -4,7 +4,7 @@
 </script>
 
 <label
-	class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase {klass}"
+	class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/70 uppercase {klass}"
 	for={forId}
 >
 	{@render children()}

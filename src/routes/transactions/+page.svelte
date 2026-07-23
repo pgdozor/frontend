@@ -168,14 +168,14 @@
 					<div class="min-w-0 flex-1">
 						<div class="flex flex-wrap items-center gap-2.5">
 							<span class="font-mono text-md font-semibold text-ink">pid {t.pid}</span>
-							<span class="font-sans text-sm text-ink/60">{t.applicationName}</span>
+							<span class="font-sans text-sm text-ink/70">{t.applicationName}</span>
 						</div>
 					</div>
 					<div class="flex-none text-right">
 						<div class="font-mono text-2xl leading-none font-semibold whitespace-nowrap text-ink">
 							{fmtDurMs(durationMs(t.start, t.end))}
 						</div>
-						<div class="mt-1 font-mono text-xs whitespace-nowrap text-ink/50">
+						<div class="mt-1 font-mono text-xs whitespace-nowrap text-ink/70">
 							{t.start ? `started ${fmtClockDate(timestampDate(t.start))}` : '—'}
 						</div>
 					</div>
@@ -205,24 +205,24 @@
 										{/if}
 									</div>
 								{:else}
-									<div class="font-mono text-sm leading-[18px] text-ink/35">no query running</div>
+									<div class="font-mono text-sm leading-[18px] text-ink/70">no query running</div>
 								{/if}
 
 								<div class="mt-2 border-l border-line pl-3.5">
 									{#each g.events as e, i (i)}
 										<div class={timelineGrid}>
 											<span class="mt-1.5 h-2.5 w-2.5 rounded-full" style:background={statusColor(e.status)}></span>
-											<span class="font-mono text-sm leading-[18px] whitespace-nowrap text-ink/60">
+											<span class="font-mono text-sm leading-[18px] whitespace-nowrap text-ink/70">
 												{#if t.start && e.from && e.to}{relFrom(t.start, e.from)}–{relFrom(t.start, e.to)}{/if}
 											</span>
-											<span class="text-right font-mono text-sm leading-[18px] whitespace-nowrap text-ink/50">
+											<span class="text-right font-mono text-sm leading-[18px] whitespace-nowrap text-ink/70">
 												{fmtDurMs(durationMs(e.from, e.to))}
 											</span>
 											<span
 												class="font-condensed text-xs leading-[18px] font-bold tracking-[0.5px] whitespace-nowrap uppercase"
 												style:color={statusColor(e.status)}>{statusLabel(e.status)}</span
 											>
-											<span class="font-mono text-sm leading-[18px] text-ink/55">{waitText(e)}</span>
+											<span class="font-mono text-sm leading-[18px] text-ink/70">{waitText(e)}</span>
 										</div>
 									{/each}
 								</div>

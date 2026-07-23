@@ -225,10 +225,10 @@
 					class="{rowCls} {i === highlight ? 'bg-hover' : ''}"
 				>
 					<span class="flex-1 text-left">{k.key}</span>
-					<span class="text-xs text-ink/55">{k.valueCount}</span>
+					<span class="text-xs text-ink/70">{k.valueCount}</span>
 				</button>
 			{:else}
-				<div class="px-2.5 py-2.5 font-mono text-sm text-ink/55">
+				<div class="px-2.5 py-2.5 font-mono text-sm text-ink/70">
 					{loading ? 'Loading…' : (error ?? (keyRows.length > 0 ? 'No matching tag keys' : 'No tags found'))}
 				</div>
 			{/each}
@@ -255,7 +255,7 @@
 							? 'cursor-not-allowed text-ink/25'
 							: op === o.v
 								? 'cursor-pointer bg-command text-paper'
-								: 'cursor-pointer text-ink/60 hover:bg-hover'}"
+								: 'cursor-pointer text-ink/70 hover:bg-hover'}"
 					>
 						{o.l}
 					</button>
@@ -308,10 +308,10 @@
 						{#if picked.includes(v.value)}<CheckIcon class="size-3 text-command" />{/if}
 					</span>
 					<span class="flex-1 truncate text-left">{v.value}</span>
-					<span class="text-xs text-ink/55">{v.statementCount}</span>
+					<span class="text-xs text-ink/70">{v.statementCount}</span>
 				</button>
 			{:else}
-				<div class="px-2.5 py-2.5 font-mono text-sm text-ink/55">
+				<div class="px-2.5 py-2.5 font-mono text-sm text-ink/70">
 					{loading ? 'Loading…' : (error ?? (valueRows.length > 0 ? 'No matching values' : 'No values in this window'))}
 				</div>
 			{/each}

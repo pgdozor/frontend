@@ -117,17 +117,17 @@
 				<div class="min-w-0 flex-1">
 					<div class="flex flex-wrap items-baseline gap-2.5">
 						<span class="font-mono text-md font-semibold text-ink">pid {tree.rootPid}</span>
-						<span class="font-sans text-sm text-ink/60">{tree.rootApplicationName}</span>
+						<span class="font-sans text-sm text-ink/70">{tree.rootApplicationName}</span>
 					</div>
 				</div>
 				<div class="flex-none text-right">
 					<div class="whitespace-nowrap">
-						<span class="font-mono text-xl leading-none font-semibold text-warn"
+						<span class="font-mono text-xl leading-none font-semibold text-warn-text"
 							>{fmtDurMs(durationMs(tree.rootStartedBlocking, tree.rootLastBlocking))}</span
 						>
-						<span class="ml-1.5 font-condensed text-2xs font-bold tracking-[0.8px] text-warn uppercase">hold</span>
+						<span class="ml-1.5 font-condensed text-2xs font-bold tracking-[0.8px] text-warn-text uppercase">hold</span>
 					</div>
-					<div class="mt-1.5 font-mono text-xs whitespace-nowrap text-ink/50">
+					<div class="mt-1.5 font-mono text-xs whitespace-nowrap text-ink/70">
 						{startedLabel(tree.rootStartedBlocking)}
 					</div>
 				</div>
@@ -136,11 +136,11 @@
 			{#each orderVictims(tree) as { event, level } (event.pid)}
 				<div class="flex items-start border-t border-line-soft py-3 pr-5" style:padding-left={`${level * 22}px`}>
 					<!-- Arrow column width matches the 22px indent step, so pids align across levels. -->
-					<span class="w-6 flex-none font-mono text-xs leading-[18px] text-ink/55">↳</span>
+					<span class="w-6 flex-none font-mono text-xs leading-[18px] text-ink/70">↳</span>
 					<div class="min-w-0 flex-1">
 						<div class="flex flex-wrap items-baseline gap-2.5">
 							<span class="font-mono text-md font-semibold text-ink">pid {event.pid}</span>
-							<span class="font-sans text-sm text-ink/60">{event.applicationName}</span>
+							<span class="font-sans text-sm text-ink/70">{event.applicationName}</span>
 						</div>
 						<div class="mt-2 flex min-w-0 items-baseline">
 							<button
@@ -154,7 +154,7 @@
 							>
 							{#if event.lockMode}
 								<span class="flex-none font-mono text-sm font-medium whitespace-nowrap text-danger">
-									<span class="mx-2.5 text-ink/35">·</span>wants {event.lockMode}
+									<span class="mx-2.5 text-ink/70">·</span>wants {event.lockMode}
 								</span>
 							{/if}
 						</div>
@@ -166,7 +166,7 @@
 							>
 							<span class="ml-1.5 font-condensed text-2xs font-bold tracking-[0.8px] text-danger uppercase">wait</span>
 						</div>
-						<div class="mt-1.5 font-mono text-xs whitespace-nowrap text-ink/50">
+						<div class="mt-1.5 font-mono text-xs whitespace-nowrap text-ink/70">
 							{startedLabel(event.startedWaiting)}
 						</div>
 					</div>

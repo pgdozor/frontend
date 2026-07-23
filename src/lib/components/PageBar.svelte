@@ -27,7 +27,7 @@
 				{title}
 			</h1>
 		</div>
-		<p class="truncate text-xs leading-[1.2] text-ink/55">{description}</p>
+		<p class="truncate text-xs leading-[1.2] text-ink/70">{description}</p>
 	</div>
 	{#if actions}
 		<div class="flex flex-wrap items-center gap-2.5">

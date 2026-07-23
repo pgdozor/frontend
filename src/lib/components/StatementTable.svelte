@@ -18,7 +18,7 @@
 <script lang="ts">
 	import { clsx } from 'clsx';
 	import { ArrowUpIcon, ArrowDownIcon, ArrowUpDownIcon } from '@lucide/svelte';
-	import { fmtDuration, fmtCount } from '$lib/format';
+	import { fmtDuration, fmtCount, sevText } from '$lib/format';
 	import type { SqlPopoverState } from '$lib/sqlPopover.svelte';
 	import Tag from '$lib/components/Tag.svelte';
 
@@ -66,7 +66,7 @@
 						aria-sort={sort.col === h.key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
 						style:width={h.width}
 						class={clsx(
-							'border-b border-line font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase',
+							'border-b border-line font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/70 uppercase',
 							h.hide
 						)}
 					>
@@ -145,7 +145,7 @@
 					</td>
 					<td
 						class="border-b border-line-soft px-4 py-3 text-right align-top leading-[20px] font-mono text-md font-semibold whitespace-nowrap"
-						style:color={q.sev}
+						style:color={sevText(q.sev)}
 					>
 						{fmtDuration(q.meanMs)}
 					</td>

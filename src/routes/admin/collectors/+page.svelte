@@ -100,7 +100,7 @@
 	}
 
 	const th =
-		'border-b border-line px-5 py-3 font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
+		'border-b border-line px-5 py-3 font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/70 uppercase';
 </script>
 
 <PageBar>
@@ -129,14 +129,14 @@
 							<td class="border-b border-line-soft px-5 py-3.5">
 								<span class="font-mono text-md font-medium text-ink">{token.serverName}</span>
 							</td>
-							<td class="border-b border-line-soft px-5 py-3.5 font-mono text-sm whitespace-nowrap text-ink/60">
+							<td class="border-b border-line-soft px-5 py-3.5 font-mono text-sm whitespace-nowrap text-ink/70">
 								{created(token)}
 							</td>
 							<td class="border-b border-line-soft px-5 py-3.5 text-right">
 								<button
 									type="button"
 									onclick={() => remove(token)}
-									class="inline-flex cursor-pointer items-center gap-1.5 font-condensed text-xs font-bold tracking-[0.6px] text-ink/50 uppercase hover:text-danger"
+									class="inline-flex cursor-pointer items-center gap-1.5 font-condensed text-xs font-bold tracking-[0.6px] text-ink/70 uppercase hover:text-danger"
 								>
 									<Trash2Icon class="size-3.5" />
 									<span>Delete</span>
@@ -189,7 +189,7 @@
 						Copy this token now. It will not be shown again.
 					</div>
 				</div>
-				<span class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase"
+				<span class="mb-1.5 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/70 uppercase"
 					>Token</span
 				>
 				<div class="flex items-center gap-3 border border-line-boldest bg-ink px-3.5 py-3.5">
@@ -203,7 +203,7 @@
 						<span>{copied ? 'Copied' : 'Copy'}</span>
 					</button>
 				</div>
-				<div class="mt-3 font-sans text-sm text-ink/55">
+				<div class="mt-3 font-sans text-sm text-ink/70">
 					Server <span class="font-mono text-ink">{newTokenServer}</span>
 				</div>
 			</div>

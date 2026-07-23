@@ -41,6 +41,6 @@
 
 <div class="mt-1.5 flex justify-between">
 	{#each ticks as t, i (i)}
-		<span class="font-mono text-2xs text-ink/50">{t}</span>
+		<span class="font-mono text-2xs text-ink/70">{t}</span>
 	{/each}
 </div>

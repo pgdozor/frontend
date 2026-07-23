@@ -27,7 +27,7 @@
 
 	const variants: Record<ButtonVariant, string> = {
 		primary: 'bg-command font-bold text-paper hover:bg-danger',
-		secondary: 'border border-line-strong font-bold text-ink/60 hover:bg-hover',
+		secondary: 'border border-line-strong font-bold text-ink/70 hover:bg-hover',
 		ghost: 'border border-line-card font-semibold text-ink/70 hover:bg-accent-soft hover:text-command'
 	};
 

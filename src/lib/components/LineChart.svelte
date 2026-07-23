@@ -98,10 +98,10 @@
 			>
 				{#snippet children({ data: point }: { data: MetricSeriesRow })}
 					<div class="flex flex-col gap-1 font-mono text-xs leading-[1.4] whitespace-nowrap">
-						<div class="text-ink/50">{fmtClockMinute(point.at)}</div>
+						<div class="text-ink/70">{fmtClockMinute(point.at)}</div>
 						{#each series as s, i (s.label)}
 							<div class="flex items-center justify-between gap-3.5">
-								<span class="flex items-center gap-1.5 text-ink/55">
+								<span class="flex items-center gap-1.5 text-ink/70">
 									<span class="h-0.5 w-3" style:background={s.color}></span>{s.label}
 								</span>
 								<span class="font-semibold text-ink"

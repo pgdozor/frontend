@@ -104,9 +104,9 @@
 				{#snippet children({ data: point }: { data: MetricSeriesRow })}
 					{@const value = point.values[0]}
 					<div class="flex flex-col gap-1 font-mono text-xs leading-[1.4] whitespace-nowrap">
-						<div class="text-ink/50">{fmtBucketRange(point.at, model.step)}</div>
+						<div class="text-ink/70">{fmtBucketRange(point.at, model.step)}</div>
 						{#if value == null}
-							<div class="text-ink/55">No data</div>
+							<div class="text-ink/70">No data</div>
 						{:else}
 							<div class="font-semibold text-ink">{fmtCountFull(value)} calls</div>
 						{/if}

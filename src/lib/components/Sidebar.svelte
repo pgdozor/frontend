@@ -15,7 +15,7 @@
 	const navClass = (active: boolean): string =>
 		clsx(
 			'flex flex-col gap-0.5 border-l-[3px] py-2.5 pr-3 pl-3.5 transition-colors',
-			active ? 'border-command bg-accent text-ink' : 'border-transparent text-ink/55 hover:bg-hover-soft'
+			active ? 'border-command bg-accent text-ink' : 'border-transparent text-ink/70 hover:bg-hover-soft'
 		);
 
 	afterNavigate(() => sidebar.closeDrawer());
@@ -60,7 +60,7 @@
 
 	{#if session.isSuperAdmin}
 		<div class="mt-auto border-t border-line px-2 pt-2 pb-1">
-			<div class="px-3.5 pt-2 pb-2 font-condensed text-2xs font-bold tracking-[1.4px] text-ink/55 uppercase">Admin</div>
+			<div class="px-3.5 pt-2 pb-2 font-condensed text-2xs font-bold tracking-[1.4px] text-ink/70 uppercase">Admin</div>
 			<div class="flex flex-col gap-0.5">
 				{#each adminItems as item (item.key)}
 					<a href={item.href} title={item.label} class={navClass(isNavActive(item, page.url.pathname))}>

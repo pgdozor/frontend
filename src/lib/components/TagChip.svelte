@@ -28,7 +28,7 @@
 		title={describeTagFilter(filter)}
 		class="flex cursor-pointer items-center gap-1.5 py-1 pr-1.5 pl-2 font-mono text-sm whitespace-nowrap"
 	>
-		<span class="text-ink/60">{filter.key}</span>
+		<span class="text-ink/70">{filter.key}</span>
 		<span class={filter.op === 'ne' ? 'font-semibold text-danger' : 'font-semibold text-command'}>{opLabel}</span>
 		{#if filter.op !== 'exists'}
 			<span class="max-w-[13.75rem] truncate text-ink">{filter.values.join(' or ')}</span>

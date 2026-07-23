@@ -27,12 +27,12 @@
 
 {#snippet segmented(label: string, type: 'start' | 'end')}
 	<div class="flex flex-col gap-1">
-		<span class="font-sans text-xs text-ink/65">{label}</span>
+		<span class="font-sans text-xs text-ink/70">{label}</span>
 		<DateRangePicker.Input {type} aria-label="{label} date and time" class={fieldCls}>
 			{#snippet children({ segments })}
 				{#each segments as { part, value: segValue }, i (i)}
 					{#if part === 'literal'}
-						<span class="px-px text-ink/40">{segValue}</span>
+						<span class="px-px text-ink/70">{segValue}</span>
 					{:else}
 						<DateRangePicker.Segment {part} class={segCls}>{segValue}</DateRangePicker.Segment>
 					{/if}

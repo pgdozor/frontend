@@ -76,9 +76,9 @@
 
 	const sev: Record<AlertLevel, { label: string; chip: string }> = {
 		[AlertLevel.CRITICAL]: { label: 'Critical', chip: 'border-danger/34 bg-danger/10 text-danger' },
-		[AlertLevel.WARNING]: { label: 'Warning', chip: 'border-warn/34 bg-warn/10 text-warn' },
-		[AlertLevel.INFO]: { label: 'Info', chip: 'border-steel/34 bg-steel/10 text-steel' },
-		[AlertLevel.UNSPECIFIED]: { label: 'Info', chip: 'border-steel/34 bg-steel/10 text-steel' }
+		[AlertLevel.WARNING]: { label: 'Warning', chip: 'border-warn/34 bg-warn/10 text-warn-text' },
+		[AlertLevel.INFO]: { label: 'Info', chip: 'border-steel/34 bg-steel/10 text-steel-text' },
+		[AlertLevel.UNSPECIFIED]: { label: 'Info', chip: 'border-steel/34 bg-steel/10 text-steel-text' }
 	};
 </script>
 
@@ -144,7 +144,7 @@
 							</button>
 						</div>
 						{#if s.slackWebhookUrl.trim() === ''}
-							<div class="mt-3 flex items-center gap-2 font-sans text-sm text-ink/50">
+							<div class="mt-3 flex items-center gap-2 font-sans text-sm text-ink/70">
 								<InfoIcon class="size-3.5 shrink-0" />
 								<span>Add a webhook URL to configure alerts for this server.</span>
 							</div>

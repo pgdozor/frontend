@@ -12,6 +12,7 @@
 
 <script lang="ts">
 	import { ArrowUpIcon, ExternalLinkIcon } from '@lucide/svelte';
+	import { sevText } from '$lib/format';
 	import type { SqlPopoverState } from '$lib/sqlPopover.svelte';
 	import Tag from '$lib/components/Tag.svelte';
 
@@ -30,7 +31,7 @@
 	} = $props();
 
 	const thBase =
-		'border-b border-line px-4 py-2.5 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/55 uppercase';
+		'border-b border-line px-4 py-2.5 font-condensed text-xs font-semibold tracking-[0.7px] text-ink/70 uppercase';
 </script>
 
 <div class="overflow-x-auto">
@@ -66,7 +67,7 @@
 								{#if hasBaseTags}
 									<span
 										title="Also carries the base tags shown at the top"
-										class="inline-flex items-center gap-1 border border-line px-1.5 py-px font-mono text-xs text-ink/55"
+										class="inline-flex items-center gap-1 border border-line px-1.5 py-px font-mono text-xs text-ink/70"
 									>
 										<ArrowUpIcon class="size-2.5" />base tags
 									</span>
@@ -89,12 +90,12 @@
 								<ExternalLinkIcon class="size-3 stroke-[2.2]" />
 							</a>
 						{:else}
-							<span class="font-mono text-sm leading-[20px] text-ink/35">—</span>
+							<span class="font-mono text-sm leading-[20px] text-ink/70">—</span>
 						{/if}
 					</td>
 					<td
 						class="border-b border-line-soft px-4 py-3 text-right align-top font-mono text-md leading-[20px] font-semibold whitespace-nowrap"
-						style:color={s.sev}>{s.durFmt}</td
+						style:color={sevText(s.sev)}>{s.durFmt}</td
 					>
 				</tr>
 			{/each}

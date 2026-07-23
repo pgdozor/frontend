@@ -285,7 +285,7 @@
 				onclick={() => (prettified = !prettified)}
 				class="inline-flex flex-none cursor-pointer items-center gap-1.5 border px-2.5 py-1 font-condensed text-2xs font-semibold tracking-[0.7px] uppercase transition-colors {prettified
 					? 'border-command bg-command text-paper'
-					: 'border-line-strong text-ink/60 hover:border-line-boldest hover:text-ink'}"
+					: 'border-line-strong text-ink/70 hover:border-line-boldest hover:text-ink'}"
 			>
 				<SparklesIcon class="size-3.5" /><span>Format</span>
 			</button>

@@ -150,7 +150,7 @@
 			<span class="font-mono text-[30px] leading-none font-semibold tracking-[-0.5px] text-ink">
 				{fmtCount(totalEvents)}
 			</span>
-			<span class="font-condensed text-sm font-semibold tracking-[0.8px] text-ink/55 uppercase">log events</span>
+			<span class="font-condensed text-sm font-semibold tracking-[0.8px] text-ink/70 uppercase">log events</span>
 		</div>
 
 		<div class="flex flex-nowrap items-center justify-end gap-2">
@@ -225,7 +225,7 @@
 				aria-expanded={menu === 'class'}
 				class="flex h-10 cursor-pointer items-center gap-2.5 border border-line-strong bg-paper px-3 hover:bg-hover-soft"
 			>
-				<span class="font-condensed text-2xs font-semibold tracking-[0.8px] text-ink/50 uppercase">Class</span>
+				<span class="font-condensed text-2xs font-semibold tracking-[0.8px] text-ink/70 uppercase">Class</span>
 				<span class="font-mono text-sm font-medium whitespace-nowrap text-ink">{classLabel}</span>
 				<ChevronDownIcon class="size-3.5 text-ink/55" />
 			</button>

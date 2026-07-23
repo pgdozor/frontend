@@ -119,7 +119,7 @@
 	}
 
 	const th =
-		'border-b border-line px-5 py-3 text-left font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/55 uppercase';
+		'border-b border-line px-5 py-3 text-left font-condensed text-xs font-semibold tracking-[0.7px] whitespace-nowrap text-ink/70 uppercase';
 	const allChip =
 		'inline-block border border-accent-line bg-accent px-2 py-0.5 font-condensed text-2xs font-bold tracking-[0.5px] whitespace-nowrap text-command uppercase';
 	const serverChip =
@@ -155,7 +155,7 @@
 							</td>
 							<td class="border-b border-line-soft px-5 py-3.5 align-top font-sans text-sm text-ink/78">{u.email}</td>
 							<td
-								class="border-b border-line-soft px-5 py-3.5 align-top font-mono text-sm whitespace-nowrap text-ink/60"
+								class="border-b border-line-soft px-5 py-3.5 align-top font-mono text-sm whitespace-nowrap text-ink/70"
 							>
 								{created(u)}
 							</td>
@@ -164,7 +164,7 @@
 									{#if u.isSuperAdmin}
 										<span class={allChip}>All servers</span>
 									{:else if u.allowedServers.length === 0}
-										<span class="font-mono text-sm text-ink/55">—</span>
+										<span class="font-mono text-sm text-ink/70">—</span>
 									{:else}
 										{#each u.allowedServers as s (s)}
 											<span class={serverChip}>{s}</span>
@@ -186,7 +186,7 @@
 										<button
 											type="button"
 											onclick={() => remove(u)}
-											class="inline-flex cursor-pointer items-center gap-1.5 font-condensed text-xs font-bold tracking-[0.6px] text-ink/50 uppercase hover:text-danger"
+											class="inline-flex cursor-pointer items-center gap-1.5 font-condensed text-xs font-bold tracking-[0.6px] text-ink/70 uppercase hover:text-danger"
 										>
 											<Trash2Icon class="size-3.5" />
 											<span>Delete</span>
@@ -237,15 +237,15 @@
 			/>
 
 			{#if editingSuperAdmin}
-				<div class="border border-line-card bg-hover-soft px-3.5 py-3 font-sans text-sm text-ink/60">
+				<div class="border border-line-card bg-hover-soft px-3.5 py-3 font-sans text-sm text-ink/70">
 					The super admin can view every server.
 				</div>
 			{:else}
-				<span class="mb-2 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/55 uppercase">
+				<span class="mb-2 block font-condensed text-2xs font-semibold tracking-[1px] text-ink/70 uppercase">
 					Allowed Servers
 				</span>
 				{#if serverOptions.length === 0}
-					<div class="font-mono text-sm text-ink/55">No servers yet — create a collector token first</div>
+					<div class="font-mono text-sm text-ink/70">No servers yet — create a collector token first</div>
 				{:else}
 					<div class="flex flex-wrap gap-2">
 						{#each serverOptions as name (name)}
@@ -255,7 +255,7 @@
 								onclick={() => toggleServer(name)}
 								class="inline-flex cursor-pointer items-center gap-2 border px-3 py-2 font-mono text-sm select-none {on
 									? 'border-command bg-accent font-semibold text-command'
-									: 'border-line-strong text-ink/60'}"
+									: 'border-line-strong text-ink/70'}"
 							>
 								{#if on}<CheckIcon class="size-3.5" />{:else}<PlusIcon class="size-3.5" />{/if}{name}
 							</button>

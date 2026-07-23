@@ -25,7 +25,7 @@
 	const hasSecondary = (r: LogRecord): boolean => !!(r.stateCode || r.detail || r.hint || r.context || r.statement);
 
 	const th =
-		'py-2.5 px-3.5 text-left font-condensed text-xs font-semibold tracking-[0.7px] uppercase text-ink/55 border-b border-line whitespace-nowrap';
+		'py-2.5 px-3.5 text-left font-condensed text-xs font-semibold tracking-[0.7px] uppercase text-ink/70 border-b border-line whitespace-nowrap';
 	const td = 'px-3.5 py-2.5 border-b border-line-soft align-top';
 </script>
 
@@ -105,7 +105,7 @@
 						<td colspan="8" class="border-b border-line p-0">
 							<div class="bg-paper px-5 py-4 pl-8">
 								<div class="mb-3.5">
-									<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
+									<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/70 uppercase">
 										Message
 									</div>
 									<div class="font-mono text-md leading-[1.6] break-words whitespace-pre-wrap text-ink">
@@ -124,7 +124,7 @@
 
 								{#if r.detail}
 									<div class="mb-3.5">
-										<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
+										<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/70 uppercase">
 											Detail
 										</div>
 										<div class="font-mono text-sm leading-[1.6] break-words whitespace-pre-wrap text-ink">
@@ -135,7 +135,7 @@
 
 								{#if r.hint}
 									<div class="mb-3.5">
-										<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
+										<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/70 uppercase">
 											Hint
 										</div>
 										<div class="font-sans text-md leading-[1.55] text-ink/82">{r.hint}</div>
@@ -144,7 +144,7 @@
 
 								{#if r.context}
 									<div class="mb-3.5">
-										<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
+										<div class="mb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/70 uppercase">
 											Context
 										</div>
 										<div class="font-mono text-sm leading-[1.55] break-words whitespace-pre-wrap text-ink/80">
@@ -155,7 +155,7 @@
 
 								{#if r.statement}
 									<div>
-										<div class="mb-1.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
+										<div class="mb-1.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/70 uppercase">
 											Statement
 										</div>
 										<pre
@@ -164,7 +164,7 @@
 								{/if}
 
 								{#if !hasSecondary(r)}
-									<div class="font-mono text-sm text-ink/55">No additional fields recorded for this event</div>
+									<div class="font-mono text-sm text-ink/70">No additional fields recorded for this event</div>
 								{/if}
 							</div>
 						</td>

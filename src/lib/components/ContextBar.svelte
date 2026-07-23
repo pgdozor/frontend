@@ -46,7 +46,7 @@
 	const panelCls = 'z-50 max-w-[calc(100vw-24px)] border border-line-strong bg-card p-1.5 shadow-dropdown';
 	const itemCls =
 		'flex w-full cursor-pointer items-center gap-2.5 px-2.5 py-2 font-mono text-sm text-ink hover:bg-hover data-[highlighted]:bg-hover';
-	const labelCls = 'px-2.5 pt-1.5 pb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase';
+	const labelCls = 'px-2.5 pt-1.5 pb-1 font-condensed text-2xs font-semibold tracking-[1px] text-ink/70 uppercase';
 	const dotTitle = (ok: boolean) =>
 		ok
 			? 'Collector healthy · reported within 5 minutes'
@@ -64,7 +64,7 @@
 				{title}
 			</h1>
 		</div>
-		<p class="truncate text-xs leading-[1.2] text-ink/55">{description}</p>
+		<p class="truncate text-xs leading-[1.2] text-ink/70">{description}</p>
 	</div>
 
 	<div class="flex flex-wrap items-center gap-2.5">
@@ -115,7 +115,7 @@
 									{/snippet}
 								</Select.Item>
 							{:else}
-								<div class="px-2.5 py-2 font-mono text-sm text-ink/55">No servers</div>
+								<div class="px-2.5 py-2 font-mono text-sm text-ink/70">No servers</div>
 							{/each}
 						</Select.Content>
 					</Select.Portal>
@@ -148,7 +148,7 @@
 									{/snippet}
 								</Select.Item>
 							{:else}
-								<div class="px-2.5 py-2 font-mono text-sm text-ink/55">No databases</div>
+								<div class="px-2.5 py-2 font-mono text-sm text-ink/70">No databases</div>
 							{/each}
 						</Select.Content>
 					</Select.Portal>
@@ -189,7 +189,7 @@
 					class="z-50 flex max-w-[calc(100vw-24px)] flex-col border border-line-strong bg-card shadow-popover sm:flex-row"
 				>
 					<div class="border-b border-line px-2 py-3.5 sm:min-w-[10.75rem] sm:border-r sm:border-b-0">
-						<div class="mb-2.5 px-2.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
+						<div class="mb-2.5 px-2.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/70 uppercase">
 							Quick ranges
 						</div>
 						{#each presets as { key, label } (key)}
@@ -206,7 +206,7 @@
 						{/each}
 					</div>
 					<div class="w-[16.75rem] max-w-full px-4 py-3.5">
-						<div class="mb-2.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/50 uppercase">
+						<div class="mb-2.5 font-condensed text-2xs font-semibold tracking-[1px] text-ink/70 uppercase">
 							Absolute time range
 						</div>
 						<DateTimeRangeField bind:value={draftRange} onSubmit={applyCustom} />

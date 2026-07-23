@@ -59,7 +59,7 @@
 			onclick={() => (picker = picker?.mode === 'add' ? null : { mode: 'add' })}
 			aria-haspopup="listbox"
 			aria-expanded={picker !== null}
-			class="relative z-[2] flex cursor-pointer items-center gap-1.5 border border-dashed border-line-bold px-2.5 py-1 font-mono text-sm text-ink/60 hover:border-accent-line hover:text-command"
+			class="relative z-[2] flex cursor-pointer items-center gap-1.5 border border-dashed border-line-bold px-2.5 py-1 font-mono text-sm text-ink/70 hover:border-accent-line hover:text-command"
 		>
 			<SearchIcon class="size-3" />
 			Tag
@@ -79,7 +79,7 @@
 				tags.clear();
 				picker = null;
 			}}
-			class="translate-y-[1px] cursor-pointer px-1.5 py-1 font-mono text-xs text-ink/55 hover:text-danger"
+			class="translate-y-[1px] cursor-pointer px-1.5 py-1 font-mono text-xs text-ink/70 hover:text-danger"
 		>
 			Clear all
 		</button>
